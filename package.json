@@ -1,0 +1,12 @@
+{
+  "name": "stockportfolio",
+  "version": "1.0.0",
+  "description": "This repository is a webpage that allows users to practice buying and selling stocks using a mock platform",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
