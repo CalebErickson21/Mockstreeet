@@ -1,0 +1,26 @@
+@import "../styles/vars.scss";
+
+nav {
+    background-color: $DARK_BLUE;
+    border-bottom: 1px solid $COOL_GREY;
+
+    &:not([show]) {
+        min-height: $NAV_HEIGHT;
+    }
+
+    .nav-link {
+        color: $COOL_GREY;
+
+        &:hover {
+            font-weight: bold;
+            color: $COOL_GREY;
+        }
+    }
+}
+
+footer {
+    background-color: $DARK_BLUE;
+    color: $COOL_GREY;
+    min-height: $NAV_HEIGHT;
+    border-top: 1px solid $COOL_GREY;
+}

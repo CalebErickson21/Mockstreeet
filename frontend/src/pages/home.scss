@@ -1,0 +1,44 @@
+@import "../styles/vars.scss";
+
+#home {
+    height: 100dvh - $NAV_HEIGHT;
+    position: relative;
+    border-bottom: 1px solid $COOL_GREY;
+    border-top: 1px solid $COOL_GREY;
+    
+    img {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+        filter: brightness(0.75) blur(2px);
+    }
+    
+    div {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 5px 10px;
+        color: $COOL_GREY;
+
+        h1, p {
+            font-weight: bold;
+        }
+    }
+}
+
+#info {
+    border-bottom: 1px solid $COOL_GREY;
+    border-top: 1px solid $COOL_GREY;
+    background: $DARK_GREY;
+    color: $COOL_GREY;
+
+    h2 {
+        font-weight: bold;
+    }
+
+    p {
+        margin: 0;
+        padding: 2rem 8rem;
+    }
+}
