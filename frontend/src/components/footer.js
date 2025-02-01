@@ -7,12 +7,13 @@ const Footer = () => {
                 <div class="col-lg">
                     <h5>Mock Street Stock Portfolio Platform</h5>
                     <p>Buy and sell stocks with confidence! Start practicing trading today!</p>
-                    <p>Developed by Caleb Erickson // LINK PORTFOLIO //</p>
+                    <p>Developed by <a href="https://caleberickson21.github.io/">Caleb Erickson</a></p>
                 </div>
                 <div class="col-lg">
                     <h5>Resources</h5>
                     <p>For more information on stock trading, try out these websites!</p>
-                    <p>// WEBSITES //</p>
+                    <p><a href="https://www.dowjones.com/smartmoney/what-is-the-stock-market/">What is the stock Market?</a></p>
+                    <p><a href="https://finance.yahoo.com/">Yahoo Finance News</a></p>
                 </div>
                 <div class="col-lg">
                     <h5>Support</h5>

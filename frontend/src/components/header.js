@@ -1,6 +1,14 @@
+import { useNavigate }  from 'react-router-dom';
+
+// Import styles
 import "./layout.scss";
 
 const Header = () => {
+    const navigate = useNavigate();
+
+    const navHome = () => {
+        navigate('/'); // Navigate to homepage
+    };
     return (
         <nav id="navbar" class="navbar sticky-top navbar-expand-lg border-bottom border-body" data-bs-theme="dark">
             <div class="container-fluid">
@@ -10,22 +18,22 @@ const Header = () => {
                 <div class="collapse navbar-collapse" id="navCollapse">
                     <ul class="navbar-nav nav-underline mx-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Home</a>
+                            <a class="nav-link" onClick={navHome}>Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Portfolio</a>
+                            <a class="nav-link" >Portfolio</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Transactions</a>
+                            <a class="nav-link" >Transactions</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Buy + Sell</a>
+                            <a class="nav-link" >Buy + Sell</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link mx-end" href="#">Login</a>
+                            <a class="nav-link mx-end" >Login</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link mx-end" href="#">Register</a>
+                            <a class="nav-link mx-end" >Register</a>
                         </li>
                     </ul>
                 </div>

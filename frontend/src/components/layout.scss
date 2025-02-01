@@ -23,4 +23,12 @@ footer {
     color: $COOL_GREY;
     min-height: $NAV_HEIGHT;
     border-top: 1px solid $COOL_GREY;
+
+    a {
+        color: $COOL_GREY;
+
+        &:hover {
+            font-weight: bolder;
+        }
+    }
 }
