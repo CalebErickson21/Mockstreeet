@@ -1,0 +1,53 @@
+@import '../../styles/vars.scss';
+
+#login {
+    .row {
+        height: 100dvh - $NAV_HEIGHT;
+        .col {
+            max-height: 100%;
+
+            &#left {
+                background-color: $DARK_BLUE;
+
+                img {
+                    object-fit: contain;
+                }
+            }
+
+            &#right {
+                background-color: $COOL_GREY;
+
+                h2 {
+                    color: $DARK_BLUE;
+                }
+
+                form {
+                    width: 50%;
+
+                    &:focus {
+                        box-shadow: 0px 0px 1px 4px $LIGHT_BLUE;
+                    }
+                    label {
+                        font-weight: bold;
+                    }
+
+                    input {
+                        color: $DARK_GREY;
+                    }
+
+                    button {
+                        width: 100%;
+                        background-color: $LIGHT_BLUE;
+                        font-weight: bold;
+                        border: 2px solid $DARK_BLUE;
+
+                        &:hover {
+                            color: $COOL_GREY;
+                            background-color: $DARK_BLUE;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

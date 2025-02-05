@@ -1,5 +1,5 @@
 import "./home.scss";
-import chartPng from "../assets/images/chart.png";
+import chartPng from "../../assets/images/chart.png";
 
 const Home = () => {
     return (

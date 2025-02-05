@@ -11,11 +11,16 @@ import logo from "../assets/images/text_right.png";
 const lgWidth = 992;
 
 const Header = () => {
-    // Navigate to homepage function
+    // Navigate to various paths
     const navigate = useNavigate();
     const navHome = () => {
         navigate('/');
     };
+    
+    const navLogin = () => {
+        navigate('/login');
+    }
+
 
     // Center nav tabs function
     const [isCentered, setIsCenter] = useState(window.innerWidth >= lgWidth);
@@ -59,7 +64,7 @@ const Header = () => {
 
                     <ul className="navbar-nav nav-underline ms-auto mb-2 mb-lg-0">
                         <li className="nav-item">
-                            <a className="nav-link" >Login</a>
+                            <a className="nav-link" onClick={navLogin}>Login</a>
                         </li>
                         <li className="nav-item">
                             <a className="nav-link" >Register</a>
