@@ -16,9 +16,11 @@ const Header = () => {
     const navHome = () => {
         navigate('/');
     };
-    
     const navLogin = () => {
         navigate('/login');
+    }
+    const navRegister = () => {
+        navigate('/register');
     }
 
 
@@ -67,7 +69,7 @@ const Header = () => {
                             <a className="nav-link" onClick={navLogin}>Login</a>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" >Register</a>
+                            <a className="nav-link" onClick={navRegister}>Register</a>
                         </li>
                     </ul>
                 </div>
