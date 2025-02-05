@@ -1,6 +1,8 @@
-// Import functions
-import { useNavigate }  from 'react-router-dom';
+// Import library functions
 import { useState, useEffect } from 'react'; // useState manages component state, useEffect handles side effects
+
+// Import custom functions
+import { useNavHome, useNavLogin, useNavRegister } from '../utils/helpers';
 
 // Import styles
 import "./layout.scss";
@@ -11,18 +13,9 @@ import logo from "../assets/images/text_right.png";
 const lgWidth = 992;
 
 const Header = () => {
-    // Navigate to various paths
-    const navigate = useNavigate();
-    const navHome = () => {
-        navigate('/');
-    };
-    const navLogin = () => {
-        navigate('/login');
-    }
-    const navRegister = () => {
-        navigate('/register');
-    }
-
+    const navHome = useNavHome();
+    const navLogin = useNavLogin();
+    const navRegister = useNavRegister();
 
     // Center nav tabs function
     const [isCentered, setIsCenter] = useState(window.innerWidth >= lgWidth);
@@ -44,7 +37,7 @@ const Header = () => {
             <div className="container-fluid">
                 
                 <a className="navbar-brand" onClick={navHome}>
-                    <img src={logo}/>
+                    <img src={logo} alt='MockStreet Logo'/>
                 </a>
 
 

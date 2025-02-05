@@ -19,11 +19,17 @@
 
                 h2 {
                     color: $DARK_BLUE;
+                    font-weight: bold;
+                }
+
+                h5 {
+                    color: $DARK_GREY;
                 }
 
                 a {
                     font-weight: bold;
                     text-decoration: underline;
+                    color: $DARK_BLUE;
                 }
 
                 form {

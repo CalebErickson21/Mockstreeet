@@ -1,5 +1,5 @@
-// Import library functions
-import { useNavigate } from 'react-router-dom';
+// Import custom functions
+import { useNavRegister } from '../../utils/helpers';
 
 // Import styles
 import './layout.scss';
@@ -8,10 +8,8 @@ import './layout.scss';
 import logo from '../../assets/images/text_below.png';
 
 const Login = () => {
-    const navigate = useNavigate();
-    const navRegister = () => {
-        navigate('/register');
-    }
+    const navRegister = useNavRegister();
+
     return (
         <div id='login'>
             <div class='contaier-fluid'>
