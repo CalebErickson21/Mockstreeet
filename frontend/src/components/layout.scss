@@ -34,7 +34,7 @@ nav {
     }
 }
 
-footer {
+#footer-container {
     background-color: $DARK_BLUE;
     color: $COOL_GREY;
     min-height: $NAV_HEIGHT;
@@ -42,6 +42,7 @@ footer {
 
     a {
         color: $COOL_GREY;
+        text-decoration: underline;
 
         &:hover {
             font-weight: bolder;

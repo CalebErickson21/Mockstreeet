@@ -12,35 +12,35 @@ const Register = () => {
 
     return (
         <div id='login'>
-            <div class='contaier-fluid'>
-                <div class='row'>
-                    <div class='col col-12 col-lg-6 d-flex justify-content-center' id='left'>
+            <div className='contaier-fluid'>
+                <div className='row'>
+                    <div className='col col-12 col-lg-6 d-flex justify-content-center' id='left'>
                         <img src={logo} alt='Mock Street Logo'/>
                     </div>
 
-                    <div class='col col-12 col-lg-6 d-flex flex-column justify-content-center align-items-center' id='right'>
+                    <div className='col col-12 col-lg-6 d-flex flex-column justify-content-center align-items-center' id='right'>
                         <h2>Welcome!</h2>
                         <h5>Start trading today!</h5>
                         <form>
-                            <div class='form-group my-2'>
+                            <div className='form-group my-2'>
                                 <label htmlfor='firstName'>First Name</label>
-                                <input type="text" id='firstName' class="form-control"  placeholder="ex. John"/>
+                                <input type="text" id='firstName' className="form-control"  placeholder="ex. John"/>
                                 <label htmlfor='lastName'>Last Name</label>
-                                <input type="text" id='lastName' class="form-control"  placeholder="ex. Doe"/>
+                                <input type="text" id='lastName' className="form-control"  placeholder="ex. Doe"/>
                             </div>
-                            <div class="form-group my-2">
+                            <div className="form-group my-2">
                                 <label htmlfor='userName'>Email</label>
-                                <input type="text" id='userName' class="form-control"  placeholder="ex. JohnDoe123"/>
+                                <input type="text" id='userName' className="form-control"  placeholder="ex. JohnDoe123"/>
                             </div>
-                            <div class="form-group my-2">
+                            <div className="form-group my-2">
                                 <label htmlfor='password'>Password</label>
-                                <input type="password" class="form-control" id="password" placeholder="ex. Password123"/>
+                                <input type="password" className="form-control" id="password" placeholder="ex. Password123"/>
                             </div>
-                            <div class="form-group my-2">
+                            <div className="form-group my-2">
                                 <label htmlfor='passwordConfirmation'>Confirm Password</label>
-                                <input type="password" class="form-control" id="passwordConfirmation" placeholder="ex. Password123"/>
+                                <input type="password" className="form-control" id="passwordConfirmation" placeholder="ex. Password123"/>
                             </div>
-                            <button class="btn my-2">Register</button>
+                            <button className="btn my-2">Register</button>
                         </form>
                         <h5>Already have account? <a onClick={navLogin}>Log in!</a></h5>
                     </div>

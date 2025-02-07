@@ -4,7 +4,7 @@ import chartPng from "../../assets/images/chart.png";
 const Home = () => {
     return (
         <div>
-            <div class="align-items-center text-center mx-0 px-0 py-0" id="home">
+            <div className="align-items-center text-center mx-0 px-0 py-0" id="home">
                 <img src={chartPng} alt="Stock Chart Img"/>
                 <div>
                 <h1>Mock Street Stock Exchange</h1>
@@ -14,7 +14,7 @@ const Home = () => {
                 </div>
             </div>
         
-            <div id="info" class="mx-0 px-2 py-2 alighn-items-center text-center">
+            <div id="info" className="mx-0 px-2 py-2 alighn-items-center text-center">
                 <h3>What is MockStreet?</h3>
                 <p>MockStreet is a stock trading simulator that allows you to buy and sell stocks with virtual money. You can view your portfolio and transaction history to track your investments. MockStreet is a great way to learn about the stock market without risking real money.</p>
 
