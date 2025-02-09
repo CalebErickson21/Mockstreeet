@@ -34,6 +34,7 @@ nav {
     }
 }
 
+
 #footer-container {
     background-color: $DARK_BLUE;
     color: $COOL_GREY;
@@ -47,5 +48,33 @@ nav {
         &:hover {
             font-weight: bolder;
         }
+    }
+
+    #modal {
+        color: $DARK_GREY;
+
+        .modal-header {
+            color: $DARK_BLUE;
+        }
+
+        button#send {
+            background-color: $LIGHT_BLUE;
+            border: 2px solid $DARK_BLUE;
+
+            &:hover {
+                font-weight: bolder;
+            }
+        }
+
+        button#close {
+            background-color: $DARK_GREY;
+            color: $COOL_GREY;
+
+            &:hover {
+                font-weight: bolder;
+            }
+        }
+
+
     }
 }

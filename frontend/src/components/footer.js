@@ -46,8 +46,8 @@ const Footer = () => {
                     </div>
 
                     <div className="modal-footer">
-                        <button type="button" className="btn" data-bs-dismiss="modal" id="closeModalBtn">Close</button>
-                        <button type="button" className="btn" id="sendModalBtn">Send</button>
+                        <button type="button" className="btn" data-bs-dismiss="modal" id="close">Close</button>
+                        <button type="button" className="btn" id="send">Send</button>
                     </div>
                 </div>
             </div>
