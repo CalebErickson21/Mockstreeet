@@ -1,7 +1,7 @@
 // Import styles
-import './portfolio.scss';
+import './market.scss';
 
-const Portfolio = () => {
+const Market = () => {
     return (
         <div id='portfolio-container'>
 
@@ -13,4 +13,4 @@ const Portfolio = () => {
     )
 }
 
-export default Portfolio;
+export default Market;

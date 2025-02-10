@@ -1,5 +1,5 @@
 // Import custom functions
-import { useNavRegister } from '../../utils/helpers';
+import { useNavigation } from '../../utils/helpers';
 
 // Import styles
 import './layout.scss';
@@ -8,7 +8,7 @@ import './layout.scss';
 import logo from '../../assets/images/text_below.png';
 
 const Login = () => {
-    const navRegister = useNavRegister();
+    const navigate = useNavigation();
 
     return (
         <div id='login'>
@@ -36,7 +36,7 @@ const Login = () => {
                             </div>
                             <button className="btn my-2">Login</button>
                         </form>
-                        <h5>New? <a onClick={navRegister}>Sign up</a> now and start trading today!</h5>
+                        <h5>New? <a onClick={navigate('/register')}>Sign up</a> now and start trading today!</h5>
                     </div>
                 </div>
             </div>
