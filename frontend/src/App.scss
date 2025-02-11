@@ -1,2 +1,7 @@
+@import './styles/vars.scss';
 
-
+#app-container {
+    background-color: $DARK_BLUE;
+    width: 100dvw;
+    height: 100dvh;
+}

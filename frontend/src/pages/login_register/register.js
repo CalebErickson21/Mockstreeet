@@ -11,7 +11,7 @@ const Register = () => {
     const navigate = useNavigation();
 
     return (
-        <div id='login'>
+        <div id='login-register-container'>
             <div className='contaier-fluid'>
                 <div className='row'>
                     <div className='col col-12 col-lg-6 d-flex justify-content-center' id='left'>

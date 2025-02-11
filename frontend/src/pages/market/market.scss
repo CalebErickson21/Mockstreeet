@@ -1,0 +1,43 @@
+@import '../../styles/vars.scss';
+
+$SECTION_HEIGHT: ((100dvh - 2*$NAV_HEIGHT) / 3) - 2dvh;
+
+#market-container {
+    max-width: 100dvw;
+    background-color: $COOL_GREY;
+    margin-top: 0px;
+    padding: 0px;
+
+    #info {
+        max-width: 100%;
+        min-height: $NAV_HEIGHT;
+        background: $COOL_GREY;
+        color: $DARK_GREY;
+        border-bottom: 0.5dvh solid $DARK_BLUE;
+        
+        button {
+            background-color: $DARK_BLUE;
+            color: $COOL_GREY;
+
+            &:hover {
+                font-weight: bold;
+            }
+        }
+    }
+
+    .section {
+        padding-left: 1dvw;
+
+        .scrollable {
+            max-height: $SECTION_HEIGHT;
+            max-width: 100dvw;
+            overflow-y: scroll;
+            overflow-x: scroll;
+            white-space: nowrap; 
+            margin-bottom: 2dvh;
+            padding-left: .5dvw;
+            padding-right: .5dvw;
+            border-bottom: 0.5dvh solid $DARK_BLUE;
+        }
+    }
+}

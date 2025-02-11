@@ -1,10 +1,10 @@
 @import '../../styles/vars.scss';
 
-#login {
+#login-register-container {
     .row {
-        height: 100dvh - $NAV_HEIGHT;
+        min-height: 100dvh - $NAV_HEIGHT;
         .col {
-            max-height: 100%;
+            min-height: 100%;
 
             &#left {
                 background-color: $DARK_BLUE;

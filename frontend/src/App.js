@@ -14,7 +14,7 @@ import Market from './pages/market/market.js';
 
 const App = () => {
   return (
-    <div>
+    <div id='app-container'>
         <Header />
         <Routes>
             <Route path='/' element={<Home />} />

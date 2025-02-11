@@ -1,0 +1,42 @@
+@import '../../styles/vars.scss';
+
+#portfolio-container {
+    max-width: 100dvw;
+    #info {
+        width: 100%;
+        border-bottom: 0.5dvh solid $DARK_BLUE;
+    
+        .row {
+            width: 100%;
+            background-color: $COOL_GREY;
+            color: $DARK_GREY;
+            
+
+            .col {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding-bottom: 1dvh;
+
+                select {
+                    width: 50%;
+                }
+            }
+        }
+    }
+
+    #details {
+        padding-left: 1dvw;
+
+        #table-container {
+            max-height: 100dvh - (3*$NAV_HEIGHT);
+            max-width: 100dvw;
+            overflow-y: scroll;
+            overflow-x: scroll;
+            white-space: nowrap;
+            padding-left: .5dvw;
+            padding-right: .5dvw;
+            border-bottom: 0.5dvh solid $DARK_BLUE;
+        }
+    }
+}
