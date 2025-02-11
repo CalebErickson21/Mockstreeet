@@ -1,7 +1,5 @@
 @import '../../styles/vars.scss';
 
-$SECTION_HEIGHT: ((100dvh - 2*$NAV_HEIGHT) / 3) - 2dvh;
-
 #market-container {
     max-width: 100dvw;
     background-color: $COOL_GREY;
@@ -29,7 +27,8 @@ $SECTION_HEIGHT: ((100dvh - 2*$NAV_HEIGHT) / 3) - 2dvh;
         padding-left: 1dvw;
 
         .scrollable {
-            max-height: $SECTION_HEIGHT;
+            max-height: ((100dvh - (2*$NAV_HEIGHT)) / 3) - 2dvh;
+            min-height: (100dvh - (5*$NAV_HEIGHT)) / 3;
             max-width: 100dvw;
             overflow-y: scroll;
             overflow-x: scroll;

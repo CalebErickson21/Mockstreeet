@@ -34,134 +34,22 @@ const Portfolio = () => {
                     <table class='table table-striped scrollable'>
                         <thead>
                             <tr>
-                                <th>Header 1</th>
-                                <th>Header 2</th>
-                                <th>Header 3</th>
-                                <th>Header 4</th>
-                                <th>Header 5</th>
-                                <th>Header 6</th>
+                                <th>Stock</th>
+                                <th>Symbol</th>
+                                <th>Shares</th>
+                                <th>Total Value</th>
+                                <th>+/-</th>
+                                <th>Transaction History</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>Row 1, Col 1</td>
-                                <td>Row 1, Col 2</td>
-                                <td>Row 1, Col 3</td>
-                                <td>Row 1, Col 4</td>
-                                <td>Row 1, Col 5</td>
-                                <td>Row 1, Col 6</td>
-                            </tr>
-                            <tr>
-                                <td>Row 2, Col 1</td>
-                                <td>Row 2, Col 2</td>
-                                <td>Row 2, Col 3</td>
-                                <td>Row 2, Col 4</td>
-                                <td>Row 2, Col 5</td>
-                                <td>Row 2, Col 6</td>
-                            </tr>
-                            <tr>
-                                <td>Row 3, Col 1</td>
-                                <td>Row 3, Col 2</td>
-                                <td>Row 3, Col 3</td>
-                                <td>Row 3, Col 4</td>
-                                <td>Row 3, Col 5</td>
-                                <td>Row 3, Col 6</td>
-                            </tr>
-                            <tr>
-                                <td>Row 4, Col 1</td>
-                                <td>Row 4, Col 2</td>
-                                <td>Row 4, Col 3</td>
-                                <td>Row 4, Col 4</td>
-                                <td>Row 4, Col 5</td>
-                                <td>Row 4, Col 6</td>
-                            </tr>
-                            <tr>
-                                <td>Row 5, Col 1</td>
-                                <td>Row 5, Col 2</td>
-                                <td>Row 5, Col 3</td>
-                                <td>Row 5, Col 4</td>
-                                <td>Row 5, Col 5</td>
-                                <td>Row 5, Col 6</td>
-                            </tr>
-                            <tr>
-                                <td>Row 6, Col 1</td>
-                                <td>Row 6, Col 2</td>
-                                <td>Row 6, Col 3</td>
-                                <td>Row 6, Col 4</td>
-                                <td>Row 6, Col 5</td>
-                                <td>Row 6, Col 6</td>
-                            </tr>
-                            <tr>
-                                <td>Row 1, Col 1</td>
-                                <td>Row 1, Col 2</td>
-                                <td>Row 1, Col 3</td>
-                                <td>Row 1, Col 4</td>
-                                <td>Row 1, Col 5</td>
-                                <td>Row 1, Col 6</td>
-                            </tr>
-                            <tr>
-                                <td>Row 1, Col 1</td>
-                                <td>Row 1, Col 2</td>
-                                <td>Row 1, Col 3</td>
-                                <td>Row 1, Col 4</td>
-                                <td>Row 1, Col 5</td>
-                                <td>Row 1, Col 6</td>
-                            </tr>
-                            <tr>
-                                <td>Row 1, Col 1</td>
-                                <td>Row 1, Col 2</td>
-                                <td>Row 1, Col 3</td>
-                                <td>Row 1, Col 4</td>
-                                <td>Row 1, Col 5</td>
-                                <td>Row 1, Col 6</td>
-                            </tr>
-                            <tr>
-                                <td>Row 1, Col 1</td>
-                                <td>Row 1, Col 2</td>
-                                <td>Row 1, Col 3</td>
-                                <td>Row 1, Col 4</td>
-                                <td>Row 1, Col 5</td>
-                                <td>Row 1, Col 6</td>
-                            </tr>
-                            <tr>
-                                <td>Row 1, Col 1</td>
-                                <td>Row 1, Col 2</td>
-                                <td>Row 1, Col 3</td>
-                                <td>Row 1, Col 4</td>
-                                <td>Row 1, Col 5</td>
-                                <td>Row 1, Col 6</td>
-                            </tr>
-                            <tr>
-                                <td>Row 1, Col 1</td>
-                                <td>Row 1, Col 2</td>
-                                <td>Row 1, Col 3</td>
-                                <td>Row 1, Col 4</td>
-                                <td>Row 1, Col 5</td>
-                                <td>Row 1, Col 6</td>
-                            </tr>
-                            <tr>
-                                <td>Row 1, Col 1</td>
-                                <td>Row 1, Col 2</td>
-                                <td>Row 1, Col 3</td>
-                                <td>Row 1, Col 4</td>
-                                <td>Row 1, Col 5</td>
-                                <td>Row 1, Col 6</td>
-                            </tr>
-                            <tr>
-                                <td>Row 1, Col 1</td>
-                                <td>Row 1, Col 2</td>
-                                <td>Row 1, Col 3</td>
-                                <td>Row 1, Col 4</td>
-                                <td>Row 1, Col 5</td>
-                                <td>Row 1, Col 6</td>
-                            </tr>
-                            <tr>
-                                <td>Row 1, Col 1</td>
-                                <td>Row 1, Col 2</td>
-                                <td>Row 1, Col 3</td>
-                                <td>Row 1, Col 4</td>
-                                <td>Row 1, Col 5</td>
-                                <td>Row 1, Col 6</td>
+                                <td>TEST</td>
+                                <td>TEST</td>
+                                <td>100</td>
+                                <td>$10000</td>
+                                <td>$23242234</td>
+                                <td><button class='btn'>View</button></td>
                             </tr>
                         </tbody>
                     </table>

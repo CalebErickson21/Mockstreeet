@@ -29,6 +29,7 @@
         padding-left: 1dvw;
 
         #table-container {
+            min-height: 100dvh - (4*$NAV_HEIGHT);
             max-height: 100dvh - (3*$NAV_HEIGHT);
             max-width: 100dvw;
             overflow-y: scroll;

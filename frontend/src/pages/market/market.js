@@ -17,13 +17,28 @@ const Market = () => {
             <div id='watchlist' class='section'>
                 <h2>Watch List</h2>
                 <div id='watchlist-scroll' class='scrollable'>
-                    <h5>watchlist</h5>
-                    <h5>watchlist</h5>
-                    <h5>watchlist</h5>
-                    <h5>watchlist</h5>
-                    <h5>watchlist</h5>
-                    <h5>watchlist</h5>
-                    <h5>watchlist</h5>
+                    <table class='table table-striped scrollable'>
+                        <thead>
+                            <tr>
+                                <th>Stock</th>
+                                <th>Symbol</th>
+                                <th>Current Value</th>
+                                <th colspan='2'>Transaction Type</th>
+                                <th>Transaction History</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>TEST</td>
+                                <td>TEST</td>
+                                <td>100</td>
+                                <td><button class='btn'>Buy</button></td>
+                                <td><button class='btn'>Sell</button></td>
+                                <td><button class='btn'>View</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
                 </div>
             </div>
 
@@ -31,14 +46,27 @@ const Market = () => {
             <div id='portfolio' class='section'>
                 <h2>Your Stocks</h2>
                 <div id='portfolio-scroll' class='scrollable'>
-                    <h5>portfolio</h5>
-                    <h5>portfolio</h5>
-                    <h5>portfolio</h5>
-                    <h5>portfolio</h5>
-                    <h5>portfolio</h5>
-                    <h5>portfolio</h5>
-                    <h5>portfolio</h5>
-                    <h5>portfolio</h5>
+                    <table class='table table-striped scrollable'>
+                        <thead>
+                            <tr>
+                                <th>Stock</th>
+                                <th>Symbol</th>
+                                <th>Current Value</th>
+                                <th colspan='2'>Transaction Type</th>
+                                <th>Transaction History</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>TEST</td>
+                                <td>TEST</td>
+                                <td>100</td>
+                                <td><button class='btn'>Buy</button></td>
+                                <td><button class='btn'>Sell</button></td>
+                                <td><button class='btn'>View</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -46,14 +74,27 @@ const Market = () => {
             <div id='market' class='section'>
                 <h2>Market</h2>
                 <div id='market-scroll' class='scrollable'>
-                    <h5>market</h5>
-                    <h5>market</h5>
-                    <h5>market</h5>
-                    <h5>market</h5>
-                    <h5>market</h5>
-                    <h5>market</h5>
-                    <h5>market</h5>
-                    <h5>market</h5>
+                    <table class='table table-striped scrollable'>
+                        <thead>
+                            <tr>
+                                <th>Stock</th>
+                                <th>Symbol</th>
+                                <th>Current Value</th>
+                                <th colspan='2'>Transaction Type</th>
+                                <th>Transaction History</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>TEST</td>
+                                <td>TEST</td>
+                                <td>100</td>
+                                <td><button class='btn'>Buy</button></td>
+                                <td><button class='btn'>Sell</button></td>
+                                <td><button class='btn'>View</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
