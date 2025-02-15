@@ -29,8 +29,12 @@ const Register = () => {
                                 <input type="text" id='lastName' className="form-control"  placeholder="ex. Doe"/>
                             </div>
                             <div className="form-group my-2">
-                                <label htmlfor='userName'>Email</label>
-                                <input type="text" id='userName' className="form-control"  placeholder="ex. JohnDoe123"/>
+                                <label htmlfor='email'>Email</label>
+                                <input type="text" id='email' className="form-control"  placeholder="ex. JohnDoe123@example.com"/>
+                            </div>
+                            <div className="form-group my-2">
+                                <label htmlfor='username'>Username</label>
+                                <input type="text" id='username' className="form-control"  placeholder="ex. JohnDoe123"/>
                             </div>
                             <div className="form-group my-2">
                                 <label htmlfor='password'>Password</label>

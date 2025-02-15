@@ -1,3 +1,4 @@
+// Import functions
 import { Route, Routes } from 'react-router-dom';
 
 // Import components
