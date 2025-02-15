@@ -1,0 +1,36 @@
+@import '../../styles/vars.scss';
+
+#transactions-container {
+
+    #filters {
+        padding-left: 1dvw;
+        padding-right: 1dvw;
+        padding-bottom: 1dvh;
+        background-color: $COOL_GREY;
+        border-bottom: 0.5dvh solid $DARK_BLUE;
+
+        .row .col {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            select {
+                width: min-content;
+            }
+        }
+    }
+
+    #table-container {
+        min-height: 100dvh - (4*$NAV_HEIGHT);
+        max-height: 100dvh - (3*$NAV_HEIGHT);
+        max-width: 100dvw;
+        overflow-y: scroll;
+        overflow-x: scroll;
+        white-space: nowrap;
+        padding-left: 1.5dvw;
+        padding-right: 1.5dvw;
+        border-bottom: 0.5dvh solid $DARK_BLUE;
+    }
+    
+
+}
