@@ -12,12 +12,12 @@ import logo from "../assets/images/text_right.png";
 
 const lgWidth = 992;
 
-const Header = () => {
+const Header = ({ user, setUser }) => {
     const navigate = useNavigation();
 
     // Center nav tabs function
-    const [isCentered, setIsCenter] = useState(window.innerWidth >= lgWidth);
     // Handle window resizing
+    const [isCentered, setIsCenter] = useState(window.innerWidth >= lgWidth);
     useEffect(() => {
         const handleResize = () => {
             setIsCenter(window.innerWidth >= lgWidth);
@@ -29,17 +29,15 @@ const Header = () => {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-
-    const [user, setUser] = useState(null);
-    
-    // Check user authentication
+    // Check user authentication whenever the component mounts or `user` state changes
     useEffect(() => {
         const fetchUser = async () => {
             const currUser = await checkAuthHelper();
             setUser(currUser);
         };
         fetchUser();
-    }, []);
+    }, [setUser]); // Runs whenever `setUser` is called in `App.js`
+
 
     // Logout user
     const handleLogout = async () => {

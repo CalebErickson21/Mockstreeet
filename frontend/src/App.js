@@ -1,5 +1,7 @@
 // Import functions
 import { Route, Routes } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { checkAuthHelper } from './utils/helpers.js';
 
 // Import components
 import Header from './components/header.js';
@@ -14,12 +16,23 @@ import Transactions from './pages/transactions/transactions.js';
 import Market from './pages/market/market.js';
 
 const App = () => {
+
+  // Global authentication check
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+    const fetchUser = async () => {
+      const currUser = await checkAuthHelper();
+      setUser(currUser);
+    };
+    fetchUser();
+  }, []);
+
   return (
     <div id='app-container'>
-        <Header />
+        <Header user={user} setUser={setUser} />
         <Routes>
             <Route path='/' element={<Home />} />
-            <Route path='/login' element={<Login />} />
+            <Route path='/login' element={<Login setUser={setUser} />} />
             <Route path='/register' element={<Register />} />
             <Route path='/portfolio' element={<Portfolio />} />
             <Route path='/transactions' element={<Transactions />} />

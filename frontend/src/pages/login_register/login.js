@@ -8,7 +8,7 @@ import './layout.scss';
 // Import images
 import logo from '../../assets/images/text_below.png';
 
-const Login = () => {
+const Login = ({ setUser }) => {
     // Navigation
     const navigate = useNavigation();
 
@@ -25,6 +25,7 @@ const Login = () => {
 
         console.log("Login response:", data);
         if (data.success) {
+            setUser(data.user);
             navigate('/')();
         }
         else {
