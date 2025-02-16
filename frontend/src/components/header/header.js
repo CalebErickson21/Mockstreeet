@@ -2,13 +2,13 @@
 import { useState, useEffect } from 'react'; // useState manages component state, useEffect handles side effects
 
 // Import custom functions
-import { useNavigation, checkAuthHelper, logoutHelper }  from '../utils/helpers';
+import { useNavigation, checkAuthHelper, logoutHelper }  from '../../utils/helpers';
 
 // Import styles
-import "./layout.scss";
+import "./header.scss";
 
 // Import logo
-import logo from "../assets/images/text_right.png";
+import logo from "../../assets/images/text_right.png";
 
 const lgWidth = 992;
 

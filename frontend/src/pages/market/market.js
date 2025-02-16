@@ -1,7 +1,21 @@
+// Import functions
+import { useEffect, useState } from 'react';
+
 // Import styles
 import './market.scss';
 
-const Market = () => {
+// Import components
+import Modal from '../../components/accessModal/modal.js';
+
+const Market = ({ user }) => {
+
+    // Show modal if user is not logged in
+    const [showModal, setShowModal] = useState(false);
+    useEffect(() => {
+        user ? setShowModal(false) : setShowModal(true);
+    }, [user]);
+
+
     return (
         <div id='market-container'>
             <div id='info' class='row justify-content-center align-items-center'>
@@ -98,6 +112,7 @@ const Market = () => {
                 </div>
             </div>
 
+            <Modal show={showModal} handleClose={() => setShowModal(false)} />
 
         </div>
     )

@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import { checkAuthHelper } from './utils/helpers.js';
 
 // Import components
-import Header from './components/header.js';
-import Footer from './components/footer.js';
+import Header from './components/header/header.js';
+import Footer from './components/footer/footer.js';
 
 // Import pages
 import Home from './pages/home/home.js';
@@ -34,9 +34,9 @@ const App = () => {
             <Route path='/' element={<Home />} />
             <Route path='/login' element={<Login setUser={setUser} />} />
             <Route path='/register' element={<Register />} />
-            <Route path='/portfolio' element={<Portfolio />} />
-            <Route path='/transactions' element={<Transactions />} />
-            <Route path='/market' element={<Market />} />
+            <Route path='/portfolio' element={<Portfolio user={user} />} />
+            <Route path='/transactions' element={<Transactions user={user} />} />
+            <Route path='/market' element={<Market user={user}/>} />
         </Routes>
         <Footer />
     </div>

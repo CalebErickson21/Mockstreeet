@@ -1,7 +1,18 @@
+// Import functions
+import { useEffect, useState } from 'react';
+
+// Import components
+import Modal from '../../components/accessModal/modal.js';
+
 // Import styles
 import './transactions.scss';
 
-const Transactions = () => {
+const Transactions = ({ user }) => {
+    // Show modal if user is not logged in
+    const [showModal, setShowModal] = useState(false);
+    useEffect(() => {
+        user ? setShowModal(false) : setShowModal(true);
+    }, [user]);
     return (
         <div id='transactions-container'>
 
@@ -54,7 +65,7 @@ const Transactions = () => {
                 </table>
             </div>
 
-
+            <Modal show={showModal} handleClose={() => setShowModal(false)} />
 
 
         </div>

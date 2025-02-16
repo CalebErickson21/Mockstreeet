@@ -1,0 +1,37 @@
+@import "../../styles/vars.scss";
+
+#header-container {
+    nav {
+        background-color: $DARK_BLUE;
+        border-bottom: 1px solid $COOL_GREY;
+
+        #nav-center.nav-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        &:not([show]) {
+            min-height: $NAV_HEIGHT;
+        }
+
+        .nav-link {
+            color: $COOL_GREY;
+
+            &:hover {
+                font-weight: bold;
+                color: $COOL_GREY;
+            }
+        }
+
+        .navbar-toggler-icon {
+            filter: invert(1);
+        }
+
+        img {
+            max-height: $NAV_HEIGHT;
+            object-fit: contain;
+        }
+    }
+}
