@@ -1,6 +1,18 @@
 // Import dependencies
 import { useNavigate } from 'react-router-dom';
 
+/** Logger function
+ * 
+ * @param {*} level 
+ * @param {*} module 
+ * @param {*} message 
+ * @param {*} data 
+ */
+export const log = (level, module, message, data = null) => {
+    const timeStamp = new Date().toISOString();
+    console[level](`[${level.toUpperCase()}] [${timeStamp}] [${module}] - [${message}]`, data || '');
+}
+
 /** Navigation helper
  * 
  * @returns function that takes path as argument as navigates to that path 
@@ -33,19 +45,20 @@ export const registerHelper = async (firstName, lastName, email, username, passw
         if (response.ok) { // Status code 200-299
             // Return registration data
             const data = await response.json();
+            log('info', 'registerHelpers', 'Registration response ok', data);
             return data;
         } else {
             // Return registration error
             const errData = await response.json();
+            log('error', 'registerHelper', `${response.status}`, errData.message);
             return { success: false, message: errData.message || 'An error occurred. Please try again.' };
         }
-    } catch (error) {
+    } catch (err) {
         // Error handling
-        console.error("Registration error:", error);
+        log('error', 'registerHelper', 'Error: ', err.message);
         return { success: false, message: "An error occurred. Please try again." };
     }
 };
-
 
 /** Login Helper
  * 
@@ -66,16 +79,18 @@ export const loginHelper = async (userNameOrEmail, password) => {
         if (response.ok) { // Status code 200-299
             // Return response data
             const data = await response.json();
+            log('info', 'loginHelper', `${response.status}`, data.message);
             return data;
         }
         else {
             // Return error
             const errData = await response.json();
+            log('error', 'loginHelper', `${response.status}`, errData.message);
             return { success: false, message: errData.message || 'An error occured. Please try again.'}
         }
-    } catch (error) {
+    } catch (err) {
         // Error handling
-        console.error("Login error:", error);
+        log('error', 'loginHelper', 'Error: ', err.message);
         return { success: false, message: "An error occurred. Please try again." };
     }
 };
@@ -94,11 +109,12 @@ export const checkAuthHelper = async () => {
         const data = await response.json();
 
         // Return status of authentication
+        log('info', 'checkAuthHelper', `${response.status}`, data.message);
         return data.success ? data.user : null;
     }
     catch (err) {
         // Error handling
-        console.error("Authentication error:", err);
+        log('error', 'checkAuthHelper', 'Error: ', err.message);
         return null;
     }
 }
@@ -118,16 +134,17 @@ export const logoutHelper = async () => {
 
         // Return logout status
         if (data.success) {
+            log('info', 'logoutHelper', `${response.status}`, data.message);
             return true;
         }
         else {
-            console.error("Logout error");
+            log('error', 'logoutHelper', `${response.status}`, data.message);
             return false;
         }
     }
     catch (err) {
         // Error handling
-        console.error("Logout error:", err);
+        log('error', 'logoutHelper', 'Error: ', err.message);
         return false;
     }
 }

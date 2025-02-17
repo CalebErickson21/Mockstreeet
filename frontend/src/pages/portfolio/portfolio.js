@@ -25,25 +25,25 @@ const Portfolio = ({ user }) => {
     return (
         <div id='portfolio-container'>
             <div id='info'>
-                <div class='row'>
-                    <div class='col col-6 col-md-4'>
+                <div className='row'>
+                    <div className='col col-6 col-md-4'>
                         <h5>Cash on Hand: // DB Req \\</h5>
                     </div>
-                    <div class='col col-6 col-md-4'>
+                    <div className='col col-6 col-md-4'>
                         <h5>Portfolio Value: // DB Req \\</h5>
                     </div>
-                    <div class='col col-6 col-md-4'>
+                    <div className='col col-6 col-md-4'>
                         <h5>Lifetime +/-: // DB Req \\</h5>
                     </div>
-                    <div class='col col-6 col-md-4'>
-                        <select class='form-select' aria-label='Portfolio Select'>
-                            <option selected>Select Portfolio</option>
+                    <div className='col col-6 col-md-4'>
+                        <select defaultValue={null} className='form-select' aria-label='Portfolio Select'>
+                            <option value={null}>Select Portfolio</option>
                         </select>
                     </div>
-                    <div class='col col-6 col-md-4'>
+                    <div className='col col-6 col-md-4'>
                         <h5>Investment +/-: // DB Req \\</h5>
                     </div>
-                    <div class='col col-6 col-md-4'>
+                    <div className='col col-6 col-md-4'>
                         <h5>Lifetime ROI: // DB Req \\</h5> 
                     </div>
                 </div>
@@ -51,7 +51,7 @@ const Portfolio = ({ user }) => {
 
             <div id='details'>
                 <div id='table-container'>
-                    <table class='table table-striped scrollable'>
+                    <table className='table table-striped scrollable'>
                         <thead>
                             <tr>
                                 <th>Stock</th>
@@ -69,7 +69,7 @@ const Portfolio = ({ user }) => {
                                 <td>100</td>
                                 <td>$10000</td>
                                 <td>$23242234</td>
-                                <td><button class='btn'>View</button></td>
+                                <td><button className='btn'>View</button></td>
                             </tr>
                         </tbody>
                     </table>

@@ -1,5 +1,5 @@
 // Import custom functions
-import { useNavigation, loginHelper } from '../../utils/helpers';
+import { useNavigation, loginHelper, log } from '../../utils/helpers';
 import { useState } from 'react';
 
 // Import styles
@@ -12,7 +12,7 @@ const Login = ({ setUser }) => {
     // Navigation
     const navigate = useNavigation();
 
-    // Login
+    // Login variables
     const [userNameOrEmail, setUserNameOrEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -23,18 +23,18 @@ const Login = ({ setUser }) => {
 
         const data = await loginHelper(userNameOrEmail, password);
 
-        console.log("Login response:", data);
         if (data.success) {
             setUser(data.user);
             navigate('/')();
+            log('info', 'login', 'Successfully logged in', data.user);
         }
         else {
             setError(data.message);
+            log('error', 'login', 'Error while logging in', data.message);
         }
     }
 
-    
-
+    // Visible component
     return (
         <div id='login-register-container'>
             <div className='contaier-fluid'>
@@ -48,12 +48,12 @@ const Login = ({ setUser }) => {
                         <h5>Log in to manage your portfolio, trade stocks, and make smart investments!</h5>
                         <form onSubmit={handleLogin}>
                             <div className="form-group my-2">
-                                <label htmlfor='username'>User Name or Email</label>
+                                <label htmlFor='username'>User Name or Email</label>
                                 <input required type="text" id='username' value={userNameOrEmail} onChange={(e) => setUserNameOrEmail(e.target.value)} className="form-control"  placeholder="ex. JohnDoe123"/>
                             </div>
 
                             <div className="form-group my-2">
-                                <label htmlfor='password'>Password</label>
+                                <label htmlFor='password'>Password</label>
                                 <input required type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="form-control" id="password" placeholder="ex. Password123"/>
                             </div>
 

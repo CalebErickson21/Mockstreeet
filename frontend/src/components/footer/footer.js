@@ -1,6 +1,8 @@
+// Import styles
 import "./footer.scss";
 
 const Footer = () => {
+    // Visible component
     return (
     <div id="footer-container">
         <footer id="footer" className="">

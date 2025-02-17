@@ -34,7 +34,7 @@ app.use(session({
 
 // Logger function
 const log = (level, module, message, data = null) => {
-    const timeStamp = new Date.toISOString();
+    const timeStamp = new Date().toISOString();
     console[level](`[${level.toUpperCase()}] [${timeStamp}] [${module}] - [${message}]`, data || '');
 }
 
@@ -75,8 +75,8 @@ app.post('/login', async (req, res) => {
 // Logout route
 app.get('/logout', (req, res) => {
     req.session.destroy(() => { // Log user out
-        log('Info', 'logout', 'User logged out'); // Log information
-        res.status(200).json({ success: true }); // Return logout success to frontend (200 is success)
+        log('info', 'logout', 'User logged out'); // Log information
+        res.status(200).json({ success: true, message: 'User logged out' }); // Return logout success to frontend (200 is success)
     });
 });
 
@@ -129,7 +129,7 @@ app.post('/register', async (req, res) => {
 
         // Successful registration
         log('info', 'register', 'User registered successfully', {firstName, lastName}); // Log successful registration
-        res.status(201).json({ success: true, user: insertResult.rows[0], message: 'Registered successfully' }); // Successful register (201 = created)
+        res.status(201).json({ success: true, user: insertResult.rows[0].username, message: 'Registered successfully' }); // Successful register (201 = created)
     }
     catch (err) {
         log('error', 'register', 'Internal server error'); // Log error

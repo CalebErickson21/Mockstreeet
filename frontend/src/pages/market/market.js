@@ -37,7 +37,7 @@ const Market = ({ user }) => {
                                 <th>Stock</th>
                                 <th>Symbol</th>
                                 <th>Current Value</th>
-                                <th colspan='2'>Transaction Type</th>
+                                <th colSpan='2'>Transaction Type</th>
                                 <th>Transaction History</th>
                             </tr>
                         </thead>
@@ -66,7 +66,7 @@ const Market = ({ user }) => {
                                 <th>Stock</th>
                                 <th>Symbol</th>
                                 <th>Current Value</th>
-                                <th colspan='2'>Transaction Type</th>
+                                <th colSpan='2'>Transaction Type</th>
                                 <th>Transaction History</th>
                             </tr>
                         </thead>
@@ -94,7 +94,7 @@ const Market = ({ user }) => {
                                 <th>Stock</th>
                                 <th>Symbol</th>
                                 <th>Current Value</th>
-                                <th colspan='2'>Transaction Type</th>
+                                <th colSpan='2'>Transaction Type</th>
                                 <th>Transaction History</th>
                             </tr>
                         </thead>

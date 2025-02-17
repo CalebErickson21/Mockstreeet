@@ -1,8 +1,6 @@
-// Import library functions
+// Import dependencies
 import { useState, useEffect } from 'react'; // useState manages component state, useEffect handles side effects
-
-// Import custom functions
-import { useNavigation, checkAuthHelper, logoutHelper }  from '../../utils/helpers';
+import { useNavigation, checkAuthHelper, logoutHelper, log }  from '../../utils/helpers';
 
 // Import styles
 import "./header.scss";
@@ -10,13 +8,13 @@ import "./header.scss";
 // Import logo
 import logo from "../../assets/images/text_right.png";
 
+// Declare screen width (boostrap variable)
 const lgWidth = 992;
 
 const Header = ({ user, setUser }) => {
     const navigate = useNavigation();
 
-    // Center nav tabs function
-    // Handle window resizing
+    // Center nav tabs function - handles window resizing
     const [isCentered, setIsCenter] = useState(window.innerWidth >= lgWidth);
     useEffect(() => {
         const handleResize = () => {
@@ -34,6 +32,7 @@ const Header = ({ user, setUser }) => {
         const fetchUser = async () => {
             const currUser = await checkAuthHelper();
             setUser(currUser);
+            log('info', 'header', 'Fetch User recieved', currUser);
         };
         fetchUser();
     }, [setUser]); // Runs whenever `setUser` is called in `App.js`
@@ -45,10 +44,14 @@ const Header = ({ user, setUser }) => {
         if (success) {
             setUser(null);
             navigate('/')();
+            log('info', 'header', 'Logged out successfully');
+        }
+        else {
+            log('error', 'header', 'Error logging out');
         }
     };
 
-
+    // Visible component
     return (
         <div id='header-container'>
             <nav id="navbar" className="navbar sticky-top navbar-expand-lg border-bottom border-body">

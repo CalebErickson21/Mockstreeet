@@ -20,20 +20,20 @@ const Transactions = ({ user }) => {
                 <h5>Filter By:</h5>
                 <div className='row'>
                     <div className='col col-4'>
-                        <select className='form-select'>
-                            <option selected>Stock</option>
+                        <select defaultValue={null} className='form-select'>
+                            <option value={null}>Stock</option>
                         </select>
                     </div>
 
                     <div className='col col-4'>
-                        <select className='form-select'>
-                            <option selected>Transaction Type</option>
+                        <select defaultValue={null} className='form-select'>
+                            <option value={null}>Transaction Type</option>
                         </select>
                     </div>
 
                     <div className='col col-4'>
-                        <select className='form-select'>
-                            <option selected>Date</option>
+                        <select defaultValue={null} className='form-select'>
+                            <option value={null}>Date</option>
                         </select>
                     </div>
                 </div>

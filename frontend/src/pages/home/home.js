@@ -1,7 +1,11 @@
+// Import styles
 import "./home.scss";
+
+// Import images
 import chartPng from "../../assets/images/chart.png";
 
 const Home = () => {
+    // Visible component
     return (
         <div>
             <div className="align-items-center text-center mx-0 px-0 py-0" id="home">

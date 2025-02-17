@@ -1,4 +1,4 @@
-// Import functions
+// Import dependencies
 import { useNavigation } from '../../utils/helpers';
 import { useEffect } from 'react';
 
@@ -23,6 +23,7 @@ const Modal = ({ show }) => {
         };
     }, [show]);
 
+    // visible component
     return (
         <div id='modal-container'>
             {show && <div className='modal-backdrop fade show'></div>}
