@@ -67,3 +67,9 @@ CREATE TRIGGER watchlist_last_updated_trigger
 BEFORE UPDATE ON watchlist
 FOR EACH ROW
 EXECUTE FUNCTION update_last_updated_column();
+
+ALTER TABLE users ADD CONSTRAINT positive_balance CHECK (balance >= 0);
+ALTER TABLE portfolio_details ADD CONSTRAINT positive_shares CHECK (shares >= 0);
+ALTER TABLE transactions ADD CONSTRAINT positive_price CHECK (total_price >= 0);
+
+SELECT setval('users_user_id_seq', (SELECT MAX(user_id) FROM users));

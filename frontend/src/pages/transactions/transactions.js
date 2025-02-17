@@ -18,21 +18,21 @@ const Transactions = ({ user }) => {
 
             <div id='filters'>
                 <h5>Filter By:</h5>
-                <div class='row'>
-                    <div class='col col-4'>
-                        <select class='form-select'>
+                <div className='row'>
+                    <div className='col col-4'>
+                        <select className='form-select'>
                             <option selected>Stock</option>
                         </select>
                     </div>
 
-                    <div class='col col-4'>
-                        <select class='form-select'>
+                    <div className='col col-4'>
+                        <select className='form-select'>
                             <option selected>Transaction Type</option>
                         </select>
                     </div>
 
-                    <div class='col col-4'>
-                        <select class='form-select'>
+                    <div className='col col-4'>
+                        <select className='form-select'>
                             <option selected>Date</option>
                         </select>
                     </div>
@@ -41,7 +41,7 @@ const Transactions = ({ user }) => {
             </div>
 
             <div id='table-container'>
-                <table class='table table-striped scrollable'>
+                <table className='table table-striped scrollable'>
                     <thead>
                         <tr>
                             <th>Stock</th>

@@ -24,7 +24,7 @@ const Footer = () => {
             </div>
         </footer>
 
-        <div className="modal fade" id="modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div className="modal fade" id="modal" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div className="modal-dialog">
                 <div className="modal-content">
                     <div className="modal-header">
@@ -35,11 +35,11 @@ const Footer = () => {
                     <div className="modal-body">
                         <form>
                             <div className="mb-3">
-                                <label for="emailSubject" className="col-form-label">Subject:</label>
+                                <label htmlFor="emailSubject" className="col-form-label">Subject:</label>
                                 <input type="text" className="form-control" id="emailSubject" name="emailSubject" required></input>
                             </div>
                             <div className="mb-3">
-                                <label for="emailBody" className="col-form-label">Message:</label>
+                                <label htmlFor="emailBody" className="col-form-label">Message:</label>
                                 <textarea className="form-control" id="emailBody" required></textarea>
                             </div>
                         </form>

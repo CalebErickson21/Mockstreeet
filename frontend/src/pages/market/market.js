@@ -18,20 +18,20 @@ const Market = ({ user }) => {
 
     return (
         <div id='market-container'>
-            <div id='info' class='row justify-content-center align-items-center'>
-                <div class='col col-auto'>
+            <div id='info' className='row justify-content-center align-items-center'>
+                <div className='col col-auto'>
                     <h5>Current Capital: // Pull from backend \\</h5>
                 </div>
-                <div class='col col-auto'>
-                    <button class='btn'>Add Capital</button>
+                <div className='col col-auto'>
+                    <button className='btn'>Add Capital</button>
                 </div>
                 
             </div>
 
-            <div id='watchlist' class='section'>
+            <div id='watchlist' className='section'>
                 <h2>Watch List</h2>
-                <div id='watchlist-scroll' class='scrollable'>
-                    <table class='table table-striped scrollable'>
+                <div id='watchlist-scroll' className='scrollable'>
+                    <table className='table table-striped scrollable'>
                         <thead>
                             <tr>
                                 <th>Stock</th>
@@ -46,9 +46,9 @@ const Market = ({ user }) => {
                                 <td>TEST</td>
                                 <td>TEST</td>
                                 <td>100</td>
-                                <td><button class='btn'>Buy</button></td>
-                                <td><button class='btn'>Sell</button></td>
-                                <td><button class='btn'>View</button></td>
+                                <td><button className='btn'>Buy</button></td>
+                                <td><button className='btn'>Sell</button></td>
+                                <td><button className='btn'>View</button></td>
                             </tr>
                         </tbody>
                     </table>
@@ -57,10 +57,10 @@ const Market = ({ user }) => {
             </div>
 
 
-            <div id='portfolio' class='section'>
+            <div id='portfolio' className='section'>
                 <h2>Your Stocks</h2>
-                <div id='portfolio-scroll' class='scrollable'>
-                    <table class='table table-striped scrollable'>
+                <div id='portfolio-scroll' className='scrollable'>
+                    <table className='table table-striped scrollable'>
                         <thead>
                             <tr>
                                 <th>Stock</th>
@@ -75,9 +75,9 @@ const Market = ({ user }) => {
                                 <td>TEST</td>
                                 <td>TEST</td>
                                 <td>100</td>
-                                <td><button class='btn'>Buy</button></td>
-                                <td><button class='btn'>Sell</button></td>
-                                <td><button class='btn'>View</button></td>
+                                <td><button className='btn'>Buy</button></td>
+                                <td><button className='btn'>Sell</button></td>
+                                <td><button className='btn'>View</button></td>
                             </tr>
                         </tbody>
                     </table>
@@ -85,10 +85,10 @@ const Market = ({ user }) => {
             </div>
 
 
-            <div id='market' class='section'>
+            <div id='market' className='section'>
                 <h2>Market</h2>
-                <div id='market-scroll' class='scrollable'>
-                    <table class='table table-striped scrollable'>
+                <div id='market-scroll' className='scrollable'>
+                    <table className='table table-striped scrollable'>
                         <thead>
                             <tr>
                                 <th>Stock</th>
@@ -103,9 +103,9 @@ const Market = ({ user }) => {
                                 <td>TEST</td>
                                 <td>TEST</td>
                                 <td>100</td>
-                                <td><button class='btn'>Buy</button></td>
-                                <td><button class='btn'>Sell</button></td>
-                                <td><button class='btn'>View</button></td>
+                                <td><button className='btn'>Buy</button></td>
+                                <td><button className='btn'>Sell</button></td>
+                                <td><button className='btn'>View</button></td>
                             </tr>
                         </tbody>
                     </table>

@@ -6,6 +6,30 @@ export const useNavigation = () => {
     return (path) => () => navigate(path);
 };
 
+// Handle register
+export const registerHelper = async (firstName, lastName, email, username, password, passwordConfirmation) => {
+    try {
+        const response = await fetch('http://localhost:5000/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ firstName, lastName, email, username, password, passwordConfirmation }),
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            return data; // Return the response data
+        } else {
+            const errData = await response.json();
+            return { success: false, message: errData.message || 'An error occurred. Please try again.' };
+        }
+    } catch (error) {
+        console.error("Registration error:", error);
+        return { success: false, message: "An error occurred. Please try again." };
+    }
+};
+
+
 // Handle Login
 export const loginHelper = async (userNameOrEmail, password) => {
     try {
@@ -16,8 +40,14 @@ export const loginHelper = async (userNameOrEmail, password) => {
             body: JSON.stringify({ userNameOrEmail, password }),
         });
         
-        const data = await response.json();
-        return data; // Return the response data
+        if (response.ok) {
+            const data = await response.json();
+            return data; // Return the response data
+        }
+        else {
+            const errData = await response.json();
+            return { success: false, message: errData.message || 'An error occured. Please try again.'}
+        }
     } catch (error) {
         console.error("Login error:", error);
         return { success: false, message: "An error occurred. Please try again." };

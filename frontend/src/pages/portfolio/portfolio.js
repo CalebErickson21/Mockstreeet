@@ -14,6 +14,14 @@ const Portfolio = ({ user }) => {
         user ? setShowModal(false) : setShowModal(true);
     }, [user]);
 
+    // Portfolio data
+    const [stocks, setStocks] = useState([]);
+    const [error, setError] = useState('');
+
+    useEffect(() => {
+        
+    }, []);
+
     return (
         <div id='portfolio-container'>
             <div id='info'>

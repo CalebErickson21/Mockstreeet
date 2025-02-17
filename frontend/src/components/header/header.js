@@ -44,6 +44,7 @@ const Header = ({ user, setUser }) => {
         const success = await logoutHelper();
         if (success) {
             setUser(null);
+            navigate('/')();
         }
     };
 
