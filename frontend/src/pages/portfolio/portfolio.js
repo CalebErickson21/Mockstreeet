@@ -79,7 +79,7 @@ const Portfolio = ({ user }) => {
 
             </div>
 
-            <Modal show={showModal} handleClose={() => setShowModal(false)} />
+            <Modal show={showModal} />
 
         </div>
     )

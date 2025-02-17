@@ -112,7 +112,7 @@ const Market = ({ user }) => {
                 </div>
             </div>
 
-            <Modal show={showModal} handleClose={() => setShowModal(false)} />
+            <Modal show={showModal} />
 
         </div>
     )

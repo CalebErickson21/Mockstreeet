@@ -65,7 +65,7 @@ const Transactions = ({ user }) => {
                 </table>
             </div>
 
-            <Modal show={showModal} handleClose={() => setShowModal(false)} />
+            <Modal show={showModal} />
 
 
         </div>

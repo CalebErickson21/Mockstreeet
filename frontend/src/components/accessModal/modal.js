@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 // Import styles
 import './modal.scss';
 
-const Modal = ({ show, handleClose }) => {
+const Modal = ({ show }) => {
     // Navigation
     const navigate = useNavigation();
 
