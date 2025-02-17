@@ -1,6 +1,6 @@
 // Import dependencies
 import { useState, useEffect } from 'react'; // useState manages component state, useEffect handles side effects
-import { useNavigation, checkAuthHelper, logoutHelper, log }  from '../../utils/helpers';
+import { useNavigation }  from '../../utils/helpers';
 
 // Import styles
 import "./header.scss";
@@ -11,7 +11,7 @@ import logo from "../../assets/images/text_right.png";
 // Declare screen width (boostrap variable)
 const lgWidth = 992;
 
-const Header = ({ user, setUser }) => {
+const Header = ({ user, handleLogout }) => {
     const navigate = useNavigation();
 
     // Center nav tabs function - handles window resizing
@@ -26,30 +26,6 @@ const Header = ({ user, setUser }) => {
 
         return () => window.removeEventListener("resize", handleResize);
     }, []);
-
-    // Check user authentication whenever the component mounts or `user` state changes
-    useEffect(() => {
-        const fetchUser = async () => {
-            const currUser = await checkAuthHelper();
-            setUser(currUser);
-            log('info', 'header', 'Fetch User recieved', currUser);
-        };
-        fetchUser();
-    }, [setUser]); // Runs whenever `setUser` is called in `App.js`
-
-
-    // Logout user
-    const handleLogout = async () => {
-        const success = await logoutHelper();
-        if (success) {
-            setUser(null);
-            navigate('/')();
-            log('info', 'header', 'Logged out successfully');
-        }
-        else {
-            log('error', 'header', 'Error logging out');
-        }
-    };
 
     // Visible component
     return (

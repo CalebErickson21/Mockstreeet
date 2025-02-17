@@ -32,13 +32,19 @@ const Register = () => {
         }
 
         // Check first name, last name, username, and password length
+        if (firstName.length > 25 || lastName.length > 25 || username.length > 25 || password > 25) {
+            setError('First name, last name, username, and password must be less than 25 characters');
+            return;
+        }
 
         // Check email length
+        if (email.length > 50) { 
+            setError('Email must be less than 50 characters');
+            return;
+        }
 
         // Call the registerHelper to handle registration logic
         const data = await registerHelper(firstName, lastName, email, username, password, passwordConfirmation);
-
-        console.log("Register response:", data);
 
         if (data.success) {
             navigate('/login')(); // Redirect to login page after successful registration
@@ -86,7 +92,7 @@ const Register = () => {
                             </div>
                             <button className="btn my-2" type='submit'>Register</button>
                         </form>
-                        {error && <div id='error'>{error}</div>}
+                        {error && <p className='error'>{error}</p>}
                         <h5>Already have account? <a onClick={navigate('/login')}>Log in!</a></h5>
                     </div>
                 </div>

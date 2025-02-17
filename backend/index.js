@@ -129,7 +129,8 @@ app.post('/register', async (req, res) => {
 
         // Successful registration
         log('info', 'register', 'User registered successfully', {firstName, lastName}); // Log successful registration
-        res.status(201).json({ success: true, user: insertResult.rows[0].username, message: 'Registered successfully' }); // Successful register (201 = created)
+        const dataRes = {username: username, email: email}; // Do not return all data in databse - some is sensitive
+        res.status(201).json({ success: true, user: dataRes, message: 'Registered successfully' }); // Successful register (201 = created)
     }
     catch (err) {
         log('error', 'register', 'Internal server error'); // Log error
@@ -137,13 +138,10 @@ app.post('/register', async (req, res) => {
     }
 });
 
-// Portfolio route
+/** Get a list of all portfolios for a certain user
+ */
 app.get('/portfolio', async (req, res) => {
-    const { portfolio_id } = req.query;
-
-    if (req.session.user) {
-        return res.status(401).json({ success: false, message: 'Unauthorized' });
-    }
+    // Check for authentication first
 
 });
 

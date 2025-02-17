@@ -15,7 +15,7 @@ const Market = ({ user }) => {
         user ? setShowModal(false) : setShowModal(true);
     }, [user]);
 
-
+    // Visible component
     return (
         <div id='market-container'>
             <div id='info' className='row justify-content-center align-items-center'>

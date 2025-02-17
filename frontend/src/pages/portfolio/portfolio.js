@@ -22,6 +22,7 @@ const Portfolio = ({ user }) => {
         
     }, []);
 
+    // Visible component
     return (
         <div id='portfolio-container'>
             <div id='info'>
@@ -38,6 +39,7 @@ const Portfolio = ({ user }) => {
                     <div className='col col-6 col-md-4'>
                         <select defaultValue={null} className='form-select' aria-label='Portfolio Select'>
                             <option value={null}>Select Portfolio</option>
+                            <option className='select-footer'>Create New</option>
                         </select>
                     </div>
                     <div className='col col-6 col-md-4'>
