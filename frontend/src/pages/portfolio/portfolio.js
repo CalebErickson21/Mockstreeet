@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 
 // Import components
 import Modal from '../../components/accessModal/modal.js';
+import DropDown from '../../components/portfolioDropdown/dropdown.js';
 
 // Import styles
 import './portfolio.scss';
@@ -37,10 +38,7 @@ const Portfolio = ({ user }) => {
                         <h5>Lifetime +/-: // DB Req \\</h5>
                     </div>
                     <div className='col col-6 col-md-4'>
-                        <select defaultValue={null} className='form-select' aria-label='Portfolio Select'>
-                            <option value={null}>Select Portfolio</option>
-                            <option className='select-footer'>Create New</option>
-                        </select>
+                        <DropDown />
                     </div>
                     <div className='col col-6 col-md-4'>
                         <h5>Investment +/-: // DB Req \\</h5>
@@ -76,13 +74,9 @@ const Portfolio = ({ user }) => {
                         </tbody>
                     </table>
                 </div>
-
-
-
             </div>
 
             <Modal show={showModal} />
-
         </div>
     )
 }

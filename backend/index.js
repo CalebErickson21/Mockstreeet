@@ -63,11 +63,11 @@ app.post('/login', async (req, res) => {
         // Successful login
         req.session.user = { id: user.id, username: user.username, email: user.email }; // Store user data for session
         log('info', 'login', 'User logged in', req.session.user); // Log information
-        res.status(200).json({success: true, user: req.session.user}); // Return successful login to frontend (200 is success)
+        return res.status(200).json({success: true, user: req.session.user}); // Return successful login to frontend (200 is success)
     }
     catch (err) {
         log('error', 'login', 'Error when loggin in'); // Log error
-        res.status(500).json({success: false, message: 'Internal server error'}); // Return 500 (internal server error)
+        return res.status(500).json({success: false, message: 'Internal server error'}); // Return 500 (internal server error)
     }
 
 });
@@ -76,7 +76,7 @@ app.post('/login', async (req, res) => {
 app.get('/logout', (req, res) => {
     req.session.destroy(() => { // Log user out
         log('info', 'logout', 'User logged out'); // Log information
-        res.status(200).json({ success: true, message: 'User logged out' }); // Return logout success to frontend (200 is success)
+        return res.status(200).json({ success: true, message: 'User logged out' }); // Return logout success to frontend (200 is success)
     });
 });
 
@@ -84,10 +84,10 @@ app.get('/logout', (req, res) => {
 app.get('/check-auth', (req, res) => {
     if (req.session.user) {
         log('info', 'check-auth', 'User is authenticated', { username: req.session.user });
-        res.status(200).json({ success: true, user: req.session.user, message: 'User is authenticated' });
+        return res.status(200).json({ success: true, user: req.session.user, message: 'User is authenticated' });
     } else {
         log('info', 'check-auth', 'User not authenticated');
-        res.status(200).json({ success: false, user: null, message: 'User is not authenticated' }); // Still successful because users can be on homepage and not be authenticated
+        return res.status(200).json({ success: false, user: null, message: 'User is not authenticated' }); // Still successful because users can be on homepage and not be authenticated
     }
 });
 
@@ -130,21 +130,28 @@ app.post('/register', async (req, res) => {
         // Successful registration
         log('info', 'register', 'User registered successfully', {firstName, lastName}); // Log successful registration
         const dataRes = {username: username, email: email}; // Do not return all data in databse - some is sensitive
-        res.status(201).json({ success: true, user: dataRes, message: 'Registered successfully' }); // Successful register (201 = created)
+        return res.status(201).json({ success: true, user: dataRes, message: 'Registered successfully' }); // Successful register (201 = created)
     }
     catch (err) {
         log('error', 'register', 'Internal server error'); // Log error
-        res.status(500).json({ success: false, message: 'Internal server error' }); // 500 status code to frontend (internal server error)
+        return res.status(500).json({ success: false, message: 'Internal server error' }); // 500 status code to frontend (internal server error)
     }
 });
 
-/** Get a list of all portfolios for a certain user
- */
-app.get('/portfolio', async (req, res) => {
+// Get list of portfolios for a user
+app.post('/portfolios', async (req, res) => {
     // Check for authentication first
-    
+    if (!req.session.user) {
+        return res.status(401).json({ success: false, user: null, message: 'User not authenticated' });
+    }
 
+    // 
 });
+
+// Create new portfolio
+app.post('/portfolio')
+
+// Fetch stocks within a portfolio
 
 // Transactions Route
 app.get('/transactions', async (req, res) => {
