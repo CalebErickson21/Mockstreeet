@@ -41,17 +41,16 @@ export const registerHelper = async (firstName, lastName, email, username, passw
             credentials: 'include', // Ensures cookies are included in request
             body: JSON.stringify({ firstName, lastName, email, username, password, passwordConfirmation }), // Request body
         });
+        const data = await response.json();
         
         if (response.ok) { // Status code 200-299
             // Return registration data
-            const data = await response.json();
             log('info', 'registerHelpers', 'Registration response ok', data);
             return data;
         } else {
             // Return registration error
-            const errData = await response.json();
-            log('error', 'registerHelper', `${response.status}`, errData.message);
-            return { success: false, message: errData.message || 'An error occurred. Please try again.' };
+            log('error', 'registerHelper', `${response.status}`, data.message);
+            return { success: false, message: data.message || 'An error occurred. Please try again.' };
         }
     } catch (err) {
         // Error handling
@@ -75,18 +74,17 @@ export const loginHelper = async (userNameOrEmail, password) => {
             credentials: 'include', // Include cookies
             body: JSON.stringify({ userNameOrEmail, password }),
         });
+        const data = await response.json();
         
         if (response.ok) { // Status code 200-299
-            // Return response data
-            const data = await response.json();
+            // Return good response
             log('info', 'loginHelper', `${response.status}`, data.message);
             return data;
         }
         else {
             // Return error
-            const errData = await response.json();
-            log('error', 'loginHelper', `${response.status}`, errData.message);
-            return { success: false, message: errData.message || 'An error occured. Please try again.'}
+            log('error', 'loginHelper', `${response.status}`, data.message);
+            return { success: false, message: data.message || 'An error occured. Please try again.'}
         }
     } catch (err) {
         // Error handling

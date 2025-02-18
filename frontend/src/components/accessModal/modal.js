@@ -27,7 +27,7 @@ const Modal = ({ show }) => {
     return (
         <div id='modal-container'>
             {show && <div className='modal-backdrop fade show'></div>}
-            <div className={`modal fade ${show ? "show d-block" : ""}`} id="accessModal" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div className={`modal fade ${show ? "show d-block" : ""}`} id="accessModal" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel">
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">

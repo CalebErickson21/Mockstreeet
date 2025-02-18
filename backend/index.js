@@ -83,13 +83,13 @@ app.get('/logout', (req, res) => {
 // Check authentication route
 app.get('/check-auth', (req, res) => {
     if (req.session.user) {
-        log('info', 'check-auth', 'Currently logged in', req.session.user);
-        res.json({ success: true, user: req.session.user });
+        log('info', 'check-auth', 'User is authenticated', { username: req.session.user });
+        res.status(200).json({ success: true, user: req.session.user, message: 'User is authenticated' });
     } else {
-        log('info', 'check-auth', 'Currently logged out');
-        res.json({ success: false });
+        log('info', 'check-auth', 'User not authenticated');
+        res.status(200).json({ success: false, user: null, message: 'User is not authenticated' }); // Still successful because users can be on homepage and not be authenticated
     }
-})
+});
 
 // Register route
 app.post('/register', async (req, res) => {
@@ -142,6 +142,7 @@ app.post('/register', async (req, res) => {
  */
 app.get('/portfolio', async (req, res) => {
     // Check for authentication first
+    
 
 });
 
