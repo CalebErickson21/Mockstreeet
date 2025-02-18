@@ -6,6 +6,7 @@ import './market.scss';
 
 // Import components
 import Modal from '../../components/accessModal/modal.js';
+import Dropdown from '../../components/portfolioDropdown/dropdown.js';
 
 const Market = ({ user }) => {
 
@@ -18,13 +19,19 @@ const Market = ({ user }) => {
     // Visible component
     return (
         <div id='market-container'>
-            <div id='info' className='row justify-content-center align-items-center'>
-                <div className='col col-auto'>
+            <div id='info' className='row'>
+                <div className='col col-4'>
                     <h5>Current Capital: // Pull from backend \\</h5>
                 </div>
-                <div className='col col-auto'>
+
+                <div className='col col-4'>
                     <button className='btn'>Add Capital</button>
                 </div>
+
+                <div className='col col-4'>
+                    <Dropdown />
+                </div>
+
                 
             </div>
 

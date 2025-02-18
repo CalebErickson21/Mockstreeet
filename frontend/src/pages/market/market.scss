@@ -13,6 +13,12 @@
         color: $DARK_GREY;
         border-bottom: 0.5dvh solid $DARK_BLUE;
         
+        .col {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         button {
             background-color: $DARK_BLUE;
             color: $COOL_GREY;

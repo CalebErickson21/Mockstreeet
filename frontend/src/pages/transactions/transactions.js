@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 
 // Import components
 import Modal from '../../components/accessModal/modal.js';
+import Dropdown from '../../components/portfolioDropdown/dropdown.js'
 
 // Import styles
 import './transactions.scss';
@@ -19,19 +20,24 @@ const Transactions = ({ user }) => {
             <div id='filters'>
                 <h5>Filter By:</h5>
                 <div className='row'>
-                    <div className='col col-4'>
+                    <div className='col col-6 col-md-3'>
                         <select defaultValue={null} className='form-select'>
                             <option value={null}>Stock</option>
                         </select>
                     </div>
 
-                    <div className='col col-4'>
+                    <div className='col col-6 col-md-3'>
                         <select defaultValue={null} className='form-select'>
                             <option value={null}>Transaction Type</option>
                         </select>
                     </div>
 
-                    <div className='col col-4'>
+                    <div className='col col-6 col-md-3'>
+                        <Dropdown />
+                    </div>
+
+
+                    <div className='col col-6 col-md-3'>
                         <select defaultValue={null} className='form-select'>
                             <option value={null}>Date</option>
                         </select>
