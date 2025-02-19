@@ -32,6 +32,11 @@ app.use(session({
     }
 }));
 
+// Title case helper
+function toTitleCase(str) {
+    return str.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
 // Logger function
 const log = (level, module, message, data = null) => {
     const timeStamp = new Date().toISOString();
@@ -245,6 +250,40 @@ app.get('/portfolio/stocks', checkAuthHelper, async (req, res) => {
     }
     catch (err) {
         log('error', 'portfolio/stocks', `Internal server error: ${err.message}`);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
+app.post('/portfolio/new', checkAuthHelper, async (req, res) => {
+    const { portfolio } = req.body;
+
+    // Ensure field is provided
+    if (!portfolio) {
+        return res.status(400).json({ success: false, message: 'All fields are required' });
+    }
+    const portfolioName = toTitleCase(portfolio); // Consistent format
+
+    try {
+        // Error check before entering into database
+        if (portfolioName === 'All') { // Default portfolio
+            return res.status(400).json({ success: false, message: 'All is an invalid portfolio name' });
+        }
+        if (portfolioName.length > 50) { // Length
+            return res.status(400).json({ success: false, message: 'Portfolio name must be less than 50 characters' });
+        }
+
+        // Ensure another portfolio with same name doesn't exist
+        const { rows: existsResult } = await db.query('SELECT portfolio_name FROM portfolios WHERE portfolio_name = $1 AND user_id = $2;', [ portfolioName, req.session.user.user_id ]);
+        if (existsResult.length !== 0) {
+            return res.status(400).json({ success: false, message: 'Portfolio name already exists '});
+        }
+
+        // Insert portfolio into database
+        await db.query('INSERT INTO portfolios (portfolio_name, user_id) VALUES ($1, $2)', [ portfolioName, req.session.user.user_id ]);
+        return res.status(200).json({ success: true, message: 'Portfolio created successfully' });
+    }
+    catch (err) {
+        log('error', 'portfolio/new', 'Internal server error', err.message);
         return res.status(500).json({ success: false, message: 'Internal server error' });
     }
 });

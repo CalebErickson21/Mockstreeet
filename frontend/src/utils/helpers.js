@@ -116,7 +116,10 @@ export const checkAuthHelper = async () => {
         return null;
     }
 }
-
+/** Portfolio name helper
+ * 
+ * @returns all the portfolio names for a user
+ */
 export const portfolioNameHelper = async () => {
     try {
         const response = await fetch('http://localhost:5000/portfolio/names', {
@@ -142,7 +145,7 @@ export const portfolioNameHelper = async () => {
     }
 }
 
-/** Portfolio helper
+/** Portfolio stock helper
  * 
  * @param {*} portfolio 
  * @returns the server response from backedn
@@ -165,6 +168,30 @@ export const portfolioStocksHelper = async ( portfolio ) => {
             // Return error
             log('error', 'portfolioStocksHelper', `${response.status}`, data.message);
             return {success: false, message: data.message || 'An error occured. Please try again'};
+        }
+    }
+    catch (err) {
+        log('error', 'portfolioStocksHelper', 'Error: ', err.message);
+        return { success: false, message: "An error occurred. Please try again." };
+    }
+}
+
+export const portfolioNewHelper = async ( portfolio ) => {
+    try {
+        // Backend request with login information
+        const response = await fetch('http://localhost:5000/portfolio/new', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include', // Include cookies
+            body: JSON.stringify({ portfolio }),
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+            return data;
+        }
+        else {
+            return({ success: false, message: data.message || 'An error occured. Please try again.' });
         }
     }
     catch (err) {

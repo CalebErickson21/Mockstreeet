@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 // Import styles
 import './dropdown.scss'
-import { portfolioNameHelper } from '../../utils/helpers';
+import { portfolioNameHelper, portfolioNewHelper } from '../../utils/helpers';
 
 const DropDown = ({ selectedOption, setSelectedOption })  => {
 
@@ -35,24 +35,56 @@ const DropDown = ({ selectedOption, setSelectedOption })  => {
 
     // Portfolio information
     const [portfolios, setPortfolios] = useState([]);
-    useEffect(() => {
-        const displayPortfolios = async () => {
-            const data = await portfolioNameHelper();
-            
-            if (data.success) {
-                setPortfolios(data.portfolioNames); // Ensure correct property
-            } else {
-                setPortfolios([]);
-            }
-        };
-    
-        displayPortfolios(); // Always fetch portfolios
-    
-        if (selectedOption === 'createNew' || selectedOption === undefined) {
+    const displayPortfolios = async () => {
+        const data = await portfolioNameHelper();
+        
+        if (data.success) {
+            setPortfolios(data.portfolioNames); // Ensure correct property
+        } else {
+            setPortfolios([]);
+        }
+    };
+
+    // Create new portfolio
+    const [portfolioName, setPortfolioName] = useState('');
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
+
+    const handleNewPortfolio = async (e) => {
+        e.preventDefault();
+        setError('');
+
+        // Error checking
+        if (!portfolioName) {
+            setError('Portfolio name is required');
+            return;
+        }
+        if (portfolioName.length > 50) {
+            setError('Portfolio name must be less than 50 characters');
+            return;
+        }
+        if (portfolioName.toLowerCase() === 'all') {
+            setError("'All' is an invalid portfolio name");
+            return;
+        }
+
+        // Get create information from helper
+        const data = await portfolioNewHelper(portfolioName);
+
+        if (data.success) {
+            // Display all portfolios, including newly created
+            setSuccess(data.message);
             displayPortfolios();
         }
-    
-    }, [selectedOption]); // Runs on `selectedOption` change
+        else {
+            setError(data.message); // Show error message
+        }
+    }
+
+    // Display portfolios on mount
+    useEffect(() => {
+        displayPortfolios();
+    }, []);
 
     // visible return value
     return (
@@ -77,18 +109,20 @@ const DropDown = ({ selectedOption, setSelectedOption })  => {
                             <button type="button" onClick={handleCloseModal} className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
 
-                        <div className="modal-body">
-                            <form>
+                        <form onSubmit={handleNewPortfolio}>
+                            <div className="modal-body">
                                 <div className="mb-3">
                                     <label htmlFor="portfolioName" className="col-form-label">Portfolio Name</label>
-                                    <input required type="text" className="form-control" id="portfolioName" name="portfolioName"></input>
+                                    <input required onChange={(e) => setPortfolioName(e.target.value)} type="text" className="form-control" id="portfolioName" name="portfolioName"></input>
                                 </div>
-                            </form>
-                        </div>
+                            </div>
 
-                        <div className="modal-footer">
-                            <button type="button" className="btn" id="create">Create</button>
-                        </div>
+                            <div className="modal-footer">
+                                <button type="submit" className="btn" id="create">Create</button>
+                                {error && <h5 class='error'>{error}</h5>}
+                                {success && <h5 class='success'>{success}</h5>}
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
