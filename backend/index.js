@@ -3,7 +3,7 @@ import db from './db.js'; // Connect to database
 import express from 'express'; // Routes and middleware
 import session from 'express-session'; // User sessions
 import cors from 'cors'; // Cross-origin resource sharing
-import fetch from 'node-fetch'; // Fetch API used to pull Yahoo finance data
+import yahooFinance from 'yahoo-finance2'; // Yahoo finance stock fetching
 import bcrypt from 'bcrypt'; // Password hashing
 import dotenv from 'dotenv'; // Environment variables
 
@@ -38,13 +38,33 @@ const log = (level, module, message, data = null) => {
     console[level](`[${level.toUpperCase()}] [${timeStamp}] [${module}] - [${message}]`, data || '');
 }
 
+// Check auth function
+const checkAuthHelper = ( req, res ) => {
+    if (!req.session.user) {
+        return res.status(401).json({ success: false, user: null, message: 'User not authenticated' });
+    }
+
+    next();
+}
+
+// Check authentication route
+app.get('/check-auth', (req, res) => {
+    if (req.session.user) {
+        log('info', 'check-auth', 'User is authenticated', { username: req.session.user });
+        return res.status(200).json({ success: true, user: req.session.user, message: 'User is authenticated' });
+    } else {
+        log('info', 'check-auth', 'User not authenticated');
+        return res.status(200).json({ success: false, user: null, message: 'User is not authenticated' }); // Still successful because users can be on homepage and not be authenticated
+    }
+});
+
 // Login route
 app.post('/login', async (req, res) => {
     const { userNameOrEmail, password } = req.body; // Extracts username/email and password from request
 
     try {
         // Query database for user
-        const result = await db.query('SELECT * FROM users WHERE username = $1 OR email = $1', [userNameOrEmail]);
+        const result = await db.query('SELECT * FROM users WHERE username = $1 OR email = $1;', [userNameOrEmail]);
         
         // User not found
         if (result.rows.length === 0) {
@@ -80,17 +100,6 @@ app.get('/logout', (req, res) => {
     });
 });
 
-// Check authentication route
-app.get('/check-auth', (req, res) => {
-    if (req.session.user) {
-        log('info', 'check-auth', 'User is authenticated', { username: req.session.user });
-        return res.status(200).json({ success: true, user: req.session.user, message: 'User is authenticated' });
-    } else {
-        log('info', 'check-auth', 'User not authenticated');
-        return res.status(200).json({ success: false, user: null, message: 'User is not authenticated' }); // Still successful because users can be on homepage and not be authenticated
-    }
-});
-
 // Register route
 app.post('/register', async (req, res) => {
     const { firstName, lastName, email, username, password, passwordConfirmation } = req.body; // Extract user details from request
@@ -102,7 +111,7 @@ app.post('/register', async (req, res) => {
 
     try {
         // Check length of fields
-        if (firstName.length > 25 || lastName.length > 25 || username.length > 25 || password > 25) {
+        if (firstName.length > 25 || lastName.length > 25 || username.length > 25 || password.length > 25) {
             return res.status(400).json({ success: false, message: 'First name, last name, username, and password must be less than 25 characters' }); // User error (400)
         }
         if (email.length > 50) {
@@ -115,7 +124,7 @@ app.post('/register', async (req, res) => {
         }
 
         // Check if username or email already exists
-        const existsResult = await db.query('SELECT * FROM users WHERE username = $1 OR email = $2', [username, email]);
+        const existsResult = await db.query('SELECT * FROM users WHERE username = $1 OR email = $2;', [username, email]);
         if (existsResult.rows.length > 0) {
             return res.status(400).json({ success: false, message: 'Username or email already exists' }); // User error (400)
         }
@@ -124,8 +133,13 @@ app.post('/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Insert into database
-        const insertQuery = 'INSERT INTO users (first_name, last_name, email, username, password_hash) VALUES ($1, $2, $3, $4, $5) RETURNING *';
-        const insertResult = await db.query(insertQuery, [firstName, lastName, email, username, hashedPassword]);
+        const registerQuery = 'INSERT INTO users (first_name, last_name, email, username, password_hash) VALUES ($1, $2, $3, $4, $5) RETURNING *;';
+        const registerResult = await db.query(registerQuery, [firstName, lastName, email, username, hashedPassword]);
+        const userId = registerResult.rows[0].user_id;
+
+        // Create default portfolio for user
+        const portfolioQuery = 'INSERT INTO portfolios (user_id, portfolio_name) VALUES ($1, $2);';
+        await db.query(portfolioQuery, [ userId , 'default' ]);
 
         // Successful registration
         log('info', 'register', 'User registered successfully', {firstName, lastName}); // Log successful registration
@@ -138,28 +152,80 @@ app.post('/register', async (req, res) => {
     }
 });
 
-// Get list of portfolios for a user
-app.post('/portfolios', async (req, res) => {
-    // Check for authentication first
-    if (!req.session.user) {
-        return res.status(401).json({ success: false, user: null, message: 'User not authenticated' });
-    }
+// Portfolio route to fetch stocks in a portfolio (or all portfolios)
+app.post('/portfolio/stocks', checkAuthHelper, async (req, res) => {
+    
+    const { portfolioName } = req.body;
 
-    // 
+    try {
+        // Error checking before query database
+        if (portfolioName.length > 50 || portfolioName === 'createNew') {
+            return res.status(400).json({ success: false, message: 'Invalid input'});
+        }
+
+        // Get portfolio
+        let portfolioQuery, portfolioParams;
+        if (portfolioName === 'default') {
+            portfolioQuery = 'SELECT portfolio_id FROM portfolios WHERE user_id = $1;';
+            portfolioParams = [ req.session.user.id ];
+        }
+        else {
+            portfolioQuery = 'SELECT portfolio_id FROM portfolios WHERE user_id = $1 AND portfolio_name = $2;';
+            portfolioParams = [ req.session.user.id, portfolioName ];
+        }
+        const { rows: portfolioIds } = await db.query(portfolioQuery, portfolioParams);
+        
+        // If portfolio not found
+        if (portfolioIds.length === 0) {
+            return res.status(404).json({ success: false, message: 'Portfolio not found'});
+        }
+
+        // Get stock data given portfolio ids list
+        const portfolioIdsList = portfolioIds.map(p => p.portfolio_id);
+        const { rows: stocks } = await db.query('SELECT symbol, shares, total_price FROM portfolio_details WHERE portfolio_id = ANY($1);', [ portfolioIdsList ]);
+
+        // If no stocks in portfolio
+        if (stocks.length === 0) {
+            return res.status(204).json({ success: true, stocks: [] });
+        }
+
+        // Fetch stock values from yahoo finance API
+        try {
+            const stockSymbols = stocks.map(stock => stock.symbol);
+
+            // API call to yahoo finance
+            const stockPrices = await yahooFinance.quote(stockSymbols);
+
+            // Combine data
+            const stockData = stocks.map(stock => ({
+                symbol: stock.symbol,
+                shares: stock.shares,
+                total_price: stockPrices[stock.symbol]?.regularMarketPrice * stock.shares || null,
+            }));
+
+            // Send result
+            log('info', 'portfolio/stocks', 'Stocks fetched successfully', stockData);
+            return res.status(200).json({ success: true, stocks: stockData });
+        }
+        catch (err) {
+            // Error handling
+            log('error', 'portfolio/stocks', 'Fetch Stocks failed', err.message);
+            return res.status(500).json({ success: false, message: 'Internal server error'});
+        }
+    }
+    catch (err) {
+        log('error', 'portfolio/stocks', 'Internal server error');
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
 });
 
-// Create new portfolio
-app.post('/portfolio')
-
-// Fetch stocks within a portfolio
-
 // Transactions Route
-app.get('/transactions', async (req, res) => {
+app.get('/transactions', checkAuthHelper, async (req, res) => {
 
-})
+});
 
 // Market Route
-app.get('/market'), async (req, res) => {
+app.get('/market'), checkAuthHelper, async (req, res) => {
 
 }
 

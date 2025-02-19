@@ -72,4 +72,14 @@ ALTER TABLE users ADD CONSTRAINT positive_balance CHECK (balance >= 0);
 ALTER TABLE portfolio_details ADD CONSTRAINT positive_shares CHECK (shares >= 0);
 ALTER TABLE transactions ADD CONSTRAINT positive_price CHECK (total_price >= 0);
 
+
 SELECT setval('users_user_id_seq', (SELECT MAX(user_id) FROM users));
+SELECT setval('portfolios_portfolio_id_seq', (SELECT MAX(portfolio_id) FROM portfolios));
+
+
+-- RESET DATABASE FOR TESTING --
+delete from users;
+delete from stocks;
+delete from portfolios;
+SELECT setval('users_user_id_seq', 1, false);
+SELECT setval('portfolios_portfolio_id_seq', 1, false);

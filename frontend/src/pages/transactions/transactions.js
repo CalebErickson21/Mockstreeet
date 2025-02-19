@@ -21,14 +21,14 @@ const Transactions = ({ user }) => {
                 <h5>Filter By:</h5>
                 <div className='row'>
                     <div className='col col-6 col-md-3'>
-                        <select defaultValue={null} className='form-select'>
-                            <option value={null}>Stock</option>
+                        <select defaultValue='default' className='form-select'>
+                            <option selected value='default'>Stock</option>
                         </select>
                     </div>
 
                     <div className='col col-6 col-md-3'>
-                        <select defaultValue={null} className='form-select'>
-                            <option value={null}>Transaction Type</option>
+                        <select defaultValue='default' className='form-select'>
+                            <option selected value='default'>Transaction Type</option>
                         </select>
                     </div>
 
@@ -38,8 +38,8 @@ const Transactions = ({ user }) => {
 
 
                     <div className='col col-6 col-md-3'>
-                        <select defaultValue={null} className='form-select'>
-                            <option value={null}>Date</option>
+                        <select defaultValue='default' className='form-select'>
+                            <option selected value='default'>Date</option>
                         </select>
                     </div>
                 </div>

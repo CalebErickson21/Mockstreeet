@@ -4,15 +4,14 @@ import { useEffect, useState } from 'react';
 // Import styles
 import './dropdown.scss'
 
-const DropDown = ()  => {
+const DropDown = ({ selectedOption, setSelectedOption })  => {
 
-    const [selectedOption, setSelectedOption] = useState('');
     const [showModal, setShowModal] = useState(false);
 
     // Modal controls
     useEffect(() => {
         // Open modal
-        if (selectedOption === "showModal") {
+        if (selectedOption === "createNew") {
           setShowModal(true);
           document.body.classList.add('modal-open');
         // Close modal
@@ -25,7 +24,7 @@ const DropDown = ()  => {
         return () => {
             document.body.classList.remove('modal-open');
         }
-    }, [selectedOption]); // Run when selected option changes
+    }, [selectedOption]); // Run when selected option changes and on mount
 
     // Close modal
     const handleCloseModal = () => {
@@ -37,9 +36,9 @@ const DropDown = ()  => {
     return (
         <div id='dropdown-container'>
 
-            <select defaultValue={null} className='form-select' onChange={(e) => setSelectedOption(e.target.value)} value={selectedOption} aria-label='Portfolio Select'>
-                <option value='default'>Select Portfolio</option>
-                <option className='select-footer' value='showModal'>Create New</option>
+            <select defaultValue='default' className='form-select' onChange={(e) => setSelectedOption(e.target.value)} value={selectedOption} aria-label='Portfolio Select'>
+                <option selected value='default'>Select Portfolio</option>
+                <option className='select-footer' value='createNew'>Create New</option>
             </select>
 
             {showModal && <div className='modal-backdrop fade show'></div>}

@@ -3,3 +3,6 @@
 
 # Environment variables
 /.env
+
+# Testing + General Info
+dbSetup.txt

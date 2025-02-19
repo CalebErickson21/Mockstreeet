@@ -1,5 +1,6 @@
 // Import functions
 import { useEffect, useState } from 'react';
+import { portfolioStocksHelper, log } from '../../utils/helpers.js';
 
 // Import components
 import Modal from '../../components/accessModal/modal.js';
@@ -16,12 +17,32 @@ const Portfolio = ({ user }) => {
     }, [user]);
 
     // Portfolio data
+    const [portfolio, setPortfolio] = useState('');
     const [stocks, setStocks] = useState([]);
     const [error, setError] = useState('');
 
-    useEffect(() => {
+    // Display portfolio contents
+    const handlePortfolio = async () => {
+        //e.preventDefault();
+        setError('');
         
-    }, []);
+        const data = await portfolioStocksHelper(portfolio);
+
+        if (data.success) {
+            // Set stocks
+        }
+        else {
+            setError(data.message);
+            log('error', 'portfolio', 'Error displaying portfolio information', data.message);
+        }
+    };
+
+    // Call handlePortfolio on mount and when portfolio value changes
+    useEffect(() => {
+        if (portfolio !== 'createNew') {
+            handlePortfolio();
+        }
+    }, [portfolio]);
 
     // Visible component
     return (
@@ -38,7 +59,7 @@ const Portfolio = ({ user }) => {
                         <h5>Lifetime +/-: // DB Req \\</h5>
                     </div>
                     <div className='col col-6 col-md-4'>
-                        <DropDown />
+                        <DropDown selectedOption={portfolio} setSelectedOption={setPortfolio} />
                     </div>
                     <div className='col col-6 col-md-4'>
                         <h5>Investment +/-: // DB Req \\</h5>

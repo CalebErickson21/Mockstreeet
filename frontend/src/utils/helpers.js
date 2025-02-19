@@ -84,7 +84,7 @@ export const loginHelper = async (userNameOrEmail, password) => {
         else {
             // Return error
             log('error', 'loginHelper', `${response.status}`, data.message);
-            return { success: false, message: data.message || 'An error occured. Please try again.'}
+            return { success: false, message: data.message || 'An error occured. Please try again.'};
         }
     } catch (err) {
         // Error handling
@@ -114,6 +114,38 @@ export const checkAuthHelper = async () => {
         // Error handling
         log('error', 'checkAuthHelper', 'Error: ', err.message);
         return null;
+    }
+}
+
+/** Portfolio helper
+ * 
+ * @param {*} portfolio 
+ * @returns the server response from backedn
+ */
+export const portfolioStocksHelper = async ( portfolio ) => {
+    try {
+        // Backend request with portfolio information
+        const response = await fetch('http://localhost:5000/portfolio/stocks', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include', // Include cookies
+            body: JSON.stringify({ portfolio }),
+        });
+        const data = await response.json();
+
+        if (response.ok) { // Status code 2XX
+            log('info', 'portfolioHelper', `${response.status}`, data.message);
+            return data;
+        }
+        else {
+            // Return error
+            log('error', 'portfolioHelper', `${response.status}`, data.message);
+            return {success: false, message: data.message || 'An error occured. Please try again'};
+        }
+    }
+    catch (err) {
+        log('error', 'portfolioHelper', 'Error: ', err.message);
+        return { success: false, message: "An error occurred. Please try again." };
     }
 }
 
