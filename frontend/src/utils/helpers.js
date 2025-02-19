@@ -117,6 +117,31 @@ export const checkAuthHelper = async () => {
     }
 }
 
+export const portfolioNameHelper = async () => {
+    try {
+        const response = await fetch('http://localhost:5000/portfolio/names', {
+            method: 'GET',
+            headers: { 'Content-Type' : 'application/json' },
+            credentials: 'include',
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+            log('info', 'portfolioNameHelper', `${response.status}`, data.message);
+            return data;
+        }
+        else {
+            // Return error
+            log('error', 'portfolioNameHelper', `${response.status}`, data.message);
+            return {success: false, message: data.message || 'An error occured. Please try again'};
+        }
+    }
+    catch (err) {
+        log('error', 'portfolioNameHelper', 'Error: ', err.message);
+        return { success: false, message: "An error occurred. Please try again." };
+    }
+}
+
 /** Portfolio helper
  * 
  * @param {*} portfolio 
@@ -125,26 +150,25 @@ export const checkAuthHelper = async () => {
 export const portfolioStocksHelper = async ( portfolio ) => {
     try {
         // Backend request with portfolio information
-        const response = await fetch('http://localhost:5000/portfolio/stocks', {
-            method: 'POST',
+        const response = await fetch(`http://localhost:5000/portfolio/stocks?portfolioName=${portfolio}`, {
+            method: 'GET',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include', // Include cookies
-            body: JSON.stringify({ portfolio }),
         });
         const data = await response.json();
 
         if (response.ok) { // Status code 2XX
-            log('info', 'portfolioHelper', `${response.status}`, data.message);
+            log('info', 'portfolioStocksHelper', `${response.status}`, data.message);
             return data;
         }
         else {
             // Return error
-            log('error', 'portfolioHelper', `${response.status}`, data.message);
+            log('error', 'portfolioStocksHelper', `${response.status}`, data.message);
             return {success: false, message: data.message || 'An error occured. Please try again'};
         }
     }
     catch (err) {
-        log('error', 'portfolioHelper', 'Error: ', err.message);
+        log('error', 'portfolioStocksHelper', 'Error: ', err.message);
         return { success: false, message: "An error occurred. Please try again." };
     }
 }

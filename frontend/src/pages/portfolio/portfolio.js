@@ -17,7 +17,7 @@ const Portfolio = ({ user }) => {
     }, [user]);
 
     // Portfolio data
-    const [portfolio, setPortfolio] = useState('');
+    const [portfolio, setPortfolio] = useState('All');
     const [stocks, setStocks] = useState([]);
     const [error, setError] = useState('');
 
@@ -25,13 +25,10 @@ const Portfolio = ({ user }) => {
     const handlePortfolio = async () => {
         //e.preventDefault();
         setError('');
-        
+
         const data = await portfolioStocksHelper(portfolio);
 
-        if (data.success) {
-            // Set stocks
-        }
-        else {
+        if (!data.success) {
             setError(data.message);
             log('error', 'portfolio', 'Error displaying portfolio information', data.message);
         }
@@ -39,6 +36,7 @@ const Portfolio = ({ user }) => {
 
     // Call handlePortfolio on mount and when portfolio value changes
     useEffect(() => {
+        // Want to do something different if createNew is selected
         if (portfolio !== 'createNew') {
             handlePortfolio();
         }

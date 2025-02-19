@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 
 // Import styles
 import './dropdown.scss'
+import { portfolioNameHelper } from '../../utils/helpers';
 
 const DropDown = ({ selectedOption, setSelectedOption })  => {
 
@@ -32,12 +33,38 @@ const DropDown = ({ selectedOption, setSelectedOption })  => {
         setSelectedOption('default');
     }
 
+    // Portfolio information
+    const [portfolios, setPortfolios] = useState([]);
+    useEffect(() => {
+        const displayPortfolios = async () => {
+            const data = await portfolioNameHelper();
+            
+            if (data.success) {
+                setPortfolios(data.portfolioNames); // Ensure correct property
+            } else {
+                setPortfolios([]);
+            }
+        };
+    
+        displayPortfolios(); // Always fetch portfolios
+    
+        if (selectedOption === 'createNew' || selectedOption === undefined) {
+            displayPortfolios();
+        }
+    
+    }, [selectedOption]); // Runs on `selectedOption` change
+
     // visible return value
     return (
         <div id='dropdown-container'>
 
-            <select defaultValue='default' className='form-select' onChange={(e) => setSelectedOption(e.target.value)} value={selectedOption} aria-label='Portfolio Select'>
-                <option selected value='default'>Select Portfolio</option>
+            <select defaultValue='All' className='form-select' onChange={(e) => setSelectedOption(e.target.value)} value={selectedOption} aria-label='Portfolio Select'>
+                <option selected value='All'>Select Portfolio</option>
+                {portfolios.map((portfolio, index) => (
+                    <option key={index} value={portfolio}>
+                        {portfolio}
+                    </option>
+                ))}
                 <option className='select-footer' value='createNew'>Create New</option>
             </select>
 

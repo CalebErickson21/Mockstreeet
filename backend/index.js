@@ -39,7 +39,7 @@ const log = (level, module, message, data = null) => {
 }
 
 // Check auth function
-const checkAuthHelper = ( req, res ) => {
+const checkAuthHelper = ( req, res, next ) => {
     if (!req.session.user) {
         return res.status(401).json({ success: false, user: null, message: 'User not authenticated' });
     }
@@ -50,8 +50,8 @@ const checkAuthHelper = ( req, res ) => {
 // Check authentication route
 app.get('/check-auth', (req, res) => {
     if (req.session.user) {
-        log('info', 'check-auth', 'User is authenticated', { username: req.session.user });
-        return res.status(200).json({ success: true, user: req.session.user, message: 'User is authenticated' });
+        log('info', 'check-auth', 'User is authenticated', { user: req.session.user.user_id });
+        return res.status(200).json({ success: true, user: req.session.user.username, message: 'User is authenticated' });
     } else {
         log('info', 'check-auth', 'User not authenticated');
         return res.status(200).json({ success: false, user: null, message: 'User is not authenticated' }); // Still successful because users can be on homepage and not be authenticated
@@ -81,9 +81,9 @@ app.post('/login', async (req, res) => {
         }
 
         // Successful login
-        req.session.user = { id: user.id, username: user.username, email: user.email }; // Store user data for session
-        log('info', 'login', 'User logged in', req.session.user); // Log information
-        return res.status(200).json({success: true, user: req.session.user}); // Return successful login to frontend (200 is success)
+        req.session.user = { user_id: user.user_id, username: user.username, email: user.email }; // Store user data for session
+        log('info', 'login', 'User logged in', req.session.user.user_id); // Log information
+        return res.status(200).json({success: true, user: req.session.user.username}); // Return successful login to frontend (200 is success)
     }
     catch (err) {
         log('error', 'login', 'Error when loggin in'); // Log error
@@ -139,7 +139,7 @@ app.post('/register', async (req, res) => {
 
         // Create default portfolio for user
         const portfolioQuery = 'INSERT INTO portfolios (user_id, portfolio_name) VALUES ($1, $2);';
-        await db.query(portfolioQuery, [ userId , 'default' ]);
+        await db.query(portfolioQuery, [ userId , 'All' ]);
 
         // Successful registration
         log('info', 'register', 'User registered successfully', {firstName, lastName}); // Log successful registration
@@ -152,10 +152,32 @@ app.post('/register', async (req, res) => {
     }
 });
 
+// Get all portfolio names for a user
+app.get('/portfolio/names', checkAuthHelper, async (req, res) => {
+
+    try {
+        const { rows: portfolioQuery } = await db.query('SELECT portfolio_name FROM portfolios WHERE user_id = $1;', [ req.session.user.user_id ]);
+        
+        // User has no default portfolio
+        if (portfolioQuery.length === 0) {
+            log('error', 'portfolio/names', 'User does not have any portfolios, including default', `user:  ${req.session.user.user_id}`);
+            return res.status(404).json({ success: false, portfolioNames: []});
+        }
+        
+        const portfolioNames = portfolioQuery.map(p => p.portfolio_name);
+        log('info', 'portfolio/names', 'Porfolio names returned successfully', { user: req.session.user.user_id, portfolios: portfolioNames});
+        return res.status(200).json({ success: true, portfolioNames: portfolioNames});
+    }
+    catch (err) {
+        log('error', 'portfolio/names', 'Internal server error', err.message);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
 // Portfolio route to fetch stocks in a portfolio (or all portfolios)
-app.post('/portfolio/stocks', checkAuthHelper, async (req, res) => {
+app.get('/portfolio/stocks', checkAuthHelper, async (req, res) => {
     
-    const { portfolioName } = req.body;
+    const portfolioName = req.query.portfolioName;
 
     try {
         // Error checking before query database
@@ -165,14 +187,15 @@ app.post('/portfolio/stocks', checkAuthHelper, async (req, res) => {
 
         // Get portfolio
         let portfolioQuery, portfolioParams;
-        if (portfolioName === 'default') {
+        if (portfolioName === 'All') { // Default portfolio is container for all stocks not in portfolio, but want to show all stocks on frontend
             portfolioQuery = 'SELECT portfolio_id FROM portfolios WHERE user_id = $1;';
-            portfolioParams = [ req.session.user.id ];
+            portfolioParams = [ req.session.user.user_id ];
         }
         else {
             portfolioQuery = 'SELECT portfolio_id FROM portfolios WHERE user_id = $1 AND portfolio_name = $2;';
-            portfolioParams = [ req.session.user.id, portfolioName ];
+            portfolioParams = [ req.session.user.user_id, portfolioName ];
         }
+
         const { rows: portfolioIds } = await db.query(portfolioQuery, portfolioParams);
         
         // If portfolio not found
@@ -182,11 +205,12 @@ app.post('/portfolio/stocks', checkAuthHelper, async (req, res) => {
 
         // Get stock data given portfolio ids list
         const portfolioIdsList = portfolioIds.map(p => p.portfolio_id);
-        const { rows: stocks } = await db.query('SELECT symbol, shares, total_price FROM portfolio_details WHERE portfolio_id = ANY($1);', [ portfolioIdsList ]);
+        const { rows: stocks } = await db.query('SELECT symbol, shares FROM portfolio_details WHERE portfolio_id = ANY($1);', [ portfolioIdsList ]);
 
         // If no stocks in portfolio
         if (stocks.length === 0) {
-            return res.status(204).json({ success: true, stocks: [] });
+            log('info', 'portfolio/stocks', 'Empty portfolio', { stocks: [] });
+            return res.status(200).json({ success: true, stocks: [] });
         }
 
         // Fetch stock values from yahoo finance API
@@ -200,7 +224,8 @@ app.post('/portfolio/stocks', checkAuthHelper, async (req, res) => {
             const stockData = stocks.map(stock => ({
                 symbol: stock.symbol,
                 shares: stock.shares,
-                total_price: stockPrices[stock.symbol]?.regularMarketPrice * stock.shares || null,
+                share_price: stockPrices[stock.symbol]?.regularMarketPrice || 'Error',
+                total_price: stock.share_price * stock.shares,
             }));
 
             // Send result
@@ -214,7 +239,7 @@ app.post('/portfolio/stocks', checkAuthHelper, async (req, res) => {
         }
     }
     catch (err) {
-        log('error', 'portfolio/stocks', 'Internal server error');
+        log('error', 'portfolio/stocks', `Internal server error: ${err.message}`);
         return res.status(500).json({ success: false, message: 'Internal server error' });
     }
 });
@@ -225,9 +250,9 @@ app.get('/transactions', checkAuthHelper, async (req, res) => {
 });
 
 // Market Route
-app.get('/market'), checkAuthHelper, async (req, res) => {
+app.post('/market', checkAuthHelper, async (req, res) => {
 
-}
+});
 
 // Start server
 app.listen(PORT, () => {
