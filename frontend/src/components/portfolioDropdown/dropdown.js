@@ -58,8 +58,8 @@ const DropDown = ({ selectedOption, setSelectedOption })  => {
     return (
         <div id='dropdown-container'>
 
-            <select defaultValue='All' className='form-select' onChange={(e) => setSelectedOption(e.target.value)} value={selectedOption} aria-label='Portfolio Select'>
-                <option selected value='All'>Select Portfolio</option>
+            <select className='form-select' onChange={(e) => setSelectedOption(e.target.value)} value={selectedOption} aria-label='Portfolio Select'>
+                <option value='All'>Select Portfolio</option>
                 {portfolios.map((portfolio, index) => (
                     <option key={index} value={portfolio}>
                         {portfolio}

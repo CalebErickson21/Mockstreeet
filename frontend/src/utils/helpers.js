@@ -158,7 +158,7 @@ export const portfolioStocksHelper = async ( portfolio ) => {
         const data = await response.json();
 
         if (response.ok) { // Status code 2XX
-            log('info', 'portfolioStocksHelper', `${response.status}`, data.message);
+            log('info', 'portfolioStocksHelper', `${response.status}`, data);
             return data;
         }
         else {

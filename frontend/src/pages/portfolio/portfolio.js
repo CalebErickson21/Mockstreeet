@@ -28,7 +28,10 @@ const Portfolio = ({ user }) => {
 
         const data = await portfolioStocksHelper(portfolio);
 
-        if (!data.success) {
+        if (data.success) {
+            setStocks(data.stocks);
+        }
+        else {  
             setError(data.message);
             log('error', 'portfolio', 'Error displaying portfolio information', data.message);
         }
@@ -82,14 +85,22 @@ const Portfolio = ({ user }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>TEST</td>
-                                <td>TEST</td>
-                                <td>100</td>
-                                <td>$10000</td>
-                                <td>$23242234</td>
-                                <td><button className='btn'>View</button></td>
-                            </tr>
+                            {stocks.length > 0 ? (
+                                stocks.map(stock => (
+                                    <tr key={stock.symbol}>
+                                        <td>TODO</td>
+                                        <td>{stock.symbol}</td>
+                                        <td>{stock.shares}</td>
+                                        <td>{stock.total_price}</td>
+                                        <td>TODO</td>
+                                        <td>TODO</td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={6}>No Stocks to Display</td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>

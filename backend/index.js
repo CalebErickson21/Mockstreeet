@@ -218,15 +218,20 @@ app.get('/portfolio/stocks', checkAuthHelper, async (req, res) => {
             const stockSymbols = stocks.map(stock => stock.symbol);
 
             // API call to yahoo finance
-            const stockPrices = await yahooFinance.quote(stockSymbols);
+            const stockPrices = await yahooFinance.quote(stockSymbols, {fields: ['shortName', 'regularMarketPrice' ] });
 
             // Combine data
-            const stockData = stocks.map(stock => ({
-                symbol: stock.symbol,
-                shares: stock.shares,
-                share_price: stockPrices[stock.symbol]?.regularMarketPrice || 'Error',
-                total_price: stock.share_price * stock.shares,
-            }));
+            const stockData = stocks.map(stock => {
+                const stockInfo = stockPrices.find(s => s.symbol === stock.symbol);
+                
+                return {
+                    company: stockInfo.shortName,
+                    symbol: stock.symbol,
+                    shares: stock.shares,
+                    share_price: stockInfo?.regularMarketPrice.toFixed(2) || 'Error',
+                    total_price: ((stockInfo?.regularMarketPrice || 0) * stock.shares).toFixed(2),
+                };
+            });
 
             // Send result
             log('info', 'portfolio/stocks', 'Stocks fetched successfully', stockData);
