@@ -39,7 +39,7 @@ const Portfolio = ({ user }) => {
 
     // Call handlePortfolio on mount and when portfolio value changes
     useEffect(() => {
-        // Want to do something different if createNew is selected
+        // If portfolio changes to currently existing portfolio
         if (portfolio !== 'createNew') {
             handlePortfolio();
         }
@@ -88,7 +88,7 @@ const Portfolio = ({ user }) => {
                             {stocks.length > 0 ? (
                                 stocks.map(stock => (
                                     <tr key={stock.symbol}>
-                                        <td>TODO</td>
+                                        <td>{stock.company}</td>
                                         <td>{stock.symbol}</td>
                                         <td>{stock.shares}</td>
                                         <td>{stock.total_price}</td>

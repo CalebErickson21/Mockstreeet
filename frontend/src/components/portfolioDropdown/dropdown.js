@@ -113,7 +113,7 @@ const DropDown = ({ selectedOption, setSelectedOption })  => {
                             <div className="modal-body">
                                 <div className="mb-3">
                                     <label htmlFor="portfolioName" className="col-form-label">Portfolio Name</label>
-                                    <input required onChange={(e) => setPortfolioName(e.target.value)} type="text" className="form-control" id="portfolioName" name="portfolioName"></input>
+                                    <input required onChange={(e) => setPortfolioName(e.target.value)} type="text" className="form-control" id="portfolioName" name="portfolioName" placeholder='ex. Tech Stocks'></input>
                                 </div>
                             </div>
 

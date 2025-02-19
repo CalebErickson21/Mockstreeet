@@ -32,6 +32,18 @@
     .section {
         padding-left: 1dvw;
 
+        #market-header {
+            padding-bottom: 1.5dvh;
+
+            h2 {
+                padding-right: 1dvw;
+            }
+            
+            input {
+                width: min-content;
+            }
+        }
+
         .scrollable {
             max-height: ((100dvh - (2*$NAV_HEIGHT)) / 3) - 2dvh;
             min-height: (100dvh - (5*$NAV_HEIGHT)) / 3;

@@ -47,10 +47,10 @@ const Header = ({ user, handleLogout }) => {
                                 <a className="nav-link" onClick={navigate('/portfolio')}>Portfolio</a>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link" onClick={navigate('/transactions')}>Transactions</a>
+                                <a className="nav-link" onClick={navigate('/market')}>Buy + Sell</a>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link" onClick={navigate('/market')}>Buy + Sell</a>
+                                <a className="nav-link" onClick={navigate('/transactions')}>Transactions</a>
                             </li>
                         </ul>
                         {user ? (
