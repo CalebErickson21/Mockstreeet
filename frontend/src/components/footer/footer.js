@@ -10,13 +10,13 @@ const Footer = () => {
                 <div className="col-lg">
                     <h5>Mock Street Stock Portfolio Platform</h5>
                     <p>Buy and sell stocks with confidence! Start practicing trading today!</p>
-                    <p>Developed by <a href="https://caleberickson21.github.io/" target="blank">Caleb Erickson</a></p>
+                    <p>Developed by <a href="https://caleberickson21.github.io/" target="_blank">Caleb Erickson</a></p>
                 </div>
                 <div className="col-lg">
                     <h5>Resources</h5>
                     <p>For more information on stock trading, try out these websites!</p>
-                    <p><a href="https://www.dowjones.com/smartmoney/what-is-the-stock-market/" target="blank">What is the stock Market?</a></p>
-                    <p><a href="https://finance.yahoo.com/" target="blank">Yahoo Finance News</a></p>
+                    <p><a href="https://www.dowjones.com/smartmoney/what-is-the-stock-market/" target="_blank">What is the stock Market?</a></p>
+                    <p><a href="https://finance.yahoo.com/" target="_blank">Yahoo Finance News</a></p>
                 </div>
                 <div className="col-lg">
                     <h5>Support</h5>
