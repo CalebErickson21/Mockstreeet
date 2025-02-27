@@ -32,18 +32,34 @@ app.use(session({
     }
 }));
 
-// Title case helper
-function toTitleCase(str) {
+/** Title Case Helper
+ * 
+ * @param {*} str 
+ * @returns Title case version of string
+ */
+const toTitleCase = (str) => {
     return str.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
-// Logger function
+/** Logger helper function
+ * 
+ * @param {*} level 
+ * @param {*} module 
+ * @param {*} message 
+ * @param {*} data 
+ */
 const log = (level, module, message, data = null) => {
     const timeStamp = new Date().toISOString();
     console[level](`[${level.toUpperCase()}] [${timeStamp}] [${module}] - [${message}]`, data || '');
 }
 
-// Check auth function
+/** User Authorization Helper
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ * @returns Error if user not logged in
+ */
 const checkAuthHelper = ( req, res, next ) => {
     if (!req.session.user) {
         return res.status(401).json({ success: false, user: null, message: 'User not authenticated' });
@@ -52,7 +68,8 @@ const checkAuthHelper = ( req, res, next ) => {
     next();
 }
 
-// Check authentication route
+/** Check User Authorization Route that can be directly called by frontend
+ */
 app.get('/check-auth', (req, res) => {
     if (req.session.user) {
         log('info', 'check-auth', 'User is authenticated', { user: req.session.user.user_id });
@@ -63,7 +80,10 @@ app.get('/check-auth', (req, res) => {
     }
 });
 
-// Login route
+/** Login route
+ * If user found in database, login
+ * If user not found in database, return error
+ */
 app.post('/login', async (req, res) => {
     const { userNameOrEmail, password } = req.body; // Extracts username/email and password from request
 
@@ -97,7 +117,9 @@ app.post('/login', async (req, res) => {
 
 });
 
-// Logout route
+/** Logout route
+ * Logout user
+ */
 app.get('/logout', (req, res) => {
     req.session.destroy(() => { // Log user out
         log('info', 'logout', 'User logged out'); // Log information
@@ -105,7 +127,9 @@ app.get('/logout', (req, res) => {
     });
 });
 
-// Register route
+/** Registration route
+ * Register user, then redirect to login page
+ */
 app.post('/register', async (req, res) => {
     const { firstName, lastName, email, username, password, passwordConfirmation } = req.body; // Extract user details from request
 
@@ -157,7 +181,9 @@ app.post('/register', async (req, res) => {
     }
 });
 
-// Get all portfolio names for a user
+/** Portfolio/names route
+ * Get a list of all of a user's portfolios
+ */
 app.get('/portfolio/names', checkAuthHelper, async (req, res) => {
 
     try {
@@ -179,7 +205,9 @@ app.get('/portfolio/names', checkAuthHelper, async (req, res) => {
     }
 });
 
-// Portfolio route to fetch stocks in a portfolio (or all portfolios)
+/** Porfolio/stocks route
+ * Get stock data for a certain portfolio
+ */
 app.get('/portfolio/stocks', checkAuthHelper, async (req, res) => {
     
     const portfolioName = req.query.portfolioName;
@@ -254,6 +282,9 @@ app.get('/portfolio/stocks', checkAuthHelper, async (req, res) => {
     }
 });
 
+/** Porfolio/new route
+ * Create new portfolio
+ */
 app.post('/portfolio/new', checkAuthHelper, async (req, res) => {
     const { portfolio } = req.body;
 
@@ -288,15 +319,13 @@ app.post('/portfolio/new', checkAuthHelper, async (req, res) => {
     }
 });
 
-// Transactions Route
-app.get('/transactions', checkAuthHelper, async (req, res) => {
+/** Portfolio/transactions
+ * Get all transactions for a certain portfolio
+ */
+app.get('portfolio/transactions', checkAuthHelper, async (req, res) => {
 
 });
 
-// Market Route
-app.post('/market', checkAuthHelper, async (req, res) => {
-
-});
 
 // Start server
 app.listen(PORT, () => {
