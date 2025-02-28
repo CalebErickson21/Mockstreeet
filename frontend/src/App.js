@@ -54,7 +54,9 @@ const App = () => {
       if (data.success) { setStockData(data.stocks); }
       else { log('error', 'portfolio', 'Error displaying portfolio information', data.message); }
     }
-    if (portfolioFilter !== 'createNew') { getPortfolioStocks(); }
+    // if (portfolioFilter !== 'createNew') { 
+      getPortfolioStocks(); 
+    //}
   }, [portfolioFilter]); // On app mount, and when portfolio changes
 
 
@@ -68,7 +70,7 @@ const App = () => {
             <Route path='/register' element={<Register />} /> 
             <Route path='/portfolio' element={<Portfolio user={user} portfolioFilter={portfolioFilter} setPortfolioFilter={setPortfolioFilter} stockData={stockData} setStockFilter={setStockFilter} />} />
             <Route path='/transactions' element={<Transactions user={user} />} /> {/*Pass user as an argument to get global login status */}
-            <Route path='/market' element={<Market user={user}/>} />
+            <Route path='/market' element={<Market user={user} portfolioFilter={portfolioFilter} setPortfolioFilter={setPortfolioFilter} stockData={stockData} setStockData={setStockData} setStockFilter={setStockFilter}/>} />
         </Routes>
         <Footer />
     </div>

@@ -1,6 +1,5 @@
 // Import dependencies
 import { useEffect, useState } from 'react';
-import { portfolioStocksHelper, log } from '../../utils/helpers.js';
 
 // Import styles
 import './market.scss';
@@ -9,7 +8,7 @@ import './market.scss';
 import Modal from '../../components/accessModal/modal.js';
 import DropDown from '../../components/portfolioDropdown/dropdown.js';
 
-const Market = ({ user }) => {
+const Market = ({ user, portfolioFilter, setPortfolioFilter, stockData, setStockData, setStockFilter }) => {
 
     // Show modal if user is not logged in
     const [showModal, setShowModal] = useState(false);
@@ -17,34 +16,7 @@ const Market = ({ user }) => {
         user ? setShowModal(false) : setShowModal(true);
     }, [user]);
 
-    // Portfolio dropdown
-    const [portfolio, setPortfolio] = useState('All');
-    const [error, setError] = useState('');
-    const [portfolioStocks, setPortfolioStocks] = useState([]);
 
-    // Currently owned stocks
-    const handleCurrentStocks = async () => {
-        //e.preventDefault();
-        setError('');
-
-        const data = await portfolioStocksHelper(portfolio);
-
-        if (data.success) {
-            setPortfolioStocks(data.stocks);
-        }
-        else {  
-            setError(data.message);
-            log('error', 'portfolio', 'Error displaying portfolio information', data.message);
-        }
-    };
-
-    // Call handlePortfolio on mount and when portfolio value changes
-    useEffect(() => {
-        // If portfolio changes to currently existing portfolio
-        if (portfolio !== 'createNew') {
-            handleCurrentStocks();
-        }
-    }, [portfolio]);
 
     // Visible component
     return (
@@ -59,7 +31,7 @@ const Market = ({ user }) => {
                 </div>
 
                 <div className='col col-4'>
-                    <DropDown selectedOption={portfolio} setSelectedOption={setPortfolio} />
+                    <DropDown portfolioFilter={portfolioFilter} setPortfolioFilter={setPortfolioFilter} />
                 </div>
 
                 
@@ -73,20 +45,14 @@ const Market = ({ user }) => {
                             <tr>
                                 <th>Stock</th>
                                 <th>Symbol</th>
-                                <th>Current Value</th>
+                                <th>Shares</th>
+                                <th>Price per Share</th>
                                 <th colSpan='2'>Transaction Type</th>
                                 <th>Transaction History</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>TEST</td>
-                                <td>TEST</td>
-                                <td>100</td>
-                                <td><button className='btn'>Buy</button></td>
-                                <td><button className='btn'>Sell</button></td>
-                                <td><button className='btn'>View</button></td>
-                            </tr>
+                            
                         </tbody>
                     </table>
                     
@@ -109,16 +75,16 @@ const Market = ({ user }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {portfolioStocks.length > 0 ? (
-                                portfolioStocks.map(stock => (
+                            {stockData.length > 0 ? (
+                                stockData.map(stock => (
                                     <tr key={stock.symbol}>
                                         <td>{stock.company}</td>
                                         <td>{stock.symbol}</td>
                                         <td>{stock.shares}</td>
                                         <td>{stock.share_price}</td>
-                                        <td>BUY</td>
-                                        <td>SELL</td>
-                                        <td>History</td>
+                                        <td><button className='btn'>Buy</button></td>
+                                        <td><button className='btn'>Sell</button></td>
+                                        <td><button className='btn' value={stock.symbol} onClick={(e) => setStockFilter(e.target.value)}>View</button></td>
                                     </tr>
                                 ))
                             ) : (

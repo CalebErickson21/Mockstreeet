@@ -326,9 +326,44 @@ app.post('/portfolio/new', checkAuthHelper, async (req, res) => {
 /** Portfolio/transactions
  * Get all transactions for a certain portfolio
  */
-app.get('portfolio/transactions', checkAuthHelper, async (req, res) => {
+app.get('/portfolio/transactions', checkAuthHelper, async (req, res) => {
 
 });
+
+app.get('/portfolio/stats', checkAuthHelper, async (req, res) => {
+    
+    // Try
+        // Get portfolio
+
+        // If portfolio not found, return error
+
+        // Else, portfolio value, portfolio +/-, lifetime +/-, lifetime ROI
+            // Portfolio value and +/- is for stocks currently in portfolio, once you sell, this no longer applies
+            // Lifetime +/- and ROI is for all stocks in a portfolio at any time
+
+    // Except
+        // Handle error
+});
+
+app.get('/user/stats', checkAuthHelper, async (req, res) => {
+
+    try {
+        // Query for user info
+        const { rows : queryRes } = db.query("SELECT balance FROM users WHERE user_id = $1", [ req.session.user.user_id ]);
+
+        // Handle errors
+        if (queryRes.length !== 1) {
+            log('error', '/user/stats', 'More than one or no user', { user: req.session.user.user_id });
+            return res.status(500).json( { success: false, message: 'Internal server error' });
+        }
+
+        return res.status(200).json( { success: true, balance: queryRes[0].balance, message: 'Balance fetched successfully' });
+    }
+    catch {
+        log('error', '/user/stats', `Internal server error: ${err.message}`);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+})
 
 
 // Start server

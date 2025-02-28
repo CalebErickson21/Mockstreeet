@@ -22,7 +22,7 @@ const Transactions = ({ user }) => {
                 <div className='row'>
                     <div className='col col-6 col-md-3'>
                         <select defaultValue='default' className='form-select'>
-                            <option selected value='default'>Stock</option>
+                            <option disabled value='default'>Stock</option>
                         </select>
                     </div>
 

@@ -35,7 +35,7 @@ const Portfolio = ({ user, portfolioFilter, setPortfolioFilter, stockData, setSt
                         <DropDown portfolioFilter={portfolioFilter} setPortfolioFilter={setPortfolioFilter} />
                     </div>
                     <div className='col col-6 col-md-4'>
-                        <h5>Investment +/-: // DB Req \\</h5>
+                        <h5>Portfolio +/-: // DB Req \\</h5>
                     </div>
                     <div className='col col-6 col-md-4'>
                         <h5>Lifetime ROI: // DB Req \\</h5> 
