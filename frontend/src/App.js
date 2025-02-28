@@ -1,7 +1,7 @@
 // Import functions
 import { Route, Routes } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { checkAuthHelper, logoutHelper, useNavigation, log } from './utils/helpers.js';
+import { checkAuthHelper, logoutHelper, useNavigation, log, portfolioStocksHelper } from './utils/helpers.js';
 
 // Import components
 import Header from './components/header/header.js';
@@ -16,11 +16,15 @@ import Transactions from './pages/transactions/transactions.js';
 import Market from './pages/market/market.js';
 
 const App = () => {
-  // Navigation
+  // Declarations
+  const [user, setUser] = useState(null);
+  const [portfolioFilter, setPortfolioFilter] = useState('All');
+  const [stockData, setStockData] = useState([]);
+  const [stockFilter, setStockFilter] = useState('');
   const navigate = useNavigation();
 
+
   // Global authentication check
-  const [user, setUser] = useState(null);
   useEffect(() => {
     const fetchUser = async () => {
       const currUser = await checkAuthHelper();
@@ -29,7 +33,6 @@ const App = () => {
     };
     fetchUser();
   }, []); // Runs on mount
-
   // Logout function
   const handleLogout = async () => {
     const success = await logoutHelper();
@@ -43,6 +46,19 @@ const App = () => {
     }
   };
 
+  // Get stock data for a specified portfolio
+  useEffect(() => {
+    const getPortfolioStocks = async () => {
+      const data = await portfolioStocksHelper(portfolioFilter);
+
+      if (data.success) { setStockData(data.stocks); }
+      else { log('error', 'portfolio', 'Error displaying portfolio information', data.message); }
+    }
+    if (portfolioFilter !== 'createNew') { getPortfolioStocks(); }
+  }, [portfolioFilter]); // On app mount, and when portfolio changes
+
+
+  // App layout
   return (
     <div id='app-container'>
         <Header user={user} handleLogout={handleLogout} /> {/*Pass user an an argument and logout user to deal with logouts in header */}
@@ -50,7 +66,7 @@ const App = () => {
             <Route path='/' element={<Home />} />
             <Route path='/login' element={<Login setUser={setUser} />} /> {/*Pass set user as an argument to update user globally */}
             <Route path='/register' element={<Register />} /> 
-            <Route path='/portfolio' element={<Portfolio user={user} />} /> {/*Pass user as an argument to get global login status */}
+            <Route path='/portfolio' element={<Portfolio user={user} portfolioFilter={portfolioFilter} setPortfolioFilter={setPortfolioFilter} stockData={stockData} setStockFilter={setStockFilter} />} />
             <Route path='/transactions' element={<Transactions user={user} />} /> {/*Pass user as an argument to get global login status */}
             <Route path='/market' element={<Market user={user}/>} />
         </Routes>

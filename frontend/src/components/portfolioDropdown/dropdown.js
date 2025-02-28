@@ -3,16 +3,21 @@ import { useEffect, useState } from 'react';
 
 // Import styles
 import './dropdown.scss'
-import { portfolioNameHelper, portfolioNewHelper } from '../../utils/helpers';
+import { portfolioNewHelper, portfolioNameHelper } from '../../utils/helpers';
 
-const DropDown = ({ selectedOption, setSelectedOption })  => {
+const DropDown = ({ portfolioFilter, setPortfolioFilter})  => {
 
+    // Declarations
     const [showModal, setShowModal] = useState(false);
-
+    const [portfolioList, setPortfolioList] = useState([]);
+    const [newPortfolio, setNewPortfolio] = useState('');
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
+    
     // Modal controls
     useEffect(() => {
         // Open modal
-        if (selectedOption === "createNew") {
+        if (portfolioFilter === "createNew") {
           setShowModal(true);
           document.body.classList.add('modal-open');
         // Close modal
@@ -25,56 +30,49 @@ const DropDown = ({ selectedOption, setSelectedOption })  => {
         return () => {
             document.body.classList.remove('modal-open');
         }
-    }, [selectedOption]); // Run when selected option changes and on mount
+    }, [portfolioFilter]); // Run when selected option changes and on mount
 
-    // Close modal
     const handleCloseModal = () => {
         setShowModal(false);
-        setSelectedOption('default');
+        setPortfolioFilter('All');
     }
 
-    // Portfolio information
-    const [portfolios, setPortfolios] = useState([]);
-    const displayPortfolios = async () => {
+    // Get portfolio list
+    const updatePortfolioList = async () => {
         const data = await portfolioNameHelper();
         
         if (data.success) {
-            setPortfolios(data.portfolioNames); // Ensure correct property
+            setPortfolioList(data.portfolioNames); // Ensure correct property
         } else {
-            setPortfolios([]);
+            setPortfolioList([]);
         }
     };
 
     // Create new portfolio
-    const [portfolioName, setPortfolioName] = useState('');
-    const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
-
     const handleNewPortfolio = async (e) => {
         e.preventDefault();
+        setSuccess('');
         setError('');
 
         // Error checking
-        if (!portfolioName) {
+        if (!newPortfolio) {
             setError('Portfolio name is required');
             return;
         }
-        if (portfolioName.length > 50) {
+        if (newPortfolio.length > 50) {
             setError('Portfolio name must be less than 50 characters');
             return;
         }
-        if (portfolioName.toLowerCase() === 'all') {
-            setError("'All' is an invalid portfolio name");
+        if (newPortfolio.toLowerCase() === 'all' || newPortfolio.toLowerCase() === 'createnew') {
+            setError("'All' and 'Create new' are invalid portfolio names");
             return;
         }
 
         // Get create information from helper
-        const data = await portfolioNewHelper(portfolioName);
-
+        const data = await portfolioNewHelper(newPortfolio);
         if (data.success) {
-            // Display all portfolios, including newly created
+            updatePortfolioList();
             setSuccess(data.message);
-            displayPortfolios();
         }
         else {
             setError(data.message); // Show error message
@@ -83,16 +81,16 @@ const DropDown = ({ selectedOption, setSelectedOption })  => {
 
     // Display portfolios on mount
     useEffect(() => {
-        displayPortfolios();
+        updatePortfolioList();
     }, []);
 
     // visible return value
     return (
         <div id='dropdown-container'>
 
-            <select className='form-select' onChange={(e) => setSelectedOption(e.target.value)} value={selectedOption} aria-label='Portfolio Select'>
-                <option value='All'>Select Portfolio</option>
-                {portfolios.map((portfolio, index) => (
+            <select className='form-select' onChange={(e) => setPortfolioFilter(e.target.value)} value={portfolioFilter} aria-label='Portfolio Select'>
+                <option value='All' disabled>Select Portfolio</option>
+                {portfolioList.map((portfolio, index) => (
                     <option key={index} value={portfolio}>
                         {portfolio}
                     </option>
@@ -113,14 +111,14 @@ const DropDown = ({ selectedOption, setSelectedOption })  => {
                             <div className="modal-body">
                                 <div className="mb-3">
                                     <label htmlFor="portfolioName" className="col-form-label">Portfolio Name</label>
-                                    <input required onChange={(e) => setPortfolioName(e.target.value)} type="text" className="form-control" id="portfolioName" name="portfolioName" placeholder='ex. Tech Stocks'></input>
+                                    <input required onChange={(e) => setNewPortfolio(e.target.value)} type="text" className="form-control" id="portfolioName" name="portfolioName" placeholder='ex. Tech Stocks'></input>
                                 </div>
                             </div>
 
                             <div className="modal-footer">
                                 <button type="submit" className="btn" id="create">Create</button>
-                                {error && <h5 class='error'>{error}</h5>}
-                                {success && <h5 class='success'>{success}</h5>}
+                                {error && <h5 className='error'>{error}</h5>}
+                                {success && <h5 className='success'>{success}</h5>}
                             </div>
                         </form>
                     </div>

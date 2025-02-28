@@ -38,7 +38,7 @@ app.use(session({
  * @returns Title case version of string
  */
 const toTitleCase = (str) => {
-    return str.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
+    return str.trim().toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
 /** Logger helper function
@@ -210,11 +210,12 @@ app.get('/portfolio/names', checkAuthHelper, async (req, res) => {
  */
 app.get('/portfolio/stocks', checkAuthHelper, async (req, res) => {
     
-    const portfolioName = req.query.portfolioName;
+    const param = req.query.portfolioName;
+    const portfolioName = toTitleCase(param);
 
     try {
         // Error checking before query database
-        if (portfolioName.length > 50 || portfolioName === 'createNew') {
+        if (portfolioName.length > 50 || portfolioName === 'CreateNew') {
             return res.status(400).json({ success: false, message: 'Invalid input'});
         }
 
@@ -297,7 +298,10 @@ app.post('/portfolio/new', checkAuthHelper, async (req, res) => {
     try {
         // Error check before entering into database
         if (portfolioName === 'All') { // Default portfolio
-            return res.status(400).json({ success: false, message: 'All is an invalid portfolio name' });
+            return res.status(400).json({ success: false, message: '"All" is an invalid portfolio name' });
+        }
+        if (portfolioName === 'Createnew' || portfolioName === 'Create New') { // Invalid portfolio name
+            return res.status(400).json({ success: false, message: '"Create New" is an invalid portfolio name' });
         }
         if (portfolioName.length > 50) { // Length
             return res.status(400).json({ success: false, message: 'Portfolio name must be less than 50 characters' });

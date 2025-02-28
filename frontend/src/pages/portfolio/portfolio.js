@@ -9,41 +9,13 @@ import DropDown from '../../components/portfolioDropdown/dropdown.js';
 // Import styles
 import './portfolio.scss';
 
-const Portfolio = ({ user }) => {
+const Portfolio = ({ user, portfolioFilter, setPortfolioFilter, stockData, setStockFilter }) => {
     // Show modal if user is not logged in
     const [showModal, setShowModal] = useState(false);
     useEffect(() => {
         user ? setShowModal(false) : setShowModal(true);
     }, [user]);
 
-    // Portfolio data
-    const [portfolio, setPortfolio] = useState('All');
-    const [stocks, setStocks] = useState([]);
-    const [error, setError] = useState('');
-
-    // Display portfolio contents
-    const handlePortfolio = async () => {
-        //e.preventDefault();
-        setError('');
-
-        const data = await portfolioStocksHelper(portfolio);
-
-        if (data.success) {
-            setStocks(data.stocks);
-        }
-        else {  
-            setError(data.message);
-            log('error', 'portfolio', 'Error displaying portfolio information', data.message);
-        }
-    };
-
-    // Call handlePortfolio on mount and when portfolio value changes
-    useEffect(() => {
-        // If portfolio changes to currently existing portfolio
-        if (portfolio !== 'createNew') {
-            handlePortfolio();
-        }
-    }, [portfolio]);
 
     // Visible component
     return (
@@ -60,7 +32,7 @@ const Portfolio = ({ user }) => {
                         <h5>Lifetime +/-: // DB Req \\</h5>
                     </div>
                     <div className='col col-6 col-md-4'>
-                        <DropDown selectedOption={portfolio} setSelectedOption={setPortfolio} />
+                        <DropDown portfolioFilter={portfolioFilter} setPortfolioFilter={setPortfolioFilter} />
                     </div>
                     <div className='col col-6 col-md-4'>
                         <h5>Investment +/-: // DB Req \\</h5>
@@ -85,15 +57,15 @@ const Portfolio = ({ user }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {stocks.length > 0 ? (
-                                stocks.map(stock => (
+                            {stockData.length > 0 ? (
+                                stockData.map(stock => (
                                     <tr key={stock.symbol}>
                                         <td>{stock.company}</td>
                                         <td>{stock.symbol}</td>
                                         <td>{stock.shares}</td>
                                         <td>{stock.total_price}</td>
                                         <td>TODO</td>
-                                        <td>TODO</td>
+                                        <td><button className='btn' value={stock.symbol} onClick={(e) => setStockFilter(e.target.value)}>View</button></td>
                                     </tr>
                                 ))
                             ) : (
