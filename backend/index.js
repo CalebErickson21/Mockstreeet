@@ -332,7 +332,7 @@ app.get('/portfolio/transactions', checkAuthHelper, async (req, res) => {
 
 app.get('/portfolio/stats', checkAuthHelper, async (req, res) => {
     
-    // Try
+    try {
         // Get portfolio
 
         // If portfolio not found, return error
@@ -341,8 +341,10 @@ app.get('/portfolio/stats', checkAuthHelper, async (req, res) => {
             // Portfolio value and +/- is for stocks currently in portfolio, once you sell, this no longer applies
             // Lifetime +/- and ROI is for all stocks in a portfolio at any time
 
-    // Except
+    }
+    catch (err) {
         // Handle error
+    }
 });
 
 app.get('/user/stats', checkAuthHelper, async (req, res) => {
@@ -357,9 +359,12 @@ app.get('/user/stats', checkAuthHelper, async (req, res) => {
             return res.status(500).json( { success: false, message: 'Internal server error' });
         }
 
-        return res.status(200).json( { success: true, balance: queryRes[0].balance, message: 'Balance fetched successfully' });
+        // Return result
+        const balance = queryRes[0].balace;
+        log('info', '/user/stats', 'Successfully fetched user balance', { user: req.session.user.user_id, balance: balanc });
+        return res.status(200).json( { success: true, balance: balance, message: 'Balance fetched successfully' });
     }
-    catch {
+    catch (err) {
         log('error', '/user/stats', `Internal server error: ${err.message}`);
         return res.status(500).json({ success: false, message: 'Internal server error' });
     }

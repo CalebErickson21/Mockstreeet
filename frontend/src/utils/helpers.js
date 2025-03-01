@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 export const log = (level, module, message, data = null) => {
     const timeStamp = new Date().toISOString();
     console[level](`[${level.toUpperCase()}] [${timeStamp}] [${module}] - [${message}]`, data || '');
-}
+};
 
 /** Navigation helper
  * 
@@ -115,7 +115,8 @@ export const checkAuthHelper = async () => {
         log('error', 'checkAuthHelper', 'Error: ', err.message);
         return null;
     }
-}
+};
+
 /** Portfolio name helper
  * 
  * @returns all the portfolio names for a user
@@ -143,7 +144,7 @@ export const portfolioNameHelper = async () => {
         log('error', 'portfolioNameHelper', 'Error: ', err.message);
         return { success: false, message: "An error occurred. Please try again." };
     }
-}
+};
 
 /** Portfolio stock helper
  * 
@@ -174,8 +175,13 @@ export const portfolioStocksHelper = async ( portfolio ) => {
         log('error', 'portfolioStocksHelper', 'Error: ', err.message);
         return { success: false, message: "An error occurred. Please try again." };
     }
-}
+};
 
+/** New portfolio helper
+ * 
+ * @param {*} portfolio 
+ * @returns 
+ */
 export const portfolioNewHelper = async ( portfolio ) => {
     try {
         // Backend request with login information
@@ -198,7 +204,31 @@ export const portfolioNewHelper = async ( portfolio ) => {
         log('error', 'portfolioStocksHelper', 'Error: ', err.message);
         return { success: false, message: "An error occurred. Please try again." };
     }
-}
+};
+
+export const userStatsHelper = async () => {
+    try {
+        // Backend request with login information
+        const response = await fetch('http://localhost:5000/user/stats', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include', // Include cookies
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            return data;
+        }
+        else {
+            return ({ success: false, message: data.message || 'An error occured. Please try again.' });
+        }
+    }
+    catch (err) {
+        log('error', 'userStatsHelper', 'Error: ', err.message);
+        return ({ success: false, message: err.message || 'An error occured. Please try again.' });
+    }
+};
 
 /** Logout helper
  * 
@@ -228,4 +258,4 @@ export const logoutHelper = async () => {
         log('error', 'logoutHelper', 'Error: ', err.message);
         return false;
     }
-}
+};

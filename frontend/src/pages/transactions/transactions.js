@@ -1,5 +1,6 @@
 // Import functions
 import { useEffect, useState } from 'react';
+import { useAuth } from '../../contexts/authContext.js';
 
 // Import components
 import Modal from '../../components/accessModal/modal.js';
@@ -8,7 +9,11 @@ import Dropdown from '../../components/portfolioDropdown/dropdown.js'
 // Import styles
 import './transactions.scss';
 
-const Transactions = ({ user }) => {
+const Transactions = () => {
+    // Contexts
+    const { user } = useAuth();
+
+
     // Show modal if user is not logged in
     const [showModal, setShowModal] = useState(false);
     useEffect(() => {

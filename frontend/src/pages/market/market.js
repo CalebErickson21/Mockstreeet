@@ -1,5 +1,7 @@
 // Import dependencies
 import { useEffect, useState } from 'react';
+import { useAuth } from '../../contexts/authContext.js';
+import { usePortfolio } from '../../contexts/portfolioContext.js';
 
 // Import styles
 import './market.scss';
@@ -8,14 +10,16 @@ import './market.scss';
 import Modal from '../../components/accessModal/modal.js';
 import DropDown from '../../components/portfolioDropdown/dropdown.js';
 
-const Market = ({ user, portfolioFilter, setPortfolioFilter, stockData, setStockData, setStockFilter }) => {
+const Market = () => {
+    // Contexts
+    const { user } = useAuth();
+    const { portfolioFilter, setPortfolioFilter, stockData, setStockData, setStockFilter } = usePortfolio();
 
     // Show modal if user is not logged in
     const [showModal, setShowModal] = useState(false);
     useEffect(() => {
         user ? setShowModal(false) : setShowModal(true);
     }, [user]);
-
 
 
     // Visible component
@@ -31,7 +35,7 @@ const Market = ({ user, portfolioFilter, setPortfolioFilter, stockData, setStock
                 </div>
 
                 <div className='col col-4'>
-                    <DropDown portfolioFilter={portfolioFilter} setPortfolioFilter={setPortfolioFilter} />
+                    <DropDown />
                 </div>
 
                 

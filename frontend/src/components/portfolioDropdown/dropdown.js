@@ -1,11 +1,14 @@
 // Import dependencies
 import { useEffect, useState } from 'react';
+import { usePortfolio } from '../../contexts/portfolioContext';
 
 // Import styles
 import './dropdown.scss'
 import { portfolioNewHelper, portfolioNameHelper } from '../../utils/helpers';
 
-const DropDown = ({ portfolioFilter, setPortfolioFilter})  => {
+const DropDown = ()  => {
+    // Contexts
+    const { portfolioFilter, setPortfolioFilter } = usePortfolio();
 
     // Declarations
     const [showModal, setShowModal] = useState(false);

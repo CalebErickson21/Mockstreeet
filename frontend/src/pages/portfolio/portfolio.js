@@ -1,6 +1,7 @@
 // Import functions
 import { useEffect, useState } from 'react';
-import { portfolioStocksHelper, log } from '../../utils/helpers.js';
+import { useAuth } from '../../contexts/authContext.js';
+import { usePortfolio } from '../../contexts/portfolioContext.js';
 
 // Import components
 import Modal from '../../components/accessModal/modal.js';
@@ -9,12 +10,18 @@ import DropDown from '../../components/portfolioDropdown/dropdown.js';
 // Import styles
 import './portfolio.scss';
 
-const Portfolio = ({ user, portfolioFilter, setPortfolioFilter, stockData, setStockFilter }) => {
+const Portfolio = () => {
+    // Contexts
+    const { user } = useAuth();
+    const { portfolioFilter, setPortfolioFilter, stockData, setStockFilter } = usePortfolio();
+
     // Show modal if user is not logged in
     const [showModal, setShowModal] = useState(false);
     useEffect(() => {
         user ? setShowModal(false) : setShowModal(true);
     }, [user]);
+
+    // Get user balance
 
 
     // Visible component
@@ -32,7 +39,7 @@ const Portfolio = ({ user, portfolioFilter, setPortfolioFilter, stockData, setSt
                         <h5>Lifetime +/-: // DB Req \\</h5>
                     </div>
                     <div className='col col-6 col-md-4'>
-                        <DropDown portfolioFilter={portfolioFilter} setPortfolioFilter={setPortfolioFilter} />
+                        <DropDown />
                     </div>
                     <div className='col col-6 col-md-4'>
                         <h5>Portfolio +/-: // DB Req \\</h5>

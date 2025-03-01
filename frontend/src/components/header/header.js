@@ -1,6 +1,7 @@
 // Import dependencies
-import { useState, useEffect } from 'react'; // useState manages component state, useEffect handles side effects
+import { useState, useEffect } from 'react'; 
 import { useNavigation }  from '../../utils/helpers';
+import { useAuth } from '../../contexts/authContext';
 
 // Import styles
 import "./header.scss";
@@ -11,8 +12,9 @@ import logo from "../../assets/images/text_right.png";
 // Declare screen width (boostrap variable)
 const lgWidth = 992;
 
-const Header = ({ user, handleLogout }) => {
+const Header = () => {
     const navigate = useNavigation();
+    const { user, handleLogout } = useAuth();
 
     // Center nav tabs function - handles window resizing
     const [isCentered, setIsCenter] = useState(window.innerWidth >= lgWidth);

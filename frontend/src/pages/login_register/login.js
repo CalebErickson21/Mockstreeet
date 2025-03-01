@@ -1,6 +1,7 @@
 // Import custom functions
 import { useNavigation, loginHelper, log } from '../../utils/helpers';
 import { useState } from 'react';
+import { useAuth } from '../../contexts/authContext';
 
 // Import styles
 import './layout.scss';
@@ -8,7 +9,10 @@ import './layout.scss';
 // Import images
 import logo from '../../assets/images/text_below.png';
 
-const Login = ({ setUser }) => {
+const Login = () => {
+    // Context
+    const { setUser } = useAuth();
+
     // Navigation
     const navigate = useNavigation();
 
@@ -64,10 +68,6 @@ const Login = ({ setUser }) => {
                     </div>
                 </div>
             </div>
-
-
-
-
         </div>
     )
 }

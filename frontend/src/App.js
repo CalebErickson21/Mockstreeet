@@ -1,7 +1,8 @@
 // Import functions
 import { Route, Routes } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { checkAuthHelper, logoutHelper, useNavigation, log, portfolioStocksHelper } from './utils/helpers.js';
+
+// Import providers
+import { AppProviders } from './contexts/AppProviders.js';
 
 // Import components
 import Header from './components/header/header.js';
@@ -16,6 +17,7 @@ import Transactions from './pages/transactions/transactions.js';
 import Market from './pages/market/market.js';
 
 const App = () => {
+  /*
   // Declarations
   const [user, setUser] = useState(null);
   const [portfolioFilter, setPortfolioFilter] = useState('All');
@@ -54,26 +56,27 @@ const App = () => {
       if (data.success) { setStockData(data.stocks); }
       else { log('error', 'portfolio', 'Error displaying portfolio information', data.message); }
     }
-    // if (portfolioFilter !== 'createNew') { 
-      getPortfolioStocks(); 
-    //}
-  }, [portfolioFilter]); // On app mount, and when portfolio changes
+    getPortfolioStocks(); 
+  }, [portfolioFilter, user]);
+  */
 
 
   // App layout
   return (
-    <div id='app-container'>
-        <Header user={user} handleLogout={handleLogout} /> {/*Pass user an an argument and logout user to deal with logouts in header */}
-        <Routes>
-            <Route path='/' element={<Home />} />
-            <Route path='/login' element={<Login setUser={setUser} />} /> {/*Pass set user as an argument to update user globally */}
-            <Route path='/register' element={<Register />} /> 
-            <Route path='/portfolio' element={<Portfolio user={user} portfolioFilter={portfolioFilter} setPortfolioFilter={setPortfolioFilter} stockData={stockData} setStockFilter={setStockFilter} />} />
-            <Route path='/transactions' element={<Transactions user={user} />} /> {/*Pass user as an argument to get global login status */}
-            <Route path='/market' element={<Market user={user} portfolioFilter={portfolioFilter} setPortfolioFilter={setPortfolioFilter} stockData={stockData} setStockData={setStockData} setStockFilter={setStockFilter}/>} />
-        </Routes>
-        <Footer />
-    </div>
+    <AppProviders>
+      <div id='app-container'>
+          <Header /> 
+          <Routes>
+              <Route path='/' element={<Home />} />
+              <Route path='/login' element={<Login />} />
+              <Route path='/register' element={<Register />} /> 
+              <Route path='/portfolio' element={<Portfolio  />} />
+              <Route path='/transactions' element={<Transactions />} />
+              <Route path='/market' element={<Market />} />
+          </Routes>
+          <Footer />
+      </div>
+    </AppProviders>
   )
 }
 
