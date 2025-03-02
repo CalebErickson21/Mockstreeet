@@ -2,10 +2,9 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { useNavigation, log } from "../utils/helpers";
 import { checkAuthHelper, logoutHelper } from "../utils/helpers";
 
-
 const AuthContext = createContext(); // Create context instance
 
-export function AuthProvider({ children }) {
+export const AuthProvider = ({ children }) => {
     // Navigation
     const navigate = useNavigation();
 
@@ -20,7 +19,8 @@ export function AuthProvider({ children }) {
         };
         fetchUser();
     }, []); // Runs on mount
-      // Logout function
+    
+    // Logout function
     const handleLogout = async () => {
         const success = await logoutHelper();
         if (success) {
@@ -40,6 +40,6 @@ export function AuthProvider({ children }) {
     )
 }
 
-export function useAuth() {
+export const useAuth = () => {
     return useContext(AuthContext);
 }

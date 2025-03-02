@@ -17,50 +17,6 @@ import Transactions from './pages/transactions/transactions.js';
 import Market from './pages/market/market.js';
 
 const App = () => {
-  /*
-  // Declarations
-  const [user, setUser] = useState(null);
-  const [portfolioFilter, setPortfolioFilter] = useState('All');
-  const [stockData, setStockData] = useState([]);
-  const [stockFilter, setStockFilter] = useState('');
-  const navigate = useNavigation();
-
-
-  // Global authentication check
-  useEffect(() => {
-    const fetchUser = async () => {
-      const currUser = await checkAuthHelper();
-      setUser(currUser);
-      log('info', 'app', 'Fetch user recieved', currUser);
-    };
-    fetchUser();
-  }, []); // Runs on mount
-  // Logout function
-  const handleLogout = async () => {
-    const success = await logoutHelper();
-    if (success) {
-        setUser(null);
-        navigate('/')();
-        log('info', 'app', 'Logged out successfully');
-    }
-    else {
-        log('error', 'app', 'Error logging out');
-    }
-  };
-
-  // Get stock data for a specified portfolio
-  useEffect(() => {
-    const getPortfolioStocks = async () => {
-      const data = await portfolioStocksHelper(portfolioFilter);
-
-      if (data.success) { setStockData(data.stocks); }
-      else { log('error', 'portfolio', 'Error displaying portfolio information', data.message); }
-    }
-    getPortfolioStocks(); 
-  }, [portfolioFilter, user]);
-  */
-
-
   // App layout
   return (
     <AppProviders>
@@ -69,10 +25,10 @@ const App = () => {
           <Routes>
               <Route path='/' element={<Home />} />
               <Route path='/login' element={<Login />} />
-              <Route path='/register' element={<Register />} /> 
-              <Route path='/portfolio' element={<Portfolio  />} />
-              <Route path='/transactions' element={<Transactions />} />
+              <Route path='/register' element={<Register />} />
+              <Route path='/portfolio' element={<Portfolio />} />
               <Route path='/market' element={<Market />} />
+              <Route path='/transactions' element={<Transactions />} />
           </Routes>
           <Footer />
       </div>

@@ -1,6 +1,7 @@
 // Import functions
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/authContext.js';
+import { useUser } from '../../contexts/userContext.js'
 import { usePortfolio } from '../../contexts/portfolioContext.js';
 
 // Import components
@@ -13,7 +14,8 @@ import './portfolio.scss';
 const Portfolio = () => {
     // Contexts
     const { user } = useAuth();
-    const { portfolioFilter, setPortfolioFilter, stockData, setStockFilter } = usePortfolio();
+    const { balance } = useUser();
+    const { portfolioValue, stockData, setStockFilter } = usePortfolio();
 
     // Show modal if user is not logged in
     const [showModal, setShowModal] = useState(false);
@@ -21,31 +23,19 @@ const Portfolio = () => {
         user ? setShowModal(false) : setShowModal(true);
     }, [user]);
 
-    // Get user balance
-
-
     // Visible component
     return (
         <div id='portfolio-container'>
             <div id='info'>
                 <div className='row'>
-                    <div className='col col-6 col-md-4'>
-                        <h5>Cash on Hand: // DB Req \\</h5>
+                    <div className='col col-4'>
+                        <h5>Capital: ${ balance }</h5>
                     </div>
-                    <div className='col col-6 col-md-4'>
-                        <h5>Portfolio Value: // DB Req \\</h5>
+                    <div className='col col-4'>
+                        <h5>Portfolio Value: ${ portfolioValue }</h5>
                     </div>
-                    <div className='col col-6 col-md-4'>
-                        <h5>Lifetime +/-: // DB Req \\</h5>
-                    </div>
-                    <div className='col col-6 col-md-4'>
+                    <div className='col col-4'>
                         <DropDown />
-                    </div>
-                    <div className='col col-6 col-md-4'>
-                        <h5>Portfolio +/-: // DB Req \\</h5>
-                    </div>
-                    <div className='col col-6 col-md-4'>
-                        <h5>Lifetime ROI: // DB Req \\</h5> 
                     </div>
                 </div>
             </div>

@@ -82,11 +82,6 @@ const DropDown = ()  => {
         }
     }
 
-    // Display portfolios on mount
-    useEffect(() => {
-        updatePortfolioList();
-    }, []);
-
     // visible return value
     return (
         <div id='dropdown-container'>

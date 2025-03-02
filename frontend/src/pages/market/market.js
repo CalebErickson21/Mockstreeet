@@ -1,6 +1,7 @@
 // Import dependencies
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/authContext.js';
+import { useUser } from '../../contexts/userContext.js';
 import { usePortfolio } from '../../contexts/portfolioContext.js';
 
 // Import styles
@@ -13,7 +14,8 @@ import DropDown from '../../components/portfolioDropdown/dropdown.js';
 const Market = () => {
     // Contexts
     const { user } = useAuth();
-    const { portfolioFilter, setPortfolioFilter, stockData, setStockData, setStockFilter } = usePortfolio();
+    const { balance, setBalance } = useUser();
+    const { stockData, setStockData, setStockFilter } = usePortfolio();
 
     // Show modal if user is not logged in
     const [showModal, setShowModal] = useState(false);
@@ -27,7 +29,7 @@ const Market = () => {
         <div id='market-container'>
             <div id='info' className='row'>
                 <div className='col col-4'>
-                    <h5>Current Capital: // Pull from backend \\</h5>
+                    <h5>Capital: ${balance}</h5>
                 </div>
 
                 <div className='col col-4'>

@@ -244,10 +244,11 @@ app.get('/portfolio/stocks', checkAuthHelper, async (req, res) => {
         // If no stocks in portfolio
         if (stocks.length === 0) {
             log('info', 'portfolio/stocks', 'Empty portfolio', { stocks: [] });
-            return res.status(200).json({ success: true, stocks: [] });
+            return res.status(200).json({ success: true, stocks: [], value: 0 });
         }
 
         // Fetch stock values from yahoo finance API
+        let portfolioValue = 0;
         try {
             const stockSymbols = stocks.map(stock => stock.symbol);
 
@@ -257,6 +258,8 @@ app.get('/portfolio/stocks', checkAuthHelper, async (req, res) => {
             // Combine data
             const stockData = stocks.map(stock => {
                 const stockInfo = stockPrices.find(s => s.symbol === stock.symbol);
+
+                portfolioValue += stockInfo.regularMarketPrice.toFixed(2) * stock.shares;
                 
                 return {
                     company: stockInfo.shortName,
@@ -269,7 +272,7 @@ app.get('/portfolio/stocks', checkAuthHelper, async (req, res) => {
 
             // Send result
             log('info', 'portfolio/stocks', 'Stocks fetched successfully', stockData);
-            return res.status(200).json({ success: true, stocks: stockData });
+            return res.status(200).json({ success: true, stocks: stockData, value: portfolioValue.toFixed(2) });
         }
         catch (err) {
             // Error handling
@@ -330,28 +333,11 @@ app.get('/portfolio/transactions', checkAuthHelper, async (req, res) => {
 
 });
 
-app.get('/portfolio/stats', checkAuthHelper, async (req, res) => {
-    
-    try {
-        // Get portfolio
-
-        // If portfolio not found, return error
-
-        // Else, portfolio value, portfolio +/-, lifetime +/-, lifetime ROI
-            // Portfolio value and +/- is for stocks currently in portfolio, once you sell, this no longer applies
-            // Lifetime +/- and ROI is for all stocks in a portfolio at any time
-
-    }
-    catch (err) {
-        // Handle error
-    }
-});
-
 app.get('/user/stats', checkAuthHelper, async (req, res) => {
 
     try {
         // Query for user info
-        const { rows : queryRes } = db.query("SELECT balance FROM users WHERE user_id = $1", [ req.session.user.user_id ]);
+        const { rows: queryRes } = await db.query("SELECT balance FROM users WHERE user_id = $1", [ req.session.user.user_id ]);
 
         // Handle errors
         if (queryRes.length !== 1) {
@@ -360,16 +346,15 @@ app.get('/user/stats', checkAuthHelper, async (req, res) => {
         }
 
         // Return result
-        const balance = queryRes[0].balace;
-        log('info', '/user/stats', 'Successfully fetched user balance', { user: req.session.user.user_id, balance: balanc });
+        const balance = queryRes[0].balance;
+        log('info', '/user/stats', 'Successfully fetched user balance', { user: req.session.user.user_id, balance: balance });
         return res.status(200).json( { success: true, balance: balance, message: 'Balance fetched successfully' });
     }
     catch (err) {
         log('error', '/user/stats', `Internal server error: ${err.message}`);
         return res.status(500).json({ success: false, message: 'Internal server error' });
     }
-})
-
+});
 
 // Start server
 app.listen(PORT, () => {
