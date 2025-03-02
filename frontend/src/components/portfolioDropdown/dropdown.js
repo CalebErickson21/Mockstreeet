@@ -8,11 +8,10 @@ import { portfolioNewHelper, portfolioNameHelper } from '../../utils/helpers';
 
 const DropDown = ()  => {
     // Contexts
-    const { portfolioFilter, setPortfolioFilter } = usePortfolio();
+    const { portfolioFilter, setPortfolioFilter, portfolioList, updatePortfolioList } = usePortfolio();
 
     // Declarations
     const [showModal, setShowModal] = useState(false);
-    const [portfolioList, setPortfolioList] = useState([]);
     const [newPortfolio, setNewPortfolio] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
@@ -39,17 +38,6 @@ const DropDown = ()  => {
         setShowModal(false);
         setPortfolioFilter('All');
     }
-
-    // Get portfolio list
-    const updatePortfolioList = async () => {
-        const data = await portfolioNameHelper();
-        
-        if (data.success) {
-            setPortfolioList(data.portfolioNames); // Ensure correct property
-        } else {
-            setPortfolioList([]);
-        }
-    };
 
     // Create new portfolio
     const handleNewPortfolio = async (e) => {
