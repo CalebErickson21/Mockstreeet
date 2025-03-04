@@ -154,7 +154,7 @@ export const portfolioNameHelper = async () => {
 export const portfolioStocksHelper = async ( portfolio ) => {
     try {
         // Backend request with portfolio information
-        const response = await fetch(`http://localhost:5000/portfolio/stocks?portfolioName=${portfolio}`, {
+        const response = await fetch(`http://localhost:5000/portfolio/stocks?portfolio=${portfolio}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include', // Include cookies
@@ -206,6 +206,10 @@ export const portfolioNewHelper = async ( portfolio ) => {
     }
 };
 
+/** User stats helper
+ * 
+ * @returns user balance
+ */
 export const userStatsHelper = async () => {
     try {
         // Backend request with login information
@@ -226,6 +230,32 @@ export const userStatsHelper = async () => {
     }
     catch (err) {
         log('error', 'userStatsHelper', 'Error: ', err.message);
+        return ({ success: false, message: err.message || 'An error occured. Please try again.' });
+    }
+};
+
+/** Transactions helper
+ * 
+ * @returns all transactions that fit the given parameters
+ */
+export const transactionsHelper = async (portfolioFilter, stockFilter, startDateFilter, endDateFilter) => {
+    try {
+        const response = await fetch(`http://localhost:5000/portfolio/transactions?portfolio=${portfolioFilter}&stock=${stockFilter}&startDate=${startDateFilter}&endDate=${endDateFilter}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include', // Include cookies
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+            return data;
+        }
+        else {
+            return ({ success: false, message: data.message || 'An error occured. Please try again.' });
+        }
+    }
+    catch (err) {
+        log('error', 'transactionsHelper', 'Error: ', err.message);
         return ({ success: false, message: err.message || 'An error occured. Please try again.' });
     }
 };

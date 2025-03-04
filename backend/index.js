@@ -210,8 +210,7 @@ app.get('/portfolio/names', checkAuthHelper, async (req, res) => {
  */
 app.get('/portfolio/stocks', checkAuthHelper, async (req, res) => {
     
-    const param = req.query.portfolioName;
-    const portfolioName = toTitleCase(param);
+    const portfolioName = toTitleCase(req.query.portfolio);
 
     try {
         // Error checking before query database
@@ -251,6 +250,7 @@ app.get('/portfolio/stocks', checkAuthHelper, async (req, res) => {
         let portfolioValue = 0;
         try {
             const stockSymbols = stocks.map(stock => stock.symbol);
+            console.log(stockSymbols);
 
             // API call to yahoo finance
             const stockPrices = await yahooFinance.quote(stockSymbols, {fields: ['shortName', 'regularMarketPrice' ] });
@@ -330,6 +330,79 @@ app.post('/portfolio/new', checkAuthHelper, async (req, res) => {
  * Get all transactions for a certain portfolio
  */
 app.get('/portfolio/transactions', checkAuthHelper, async (req, res) => {
+    // Get request variables
+    const portfolioFilter = toTitleCase(req.query.portfolio);
+    const stockFilter = (req.query.stock).toUpperCase().trim();
+    const startFilter = new Date(req.query.startDate).toISOString().split('T')[0] + ' 00:00:00';
+    const endFilter = new Date(req.query.endDate).toISOString().split('T')[0] + ' 23:59:59';
+
+    if (!portfolioFilter || !startFilter || !endFilter) {
+        return res.status(400).json({ success: false, message: 'All input fields required' });
+    }
+
+    try {
+        // Error check inputs
+        // Length of all inputs
+        if (portfolioFilter.length >= 50) {
+            return res.status(400).json({ success: false, message: 'Portfolio name must be less than 50 characters.' });
+        }
+        if (stockFilter.length >= 10) {
+            return res.status(400).json({ success: false, message: 'Stock length must be less than 10 characers.' });
+        }
+        // ?? DATE ERROR CHECKING ??
+
+        // Get query and params
+        let transactionQuery = 'SELECT symbol, transaction_type, shares, price_per_share, total_price, transaction_date FROM transactions t JOIN portfolios p ON t.portfolio_id = p.portfolio_id WHERE p.user_id = $1'; // AND t.transaction_date BETWEEN $2 AND $3';
+        let transactionQueryParams = [ req.session.user.user_id ];
+        let paramIdx = 2;
+
+        if (portfolioFilter !== 'All') {
+            transactionQuery += ` AND p.portfolio_name = $${paramIdx}`;
+            transactionQueryParams.push(portfolioFilter);
+            paramIdx++;
+        }
+
+        if (stockFilter) {
+            transactionQuery += ` AND t.symbol = $${paramIdx}`;
+            transactionQueryParams.push(stockFilter);
+            paramIdx++;
+        }
+
+        console.log(transactionQuery);
+        console.log(transactionQueryParams);
+
+        // Query database
+        const { rows: queryRes } = await db.query(transactionQuery, transactionQueryParams);
+
+        // Get each stocks name
+        const stockSymbols = queryRes.map(row => row.symbol);
+        
+        const yahooQuery = await yahooFinance.quote(stockSymbols, {fields: ['shortName'] });
+
+        const transactionData = queryRes.map(t => {
+            const stockInfo = yahooQuery.find(s => s.symbol === t.symbol);
+            
+            return {
+                company: stockInfo.shortName,
+                symbol: t.symbol,
+                type: t.transaction_type,
+                shares: t.shares,
+                share_price: t.price_per_share,
+                total_price: t.total_price,
+                date: t.transaction_date
+            };
+        });
+
+
+        // Return result
+        log('info', '/portfolio/transactions', 'Successfully fetched transactions', { user: req.session.user.user_id, transactions: transactionData });
+        return res.status(200).json({ success: true, transactions: transactionData });
+
+    }
+    catch (err) {
+        log('error', '/portfolio/transactions', 'Internal Server Error', err.message);
+        return res.status(500).json({ success: false, messgage: 'Internal server error' });
+    }
 
 });
 
