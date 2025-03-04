@@ -250,7 +250,6 @@ app.get('/portfolio/stocks', checkAuthHelper, async (req, res) => {
         let portfolioValue = 0;
         try {
             const stockSymbols = stocks.map(stock => stock.symbol);
-            console.log(stockSymbols);
 
             // API call to yahoo finance
             const stockPrices = await yahooFinance.quote(stockSymbols, {fields: ['shortName', 'regularMarketPrice' ] });
@@ -333,28 +332,29 @@ app.get('/portfolio/transactions', checkAuthHelper, async (req, res) => {
     // Get request variables
     const portfolioFilter = toTitleCase(req.query.portfolio);
     const stockFilter = (req.query.stock).toUpperCase().trim();
-    const startFilter = new Date(req.query.startDate).toISOString().split('T')[0] + ' 00:00:00';
-    const endFilter = new Date(req.query.endDate).toISOString().split('T')[0] + ' 23:59:59';
+    const startFilter = new Date(req.query.startDate).toISOString().split('T')[0] + ' 23:59:59.999999';
+    const endFilter = new Date(req.query.endDate).toISOString().split('T')[0] + ' 00:00:00.000000';
 
+    // Check for empty fields
     if (!portfolioFilter || !startFilter || !endFilter) {
-        return res.status(400).json({ success: false, message: 'All input fields required' });
+        log('error', '/portfolio/transactions', 'Empty input fields', { user: req.session.user.user_id });
+        return res.status(400).json({ success: false, message: 'All input fields required', transactions: [] });
+    }
+    // Error check inputs
+    if (portfolioFilter.length >= 50) {
+        log('error', '/portfolio/transactions', 'Portfolio filter over 50 characters', {user: req.session.user.user_id });
+        return res.status(400).json({ success: false, message: 'Portfolio name must be less than 50 characters.' });
+    }
+    if (stockFilter.length >= 10) {
+        log('error', '/portfolio/transactions', 'Stock filter over 10 characters', { user: req.session.user.user_id });
+        return res.status(400).json({ success: false, message: 'Stock length must be less than 10 characers.' });
     }
 
     try {
-        // Error check inputs
-        // Length of all inputs
-        if (portfolioFilter.length >= 50) {
-            return res.status(400).json({ success: false, message: 'Portfolio name must be less than 50 characters.' });
-        }
-        if (stockFilter.length >= 10) {
-            return res.status(400).json({ success: false, message: 'Stock length must be less than 10 characers.' });
-        }
-        // ?? DATE ERROR CHECKING ??
-
         // Get query and params
-        let transactionQuery = 'SELECT symbol, transaction_type, shares, price_per_share, total_price, transaction_date FROM transactions t JOIN portfolios p ON t.portfolio_id = p.portfolio_id WHERE p.user_id = $1'; // AND t.transaction_date BETWEEN $2 AND $3';
-        let transactionQueryParams = [ req.session.user.user_id ];
-        let paramIdx = 2;
+        let transactionQuery = 'SELECT symbol, transaction_type, shares, price_per_share, total_price, transaction_date FROM transactions t JOIN portfolios p ON t.portfolio_id = p.portfolio_id WHERE p.user_id = $1 AND t.transaction_date BETWEEN $2 AND $3';
+        let transactionQueryParams = [ req.session.user.user_id, endFilter, startFilter ];
+        let paramIdx = 4;
 
         if (portfolioFilter !== 'All') {
             transactionQuery += ` AND p.portfolio_name = $${paramIdx}`;
@@ -368,35 +368,41 @@ app.get('/portfolio/transactions', checkAuthHelper, async (req, res) => {
             paramIdx++;
         }
 
-        console.log(transactionQuery);
         console.log(transactionQueryParams);
 
         // Query database
         const { rows: queryRes } = await db.query(transactionQuery, transactionQueryParams);
 
-        // Get each stocks name
-        const stockSymbols = queryRes.map(row => row.symbol);
-        
-        const yahooQuery = await yahooFinance.quote(stockSymbols, {fields: ['shortName'] });
-
-        const transactionData = queryRes.map(t => {
-            const stockInfo = yahooQuery.find(s => s.symbol === t.symbol);
+        try {
+            // Get each stocks name
+            const stockSymbols = queryRes.map(row => row.symbol);
             
-            return {
-                company: stockInfo.shortName,
-                symbol: t.symbol,
-                type: t.transaction_type,
-                shares: t.shares,
-                share_price: t.price_per_share,
-                total_price: t.total_price,
-                date: t.transaction_date
-            };
-        });
+            // Query yahoo finance to get company name for each stock symbol
+            const yahooQuery = await yahooFinance.quote(stockSymbols, {fields: ['shortName'] });
 
+            // Structure transaction return value
+            const transactionData = queryRes.map(t => {
+                const stockInfo = yahooQuery.find(s => s.symbol === t.symbol);
+                
+                return {
+                    company: stockInfo.shortName,
+                    symbol: t.symbol,
+                    type: t.transaction_type,
+                    shares: t.shares,
+                    share_price: t.price_per_share,
+                    total_price: t.total_price,
+                    date: t.transaction_date
+                };
+            });
 
-        // Return result
-        log('info', '/portfolio/transactions', 'Successfully fetched transactions', { user: req.session.user.user_id, transactions: transactionData });
-        return res.status(200).json({ success: true, transactions: transactionData });
+            // Return result
+            log('info', '/portfolio/transactions', 'Successfully fetched transactions', { user: req.session.user.user_id, transactions: transactionData });
+            return res.status(200).json({ success: true, transactions: transactionData });
+        }
+        catch (err) {
+            log('error', '/portfolio/transactions', 'Error fetching stock data', err.message);
+            return res.status(500).json({ success: false, message: 'Internal server error' });
+        }
 
     }
     catch (err) {
