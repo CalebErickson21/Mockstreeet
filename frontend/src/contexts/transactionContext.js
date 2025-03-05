@@ -1,19 +1,22 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { transactionsHelper } from "../utils/helpers";
 import { usePortfolio } from "./portfolioContext";
+import { useUser } from "./userContext";
 
 const TransactionContext = createContext();
 
 export const TransactionProvider = ({ children }) => {
 
     const { portfolioFilter, stockFilter } = usePortfolio();
+    const { balance } = useUser();
 
     const [transactions, setTransactions] = useState([]);
-    const [stockTransaction, setStockTransaction] = useState('');
+    const [marketStock, setMarketStock] = useState('');
+    const [transactionType, setTransactionType] = useState('All');
     const [buy, setBuy] = useState(false);
     const [sell, setSell] = useState(false);
-    const [startDate, setStartDate] = useState(new Date());
-    const [endDate, setEndDate] = useState(new Date(startDate - 7 * 24 * 60 * 60 * 1000));
+    const [endDate, setEndDate] = useState(new Date());
+    const [startDate, setStartDate] = useState(new Date(endDate - 7 * 24 * 60 * 60 * 1000));
 
     // Get transactions function, does not run on mount of context
     const updateTransactions = async () => {
@@ -26,7 +29,14 @@ export const TransactionProvider = ({ children }) => {
 
     // Buy stocks function, might move to market.js
     const buyStock = async () => {
+        //const data = await buyStockHelper(balance, stockTransaction, shares);
 
+        // if (data.success) {
+        //     // Return data success message
+        // }
+        // else {
+        //     // Return error message
+        // }
     }
 
     // Sell stocks function, might move to market.js
@@ -34,9 +44,14 @@ export const TransactionProvider = ({ children }) => {
 
     }
 
+    // Get transactions on context render and filter changes
+    useEffect(() => {
+        updateTransactions();
+    }, [portfolioFilter, stockFilter, startDate, endDate, transactionType]);
+
 
     return (
-        <TransactionContext.Provider value={{ transactions, setTransactions, updateTransactions }}>
+        <TransactionContext.Provider value={{ transactions, updateTransactions, transactionType, setTransactionType, startDate, setStartDate, endDate, setEndDate }}>
             { children }
         </TransactionContext.Provider>
     )

@@ -343,17 +343,17 @@ app.get('/portfolio/transactions', checkAuthHelper, async (req, res) => {
     // Error check inputs
     if (portfolioFilter.length >= 50) {
         log('error', '/portfolio/transactions', 'Portfolio filter over 50 characters', {user: req.session.user.user_id });
-        return res.status(400).json({ success: false, message: 'Portfolio name must be less than 50 characters.' });
+        return res.status(400).json({ success: false, message: 'Portfolio name must be less than 50 characters.', transactions: [] });
     }
     if (stockFilter.length >= 10) {
         log('error', '/portfolio/transactions', 'Stock filter over 10 characters', { user: req.session.user.user_id });
-        return res.status(400).json({ success: false, message: 'Stock length must be less than 10 characers.' });
+        return res.status(400).json({ success: false, message: 'Stock length must be less than 10 characers.', transactions: [] });
     }
 
     try {
         // Get query and params
         let transactionQuery = 'SELECT symbol, transaction_type, shares, price_per_share, total_price, transaction_date FROM transactions t JOIN portfolios p ON t.portfolio_id = p.portfolio_id WHERE p.user_id = $1 AND t.transaction_date BETWEEN $2 AND $3';
-        let transactionQueryParams = [ req.session.user.user_id, endFilter, startFilter ];
+        let transactionQueryParams = [ req.session.user.user_id, startFilter, endFilter ];
         let paramIdx = 4;
 
         if (portfolioFilter !== 'All') {
@@ -368,10 +368,13 @@ app.get('/portfolio/transactions', checkAuthHelper, async (req, res) => {
             paramIdx++;
         }
 
-        console.log(transactionQueryParams);
-
         // Query database
         const { rows: queryRes } = await db.query(transactionQuery, transactionQueryParams);
+
+        if (queryRes.length === 0) {
+            log('info', '/portfolio/transactions', 'No transactions with given params', { user: req.session.user.user_id });
+            return res.status(200).json({ success: true, message: 'No transactions', transactions: []});
+        }
 
         try {
             // Get each stocks name
@@ -391,7 +394,7 @@ app.get('/portfolio/transactions', checkAuthHelper, async (req, res) => {
                     shares: t.shares,
                     share_price: t.price_per_share,
                     total_price: t.total_price,
-                    date: t.transaction_date
+                    date: t.transaction_date.toISOString().split('T')[0]
                 };
             });
 

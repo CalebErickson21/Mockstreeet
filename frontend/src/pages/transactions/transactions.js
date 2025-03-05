@@ -1,7 +1,8 @@
 // Import functions
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../../contexts/authContext.js';
 import { useTransaction } from '../../contexts/transactionContext.js';
+import { log } from '../../utils/helpers.js'
 
 // Import components
 import Modal from '../../components/accessModal/modal.js';
@@ -9,20 +10,12 @@ import Dropdown from '../../components/portfolioDropdown/dropdown.js'
 
 // Import styles
 import './transactions.scss';
+import { usePortfolio } from '../../contexts/portfolioContext.js';
 
 const Transactions = () => {
     // Contexts
     const { user } = useAuth();
-    const { transactions, updateTransactions } = useTransaction();
-    
-
-    // Update transactions on mount
-    useEffect(() => {
-        if (transactions.length === 0) {
-            updateTransactions();
-        }
-    }, []);
-
+    const { transactions, transactionType, setTransactionType, startDate, setStartDate, endDate, setEndDate } = useTransaction();
 
     // Show modal if user is not logged in
     const [showModal, setShowModal] = useState(false);
@@ -45,7 +38,7 @@ const Transactions = () => {
 
                     <div className='col col-6 col-md-3'>
                         <select defaultValue='default' className='form-select'>
-                            <option selected value='default'>Transaction Type</option>
+                            <option onChange={setTransactionType} value={transactionType}>Transaction Type</option>
                         </select>
                     </div>
 
@@ -56,12 +49,12 @@ const Transactions = () => {
 
                     <div className='col col-6 col-md-3'>
                         <div className='col col-6'>
-                            <input className='form-control date' type='date' placeholder='Start Date'></input>
+                            <input onChange={(e) => setStartDate(e.target.value)} value={startDate} className='form-control date' type='date' placeholder='Start Date'></input>
                         </div>
 
                         <div className='col col-6'>
                             <div className='col col-6'>
-                                <input className='form-control date' type='date' placeholder='End Date'></input>
+                                <input onChange={(e) => setEndDate(e.target.value)} value={endDate} className='form-control date' type='date' placeholder='End Date'></input>
                             </div>
                         </div>
                     </div>
@@ -83,15 +76,23 @@ const Transactions = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {/* Map transactions to columns */}
-                        <tr>
-                            <td>Apple</td>
-                            <td>AAPL</td>
-                            <td>10</td>
-                            <td>$1,500</td>
-                            <td>Buy</td>
-                            <td>2025-02-14</td>
-                        </tr>
+                        {transactions.length > 0 ? (
+                            transactions.map(t => (
+                                <tr key={t.symbol}>
+                                    <td>{t.company}</td>
+                                    <td>{t.symbol}</td>
+                                    <td>{t.shares}</td>
+                                    <td>{t.share_price}</td>
+                                    <td>{t.total_price}</td>
+                                    <td>{t.type}</td>
+                                    <td>{t.date}</td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={7}>No Transactions to Display</td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </div>

@@ -49,7 +49,6 @@ const Portfolio = () => {
                                 <th>Symbol</th>
                                 <th>Shares</th>
                                 <th>Total Value</th>
-                                <th>+/-</th>
                                 <th>Transaction History</th>
                             </tr>
                         </thead>
@@ -61,13 +60,12 @@ const Portfolio = () => {
                                         <td>{stock.symbol}</td>
                                         <td>{stock.shares}</td>
                                         <td>{stock.total_price}</td>
-                                        <td>TODO</td>
                                         <td><button className='btn' value={stock.symbol} onClick={(e) => setStockFilter(e.target.value)}>View</button></td>
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={6}>No Stocks to Display</td>
+                                    <td colSpan={5}>No Stocks to Display</td>
                                 </tr>
                             )}
                         </tbody>
