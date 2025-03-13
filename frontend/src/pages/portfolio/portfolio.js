@@ -1,11 +1,14 @@
-// Import functions
+// Import helpers
 import { useEffect, useState } from 'react';
+
+// Import contexts
 import { useAuth } from '../../contexts/authContext.js';
 import { useUser } from '../../contexts/userContext.js'
 import { usePortfolio } from '../../contexts/portfolioContext.js';
+import { useTransaction } from '../../contexts/transactionContext.js';
 
 // Import components
-import Modal from '../../components/accessModal/modal.js';
+import LoginModal from '../../components/loginModal/modal.js';
 import DropDown from '../../components/portfolioDropdown/dropdown.js';
 
 // Import styles
@@ -16,11 +19,12 @@ const Portfolio = () => {
     const { user } = useAuth();
     const { balance } = useUser();
     const { portfolioValue, stockData, setStockFilter } = usePortfolio();
+    const { handleTransactionRedirect } = useTransaction();
 
     // Show modal if user is not logged in
-    const [showModal, setShowModal] = useState(false);
+    const [showLoginModal, setShowLoginModal] = useState(false);
     useEffect(() => {
-        user ? setShowModal(false) : setShowModal(true);
+        user ? setShowLoginModal(false) : setShowLoginModal(true);
     }, [user]);
 
     // Visible component
@@ -60,7 +64,7 @@ const Portfolio = () => {
                                         <td>{stock.symbol}</td>
                                         <td>{stock.shares}</td>
                                         <td>{stock.total_price}</td>
-                                        <td><button className='btn' value={stock.symbol} onClick={(e) => setStockFilter(e.target.value)}>View</button></td>
+                                        <td><button className='btn' value={stock.symbol} onClick={(e) => handleTransactionRedirect(e)}>View</button></td>
                                     </tr>
                                 ))
                             ) : (
@@ -73,7 +77,7 @@ const Portfolio = () => {
                 </div>
             </div>
 
-            <Modal show={showModal} />
+            <LoginModal show={showLoginModal} />
         </div>
     )
 }

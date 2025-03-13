@@ -1,24 +1,25 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { transactionsHelper } from "../utils/helpers";
+import { transactionsHelper, useNavigation } from "../utils/helpers";
 import { usePortfolio } from "./portfolioContext";
 import { useUser } from "./userContext";
 
 const TransactionContext = createContext();
 
 export const TransactionProvider = ({ children }) => {
+    // Helpers
+    const navigate = useNavigation();
 
-    const { portfolioFilter, stockFilter } = usePortfolio();
+    // Contexts
+    const { portfolioFilter, stockFilter, setStockFilter } = usePortfolio();
     const { balance } = useUser();
 
+    // States
     const [transactions, setTransactions] = useState([]);
-    const [marketStock, setMarketStock] = useState('');
-    const [transactionType, setTransactionType] = useState('All');
-    const [buy, setBuy] = useState(false);
-    const [sell, setSell] = useState(false);
+    const [transactionTypeFilter, setTransactionTypeFilter] = useState('All');
     const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
     const [startDate, setStartDate] = useState(new Date(new Date(endDate).setDate(new Date(endDate).getDate() - 7)).toISOString().split('T')[0]);
 
-    // Get transactions function
+    // Update transactions
     const updateTransactions = async () => {
         const data = await transactionsHelper(portfolioFilter, stockFilter, startDate, endDate);
 
@@ -27,31 +28,21 @@ export const TransactionProvider = ({ children }) => {
         }
     };
 
-    // Buy stocks function, might move to market.js
-    const buyStock = async () => {
-        //const data = await buyStockHelper(balance, stockTransaction, shares);
-
-        // if (data.success) {
-        //     // Return data success message
-        // }
-        // else {
-        //     // Return error message
-        // }
-    }
-
-    // Sell stocks function, might move to market.js
-    const sellStock = async () => {
-
+    // Handle transaction redirect
+    const handleTransactionRedirect = (e) => {
+        e.preventDefault();
+        setStockFilter(e.target.value);
+        navigate('/transactions')();
     }
 
     // Get transactions on context render and filter changes
     useEffect(() => {
         updateTransactions();
-    }, [portfolioFilter, stockFilter, startDate, endDate, transactionType]);
+    }, [portfolioFilter, stockFilter, startDate, endDate, transactionTypeFilter]);
 
 
     return (
-        <TransactionContext.Provider value={{ transactions, updateTransactions, transactionType, setTransactionType, startDate, setStartDate, endDate, setEndDate }}>
+        <TransactionContext.Provider value={{ transactions, updateTransactions, transactionTypeFilter, setTransactionTypeFilter, startDate, setStartDate, endDate, setEndDate , handleTransactionRedirect }}>
             { children }
         </TransactionContext.Provider>
     )

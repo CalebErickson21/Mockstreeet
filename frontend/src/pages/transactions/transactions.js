@@ -1,26 +1,26 @@
-// Import functions
+// Import helpers
 import { useEffect, useState, useRef } from 'react';
+
+// Import contexts
 import { useAuth } from '../../contexts/authContext.js';
 import { useTransaction } from '../../contexts/transactionContext.js';
-import { log } from '../../utils/helpers.js'
 
 // Import components
-import Modal from '../../components/accessModal/modal.js';
-import Dropdown from '../../components/portfolioDropdown/dropdown.js'
+import LoginModal from '../../components/loginModal/modal.js';
+import Dropdown from '../../components/portfolioDropdown/dropdown.js';
 
 // Import styles
 import './transactions.scss';
-import { usePortfolio } from '../../contexts/portfolioContext.js';
 
 const Transactions = () => {
     // Contexts
     const { user } = useAuth();
-    const { transactions, transactionType, setTransactionType, startDate, setStartDate, endDate, setEndDate } = useTransaction();
+    const { transactions, transactionTypeFilter, setTransactionTypeFilter, startDate, setStartDate, endDate, setEndDate } = useTransaction();
 
     // Show modal if user is not logged in
-    const [showModal, setShowModal] = useState(false);
+    const [showLoginModal, setShowLoginModal] = useState(false);
     useEffect(() => {
-        user ? setShowModal(false) : setShowModal(true);
+        user ? setShowLoginModal(false) : setShowLoginModal(true);
     }, [user]);
 
     // Visible component
@@ -37,11 +37,11 @@ const Transactions = () => {
                     </div>
 
                     <div className='col col-6 col-md-3'>
-                        <select defaultValue={transactionType} onChange={(e) => setTransactionType(e.target.value)} value={transactionType} className='form-select'>
+                        <select defaultValue={transactionTypeFilter} onChange={(e) => setTransactionTypeFilter(e.target.value)} value={transactionTypeFilter} className='form-select'>
                             <option disabled value='All'>Transaction Type</option>
                             <option value='All'>All</option>
-                            <option value='buy'>Buy</option>
-                            <option value='sell'>Sell</option>
+                            <option value='Buy'>Buy</option>
+                            <option value='Sell'>Sell</option>
                         </select>
                     </div>
 
@@ -100,7 +100,7 @@ const Transactions = () => {
                 </table>
             </div>
 
-            <Modal show={showModal} />
+            <LoginModal show={showLoginModal} />
 
 
         </div>

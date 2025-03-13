@@ -1,26 +1,34 @@
-// Import dependencies
+// Import helpers
 import { useEffect, useState } from 'react';
-import { useAuth } from '../../contexts/authContext.js';
-import { useUser } from '../../contexts/userContext.js';
-import { usePortfolio } from '../../contexts/portfolioContext.js';
+import { useNavigation } from '../../utils/helpers.js';
 
 // Import styles
 import './market.scss';
 
 // Import components
-import Modal from '../../components/accessModal/modal.js';
+import LoginModal from '../../components/loginModal/modal.js';
 import DropDown from '../../components/portfolioDropdown/dropdown.js';
+
+// Import contexts
+import { useAuth } from '../../contexts/authContext.js';
+import { useUser } from '../../contexts/userContext.js';
+import { usePortfolio } from '../../contexts/portfolioContext.js';
+import { useTransaction } from '../../contexts/transactionContext.js';
+
 
 const Market = () => {
     // Contexts
     const { user } = useAuth();
-    const { balance, setBalance } = useUser();
-    const { stockData, setStockData, setStockFilter } = usePortfolio();
+    const { balance } = useUser();
+    const { stockData } = usePortfolio();
+    const { handleTransactionRedirect } = useTransaction();
 
-    // Show modal if user is not logged in
-    const [showModal, setShowModal] = useState(false);
+    // States
+    const [showLoginModal, setShowLoginModal] = useState(false);
+
+    // Modal functions
     useEffect(() => {
-        user ? setShowModal(false) : setShowModal(true);
+        user ? setShowLoginModal(false) : setShowLoginModal(true);
     }, [user]);
 
 
@@ -90,7 +98,7 @@ const Market = () => {
                                         <td>{stock.share_price}</td>
                                         <td><button className='btn'>Buy</button></td>
                                         <td><button className='btn'>Sell</button></td>
-                                        <td><button className='btn' value={stock.symbol} onClick={(e) => setStockFilter(e.target.value)}>View</button></td>
+                                        <td><button className='btn' value={stock.symbol} onClick={(e) => handleTransactionRedirect(e)}>View</button></td>
                                     </tr>
                                 ))
                             ) : (
@@ -137,8 +145,7 @@ const Market = () => {
                 </div>
             </div>
 
-            <Modal show={showModal} />
-
+            <LoginModal show={showLoginModal} />
         </div>
     )
 }
