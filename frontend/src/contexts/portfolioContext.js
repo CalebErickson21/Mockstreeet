@@ -24,28 +24,28 @@ export const PortfolioProvider = ({ children }) => {
       else { log('error', 'portfolio', 'Error displaying portfolio information', data.message); }
     }
     getPortfolioStocks(); 
-    }, [portfolioFilter, user]);
+  }, [portfolioFilter, user]);
 
-    // Get list of all portfolios
-    const updatePortfolioList = async () => {
-      const data = await portfolioNameHelper();
+  // Get list of all portfolios
+  const updatePortfolioList = async () => {
+    const data = await portfolioNameHelper();
       
-      if (data.success) {
-        setPortfolioList(data.portfolioNames); // Ensure correct property
-      } else {
-        setPortfolioList([]);
-      }
-    };
-    useEffect(() => {
-      updatePortfolioList();
-    }, [user]);
+    if (data.success) {
+      setPortfolioList(data.portfolioNames); // Ensure correct property
+    } else {
+      setPortfolioList([]);
+    }
+  };
+  useEffect(() => {
+    updatePortfolioList();
+  }, [user]);
 
-    // Return context wrapper
-    return (
-      <PortfolioContext.Provider value={{ portfolioFilter, setPortfolioFilter, portfolioList, updatePortfolioList, portfolioValue, setPortfolioValue, stockData, setStockData, stockFilter, setStockFilter }}>
-        { children }
-      </PortfolioContext.Provider>
-    );
+  // Return context wrapper
+  return (
+    <PortfolioContext.Provider value={{ portfolioFilter, setPortfolioFilter, portfolioList, updatePortfolioList, portfolioValue, setPortfolioValue, stockData, setStockData, stockFilter, setStockFilter }}>
+      { children }
+    </PortfolioContext.Provider>
+  );
 }
 
 // Export function for getting portfolio values

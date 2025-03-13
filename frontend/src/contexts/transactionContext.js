@@ -15,10 +15,10 @@ export const TransactionProvider = ({ children }) => {
     const [transactionType, setTransactionType] = useState('All');
     const [buy, setBuy] = useState(false);
     const [sell, setSell] = useState(false);
-    const [endDate, setEndDate] = useState(new Date());
-    const [startDate, setStartDate] = useState(new Date(endDate - 7 * 24 * 60 * 60 * 1000));
+    const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
+    const [startDate, setStartDate] = useState(new Date(new Date(endDate).setDate(new Date(endDate).getDate() - 7)).toISOString().split('T')[0]);
 
-    // Get transactions function, does not run on mount of context
+    // Get transactions function
     const updateTransactions = async () => {
         const data = await transactionsHelper(portfolioFilter, stockFilter, startDate, endDate);
 

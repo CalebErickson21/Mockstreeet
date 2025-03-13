@@ -332,8 +332,8 @@ app.get('/portfolio/transactions', checkAuthHelper, async (req, res) => {
     // Get request variables
     const portfolioFilter = toTitleCase(req.query.portfolio);
     const stockFilter = (req.query.stock).toUpperCase().trim();
-    const startFilter = new Date(req.query.startDate).toISOString().split('T')[0] + ' 23:59:59.999999';
-    const endFilter = new Date(req.query.endDate).toISOString().split('T')[0] + ' 00:00:00.000000';
+    const startFilter = new Date(req.query.startDate).toISOString().split('T')[0] + ' 00:00:00.000000';
+    const endFilter = new Date(req.query.endDate).toISOString().split('T')[0] + ' 23:59:59.999999';
 
     // Check for empty fields
     if (!portfolioFilter || !startFilter || !endFilter) {

@@ -37,8 +37,11 @@ const Transactions = () => {
                     </div>
 
                     <div className='col col-6 col-md-3'>
-                        <select defaultValue='default' className='form-select'>
-                            <option onChange={setTransactionType} value={transactionType}>Transaction Type</option>
+                        <select defaultValue={transactionType} onChange={(e) => setTransactionType(e.target.value)} value={transactionType} className='form-select'>
+                            <option disabled value='All'>Transaction Type</option>
+                            <option value='All'>All</option>
+                            <option value='buy'>Buy</option>
+                            <option value='sell'>Sell</option>
                         </select>
                     </div>
 
