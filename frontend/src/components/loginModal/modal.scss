@@ -1,0 +1,29 @@
+@import "../../styles/base.scss";
+
+body.modal-open {
+    overflow: hidden;
+    padding-right: 16px;
+}
+
+.modal-content {
+    background: $COOL_GREY;
+
+    h2 {
+        color: $DARK_BLUE;
+    }
+
+    h5 {
+        color: $DARK_GREY;
+    }
+
+    button {
+        background-color: $LIGHT_BLUE;
+        border: 2px solid $DARK_BLUE;
+
+        &:hover {
+            background-color: $LIGHT_BLUE;
+            border: 2px solid $DARK_BLUE;
+            font-weight: bolder;
+        }
+    }
+}
