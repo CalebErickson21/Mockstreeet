@@ -260,7 +260,11 @@ export const transactionsHelper = async (portfolioFilter, stockFilter, startDate
     }
 };
 
+/** Market helper
+ * 
+ */
 export const marketHelper = async (searchStock) => {
+    console.log(searchStock);
     try {
         const response = await fetch(`http://localhost:5000/market/search?stock=${searchStock}`, {
             method: 'GET',

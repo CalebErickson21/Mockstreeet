@@ -416,25 +416,37 @@ app.get('/portfolio/transactions', checkAuthHelper, async (req, res) => {
 });
 
 app.get('/market/search', checkAuthHelper, async (req, res) => {
-    const searchStock = (req.query.stock?.toUpperCase().trim()) || '';
+    const searchStocksList = (req.query.stock?.split(',').map(item => item.toUpperCase().trim()) || '').filter(s => s !== '');
+    console.log(searchStocksList);
 
     // Error check inputs
-    if (!searchStock || searchStock.length > 10) {
+    if (!searchStocksList) {
         log('error', '/market/search', 'Invalid search input', { user: req.session.user.user_id });
         return res.status(400).json({ success: false, message: 'Invalid search input' });
     };
 
+    // Check each input length
+    for (let i = 0; i < searchStocksList.length; i++) {
+        if (searchStocksList[i].length >= 10) {
+            log('error', '/market/search', 'Stock symbol too long', { user: req.session.user.user_id });
+            return res.status(400).json({ success: false, message: 'Stock symbol must be less than 10 characters' });
+        }
+    }
+
     try {
         // Query yahoo finance for stock data
-        const yahooRes = await yahooFinance.quote(searchStock, { fields: ['shortName', 'regularMarketPrice']});
+        const yahooRes = await yahooFinance.quote(searchStocksList, { fields: ['shortName', 'regularMarketPrice']});
         console.log(yahooRes);
 
         // Combine return data
-        const stockData = {
-            company: yahooRes.shortName,
-            symbol: yahooRes.symbol,
-            share_price: yahooRes.regularMarketPrice.toFixed(2),
-        };
+        const stockData = searchStocksList.map(stock => {
+            const stockInfo = yahooRes.find(s => s.symbol === stock);
+            return {
+                company: stockInfo.shortName,
+                symbol: stockInfo.symbol,
+                share_price: stockInfo.regularMarketPrice.toFixed(2)
+            };
+        }).filter(stock => stock !== undefined);
 
         // Return result
         log('info', '/market/search', 'Stocks fetched successfully', stockData);

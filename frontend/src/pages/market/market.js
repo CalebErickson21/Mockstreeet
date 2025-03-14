@@ -26,7 +26,7 @@ const Market = () => {
     // States
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [searchStock, setSearchStock] = useState('');
-    const [searchRes, setSearchRes] = useState(null);
+    const [searchRes, setSearchRes] = useState([]);
 
     // Modal functions
     useEffect(() => {
@@ -37,7 +37,7 @@ const Market = () => {
         e.preventDefault();
         
         // Error check
-        if (!searchStock || searchStock.length > 10) {
+        if (!searchStock) {
             return;
         }
 
@@ -45,10 +45,9 @@ const Market = () => {
         const data = await marketHelper(searchStock);
         if (data.success) {
             setSearchRes(data.stock);
-            console.log(searchRes);
         }
         else {
-            setSearchRes(null);
+            setSearchRes([]);
         }
     };
 
@@ -153,18 +152,20 @@ const Market = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {searchRes ? (
-                                <tr key={searchRes.symbol}>
-                                    <td>{searchRes.company}</td>
-                                    <td>{searchRes.symbol}</td>
-                                    <td>{searchRes.share_price}</td>
-                                    <td>Buy</td>
-                                    <td>Sell</td>
-                                    <td>View</td>
-                                </tr>
+                            {searchRes.length > 0 ? (
+                                searchRes.map(stock => (
+                                    <tr key={stock.symbol}>
+                                        <td>{stock.company}</td>
+                                        <td>{stock.symbol}</td>
+                                        <td>{stock.share_price}</td>
+                                        <td>Buy</td>
+                                        <td>Sell</td>
+                                        <td>View</td>
+                                    </tr>
+                                ))
                             ) : (
                                 <tr>
-                                    <td colSpan={6}>Please Search for Valid Stock Symbol</td>
+                                    <td colSpan={6}>Please Search for Valid Stock Symbol(s) as a comma separated list</td>
                                 </tr>
                             )}
                         </tbody>
