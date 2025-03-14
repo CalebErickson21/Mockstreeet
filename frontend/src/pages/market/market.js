@@ -1,6 +1,6 @@
 // Import helpers
 import { useEffect, useState } from 'react';
-import { useNavigation } from '../../utils/helpers.js';
+import { marketHelper } from '../../utils/helpers.js';
 
 // Import styles
 import './market.scss';
@@ -25,11 +25,32 @@ const Market = () => {
 
     // States
     const [showLoginModal, setShowLoginModal] = useState(false);
+    const [searchStock, setSearchStock] = useState('');
+    const [searchRes, setSearchRes] = useState(null);
 
     // Modal functions
     useEffect(() => {
         user ? setShowLoginModal(false) : setShowLoginModal(true);
     }, [user]);
+
+    const handleSearch = async (e) => {
+        e.preventDefault();
+        
+        // Error check
+        if (!searchStock || searchStock.length > 10) {
+            return;
+        }
+
+        // Fetch data using helper
+        const data = await marketHelper(searchStock);
+        if (data.success) {
+            setSearchRes(data.stock);
+            console.log(searchRes);
+        }
+        else {
+            setSearchRes(null);
+        }
+    };
 
 
     // Visible component
@@ -115,8 +136,8 @@ const Market = () => {
             <div id='market' className='section'>
                 <div id='market-header' className="d-flex align-items-center gap-2">
                     <h2>Market</h2>
-                    <form className='d-flex align-items-center gap-2'>
-                        <input required type="text" className="form-control" id="stockSearch" name="stockSearch" placeholder='Search Stocks'></input>
+                    <form onSubmit={handleSearch} className='d-flex align-items-center gap-2'>
+                        <input required onChange={(e) => setSearchStock(e.target.value)} value={searchStock} type="text" className="form-control" id="stockSearch" name="stockSearch" placeholder='Search By Symbol'></input>
                         <button class='btn' type='submit'>Search</button>
                     </form>
                 </div>
@@ -126,20 +147,26 @@ const Market = () => {
                             <tr>
                                 <th>Stock</th>
                                 <th>Symbol</th>
-                                <th>Current Value</th>
+                                <th>Share Value</th>
                                 <th colSpan='2'>Transaction Type</th>
                                 <th>Transaction History</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>TEST</td>
-                                <td>TEST</td>
-                                <td>100</td>
-                                <td><button className='btn'>Buy</button></td>
-                                <td><button className='btn'>Sell</button></td>
-                                <td><button className='btn'>View</button></td>
-                            </tr>
+                            {searchRes ? (
+                                <tr key={searchRes.symbol}>
+                                    <td>{searchRes.company}</td>
+                                    <td>{searchRes.symbol}</td>
+                                    <td>{searchRes.share_price}</td>
+                                    <td>Buy</td>
+                                    <td>Sell</td>
+                                    <td>View</td>
+                                </tr>
+                            ) : (
+                                <tr>
+                                    <td colSpan={6}>Please Search for Valid Stock Symbol</td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>

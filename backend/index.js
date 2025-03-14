@@ -415,6 +415,37 @@ app.get('/portfolio/transactions', checkAuthHelper, async (req, res) => {
 
 });
 
+app.get('/market/search', checkAuthHelper, async (req, res) => {
+    const searchStock = (req.query.stock?.toUpperCase().trim()) || '';
+
+    // Error check inputs
+    if (!searchStock || searchStock.length > 10) {
+        log('error', '/market/search', 'Invalid search input', { user: req.session.user.user_id });
+        return res.status(400).json({ success: false, message: 'Invalid search input' });
+    };
+
+    try {
+        // Query yahoo finance for stock data
+        const yahooRes = await yahooFinance.quote(searchStock, { fields: ['shortName', 'regularMarketPrice']});
+        console.log(yahooRes);
+
+        // Combine return data
+        const stockData = {
+            company: yahooRes.shortName,
+            symbol: yahooRes.symbol,
+            share_price: yahooRes.regularMarketPrice.toFixed(2),
+        };
+
+        // Return result
+        log('info', '/market/search', 'Stocks fetched successfully', stockData);
+        return res.status(200).json({ success: true, stock: stockData });
+    }
+    catch (err) {
+        log('error', '/market/search', 'Internal server error', err.message);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
 app.get('/user/stats', checkAuthHelper, async (req, res) => {
 
     try {
