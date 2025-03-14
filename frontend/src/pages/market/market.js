@@ -1,6 +1,6 @@
 // Import helpers
 import { useEffect, useState } from 'react';
-import { marketHelper } from '../../utils/helpers.js';
+import { marketHelper, watchlistHelper } from '../../utils/helpers.js';
 
 // Import styles
 import './market.scss';
@@ -20,19 +20,32 @@ const Market = () => {
     // Contexts
     const { user } = useAuth();
     const { balance } = useUser();
-    const { stockData } = usePortfolio();
+    const { portfolioFilter, stockData } = usePortfolio();
     const { handleTransactionRedirect } = useTransaction();
 
     // States
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [searchStock, setSearchStock] = useState('');
     const [searchRes, setSearchRes] = useState([]);
+    const [watchlist, setWatchlist] = useState([]);
 
     // Modal functions
     useEffect(() => {
         user ? setShowLoginModal(false) : setShowLoginModal(true);
     }, [user]);
 
+    // Update watchlist when portfolio changes
+    useEffect(() => {
+        const updateWatchlist = async () => {
+            const data = await watchlistHelper(portfolioFilter);
+
+            data.success ? setWatchlist(data.watchlist) : setWatchlist([]);
+        }
+
+        updateWatchlist();
+    }, [portfolioFilter]);
+
+    // Search market function
     const handleSearch = async (e) => {
         e.preventDefault();
         
@@ -43,13 +56,9 @@ const Market = () => {
 
         // Fetch data using helper
         const data = await marketHelper(searchStock);
-        if (data.success) {
-            setSearchRes(data.stock);
-        }
-        else {
-            setSearchRes([]);
-        }
+        data.success ? setSearchRes(data.stock) : setSearchRes([]);
     };
+
 
 
     // Visible component
@@ -86,7 +95,22 @@ const Market = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            
+                            {watchlist.length > 0 ? (
+                                watchlist.map(stock => (
+                                    <tr key={stock.symbol}>
+                                        <td>{stock.company}</td>
+                                        <td>{stock.symbol}</td>
+                                        <td>{stock.share_price}</td>
+                                        <td><button className='btn'>Buy</button></td>
+                                        <td><button className='btn'>Sell</button></td>
+                                        <td><button className='btn' value={stock.symbol} onClick={(e) => handleTransactionRedirect(e)}>View</button></td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={6}>No Stocks in Watchlist for Portfolio: {portfolioFilter}</td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                     
@@ -123,7 +147,7 @@ const Market = () => {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={6}>No Stocks to Display</td>
+                                    <td colSpan={6}>No Stocks in Portfolio: {portfolioFilter}</td>
                                 </tr>
                             )}
                         </tbody>

@@ -250,6 +250,7 @@ app.get('/portfolio/stocks', checkAuthHelper, async (req, res) => {
         let portfolioValue = 0;
         try {
             const stockSymbols = stocks.map(stock => stock.symbol);
+            console.log(stockSymbols);
 
             // API call to yahoo finance
             const stockPrices = await yahooFinance.quote(stockSymbols, {fields: ['shortName', 'regularMarketPrice' ] });
@@ -411,6 +412,57 @@ app.get('/portfolio/transactions', checkAuthHelper, async (req, res) => {
     catch (err) {
         log('error', '/portfolio/transactions', 'Internal Server Error', err.message);
         return res.status(500).json({ success: false, messgage: 'Internal server error' });
+    }
+
+});
+
+app.get('/portfolio/watchlist', checkAuthHelper, async (req, res) => {
+    // select symbol from portfolios p join watchlist w on p.portfolio_id = w.portfolio_id;
+
+    try {
+        // Get search parameters
+        const portfolioParam = toTitleCase(req.query.portfolio);
+
+        // Error check
+        if (portfolioParam === '' || portfolioParam.length >= 50) {
+            log('error', '/portfolio/watchlist', 'Invalid portfolio input', req.session.user.user_id);
+            return res.status(400).json({ success: false, message: 'Invalid portfolio parameter' });
+        }
+
+        // Query database
+        const { rows: stockSymbols } = await db.query('SELECT symbol FROM portfolios p JOIN watchlist w ON p.portfolio_id = w.portfolio_id WHERE p.portfolio_name = $1 AND p.user_id = $2', [ portfolioParam, req.session.user.user_id ]);
+        if (stockSymbols.length === 0) {
+            log('info', '/portfolio/watchlist', 'No stocks in portfolio watchlist');
+            return res.status(200).json({ success: true, watchlist: [] });
+        }
+
+
+        // Query yahoo finance api to fetch live stock data
+        try {
+            const yahooRes = await yahooFinance.quote(stockSymbols, { fields: ['shortName', 'regularMarketPrice']});
+    
+            // Combine return data
+            const stockData = searchStocksList.map(stock => {
+                const stockInfo = yahooRes.find(s => s.symbol === stock);
+                return {
+                    company: stockInfo.shortName,
+                    symbol: stockInfo.symbol,
+                    share_price: stockInfo.regularMarketPrice.toFixed(2)
+                };
+            }).filter(stock => stock !== undefined);
+    
+            // Return result
+            log('info', '/portfolio/watchlist', 'Stocks fetched successfully', stockData);
+            return res.status(200).json({ success: true, watchlist: stockData });
+        }
+        catch (err) {
+            log('error', '/portfolio/watchlist', 'Error fetching yahoo stocks', err.message);
+            return res.status(500).json({ success: false, message: 'Error fetching yahoo stocks' });
+        }
+    }
+    catch (err) {
+        log('error', '/portfolio/watchlist', 'Internal server error');
+        return res.status(500).json({ success: false, message: 'Internal server error.' });
     }
 
 });

@@ -264,7 +264,6 @@ export const transactionsHelper = async (portfolioFilter, stockFilter, startDate
  * 
  */
 export const marketHelper = async (searchStock) => {
-    console.log(searchStock);
     try {
         const response = await fetch(`http://localhost:5000/market/search?stock=${searchStock}`, {
             method: 'GET',
@@ -282,6 +281,29 @@ export const marketHelper = async (searchStock) => {
     }
     catch (err) {
         log('error', 'marketHelper', 'Error: ', err.message || 'An error occured. Please try again.');
+        return ({ success: false, message: err.message || 'An error occured. Please try again.' });
+    }
+};
+
+export const watchlistHelper = async (portfolioFilter) => {
+    try {
+        const response = await fetch(`http://localhost:5000/portfolio/watchlist?portfolio=${portfolioFilter}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include', // Include cookies
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+            return data;
+        }
+        else {
+            return ({ success: false, message: data.message || 'An error occured. Please try again' });
+        }
+
+    }
+    catch (err) {
+        log('error', 'watchlistHelper', 'Error: ', err.message || 'An error occured. Please try again.');
         return ({ success: false, message: err.message || 'An error occured. Please try again.' });
     }
 };
