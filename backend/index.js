@@ -250,7 +250,6 @@ app.get('/portfolio/stocks', checkAuthHelper, async (req, res) => {
         let portfolioValue = 0;
         try {
             const stockSymbols = stocks.map(stock => stock.symbol);
-            console.log(stockSymbols);
 
             // API call to yahoo finance
             const stockPrices = await yahooFinance.quote(stockSymbols, {fields: ['shortName', 'regularMarketPrice' ] });
@@ -430,19 +429,21 @@ app.get('/portfolio/watchlist', checkAuthHelper, async (req, res) => {
         }
 
         // Query database
-        const { rows: stockSymbols } = await db.query('SELECT symbol FROM portfolios p JOIN watchlist w ON p.portfolio_id = w.portfolio_id WHERE p.portfolio_name = $1 AND p.user_id = $2', [ portfolioParam, req.session.user.user_id ]);
-        if (stockSymbols.length === 0) {
+        const { rows: queryRes } = await db.query('SELECT symbol FROM portfolios p JOIN watchlist w ON p.portfolio_id = w.portfolio_id WHERE p.portfolio_name = $1 AND p.user_id = $2', [ portfolioParam, req.session.user.user_id ]);
+        if (queryRes.length === 0) {
             log('info', '/portfolio/watchlist', 'No stocks in portfolio watchlist');
             return res.status(200).json({ success: true, watchlist: [] });
         }
 
+        // Convert query to list of stocks
+        const stockSymbols = queryRes.map(stock => stock.symbol);
 
         // Query yahoo finance api to fetch live stock data
         try {
-            const yahooRes = await yahooFinance.quote(stockSymbols, { fields: ['shortName', 'regularMarketPrice']});
+            const yahooRes = await yahooFinance.quote(stockSymbols, { fields: ['shortName', 'regularMarketPrice'] });
     
             // Combine return data
-            const stockData = searchStocksList.map(stock => {
+            const stockData = stockSymbols.map(stock => {
                 const stockInfo = yahooRes.find(s => s.symbol === stock);
                 return {
                     company: stockInfo.shortName,

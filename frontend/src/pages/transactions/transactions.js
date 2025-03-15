@@ -11,10 +11,12 @@ import Dropdown from '../../components/portfolioDropdown/dropdown.js';
 
 // Import styles
 import './transactions.scss';
+import { usePortfolio } from '../../contexts/portfolioContext.js';
 
 const Transactions = () => {
     // Contexts
     const { user } = useAuth();
+    const { stockFilter, setStockFilter } = usePortfolio();
     const { transactions, transactionTypeFilter, setTransactionTypeFilter, startDate, setStartDate, endDate, setEndDate } = useTransaction();
 
     // Show modal if user is not logged in
@@ -31,8 +33,9 @@ const Transactions = () => {
                 <h5>Filter By:</h5>
                 <div className='row'>
                     <div className='col col-6 col-md-3'>
-                        <select defaultValue='default' className='form-select'>
-                            <option disabled value='default'>Stock</option>
+                        <select defaultValue={stockFilter} className='form-select'>
+                            <option disabled value='All'>Stock</option>
+                            <option value={stockFilter}>{stockFilter}</option>
                         </select>
                     </div>
 

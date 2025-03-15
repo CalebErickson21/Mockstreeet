@@ -29,9 +29,8 @@ export const TransactionProvider = ({ children }) => {
     };
 
     // Handle transaction redirect
-    const handleTransactionRedirect = (e) => {
-        e.preventDefault();
-        setStockFilter(e.target.value);
+    const handleTransactionRedirect = ( stock ) => {
+        setStockFilter(stock);
         navigate('/transactions')();
     }
 
