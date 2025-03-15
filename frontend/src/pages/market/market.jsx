@@ -11,6 +11,7 @@ import DropDown from '../../components/portfolioDropdown/dropdown.jsx';
 import BuyButton from '../../components/buyBtn/buyButton.jsx';
 import SellButton from '../../components/sellBtn/sellButton.jsx';
 import HistoryButton from '../../components/historyBtn/historyButton.jsx';
+import CapitalBtn from '../../components/capitalBtn/capitalBtn.jsx';
 
 // Import contexts
 import { useAuth } from '../../contexts/authContext.jsx';
@@ -73,7 +74,7 @@ const Market = () => {
                 </div>
 
                 <div className='col col-4'>
-                    <button className='btn'>Add Capital</button>
+                    <CapitalBtn />
                 </div>
 
                 <div className='col col-4'>
@@ -91,8 +92,7 @@ const Market = () => {
                             <tr>
                                 <th>Stock</th>
                                 <th>Symbol</th>
-                                <th>Shares</th>
-                                <th>Price per Share</th>
+                                <th>Price Per Share ($)</th>
                                 <th colSpan='2'>Transaction Type</th>
                                 <th>Transaction History</th>
                             </tr>
@@ -104,8 +104,8 @@ const Market = () => {
                                         <td>{stock.company}</td>
                                         <td>{stock.symbol}</td>
                                         <td>{stock.share_price}</td>
-                                        <td><BuyButton stock={stock.symbol} /></td>
-                                        <td><SellButton stock={stock.symbol} /></td>
+                                        <td><BuyButton stock={stock.symbol} company={stock.company} /></td>
+                                        <td><SellButton stock={stock.symbol} company={stock.company} /></td>
                                         <td><HistoryButton stock={stock.symbol} handleTransactionRedirect={handleTransactionRedirect} /></td>
                                     </tr>
                                 ))
@@ -130,7 +130,7 @@ const Market = () => {
                                 <th>Stock</th>
                                 <th>Symbol</th>
                                 <th>Shares</th>
-                                <th>Share Value</th>
+                                <th>Price Per Share ($)</th>
                                 <th colSpan='2'>Transaction Type</th>
                                 <th>Transaction History</th>
                             </tr>
@@ -143,8 +143,8 @@ const Market = () => {
                                         <td>{stock.symbol}</td>
                                         <td>{stock.shares}</td>
                                         <td>{stock.share_price}</td>
-                                        <td><BuyButton stock={stock.symbol} /></td>
-                                        <td><SellButton stock={stock.symbol} /></td>
+                                        <td><BuyButton stock={stock.symbol} company={stock.company} /></td>
+                                        <td><SellButton stock={stock.symbol} company={stock.company} /></td>
                                         <td><HistoryButton stock={stock.symbol} handleTransactionRedirect={handleTransactionRedirect} /></td>
                                     </tr>
                                 ))
@@ -173,7 +173,7 @@ const Market = () => {
                             <tr>
                                 <th>Stock</th>
                                 <th>Symbol</th>
-                                <th>Share Value</th>
+                                <th>Share Value ($)</th>
                                 <th colSpan='2'>Transaction Type</th>
                                 <th>Transaction History</th>
                             </tr>
@@ -185,8 +185,8 @@ const Market = () => {
                                         <td>{stock.company}</td>
                                         <td>{stock.symbol}</td>
                                         <td>{stock.share_price}</td>
-                                        <td><BuyButton stock={stock.symbol} /></td>
-                                        <td><SellButton stock={stock.symbol} /></td>
+                                        <td><BuyButton stock={stock.symbol} company={stock.company} /></td>
+                                        <td><SellButton stock={stock.symbol} company={stock.company} /></td>
                                         <td><HistoryButton stock={stock.symbol} handleTransactionRedirect={handleTransactionRedirect} /></td>
                                     </tr>
                                 ))

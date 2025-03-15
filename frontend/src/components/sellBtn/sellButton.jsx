@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const SellButton = ( {stock} ) => {
+const SellButton = ( {stock, company} ) => {
 
     // States
     const [showSell, setShowSell] = useState(false);
@@ -39,14 +39,14 @@ const SellButton = ( {stock} ) => {
                 <div className='modal-dialog'>
                     <div className='modal-content'>
                         <div className='modal-header'>
-                            <h2 className='modal-title fs-5'>Sell {stock}</h2>
+                            <h2 className='modal-title fs-5'>Sell {company}</h2>
                             <button type='button' onClick={() => setShowSell(false)} className='btn-close' data-bs-dismiss='modal' aria-label='close'></button>
                         </div>
 
                         <form onSubmit={handleSell}>
                             <div className='modal-body'>
-                                <label htmlFor='buyShares' className='col-form-label'>Sell Shares</label>
-                                <input required onChange={(e) => setShares(e.target.value)} type='number' className='form-control' name='buyShares' placeholder='ex. 15'></input>
+                                <label htmlFor='sellShares' className='col-form-label'>Sell {stock} Shares</label>
+                                <input required onChange={(e) => setShares(e.target.value)} type='number' className='form-control' name='sellShares' placeholder='ex. 15'></input>
                             </div>
                             <div className='modal-footer'>
                                 <button type='submit' className='btn' id='buyBtn'>Sell</button>

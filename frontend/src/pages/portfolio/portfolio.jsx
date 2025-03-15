@@ -10,9 +10,13 @@ import { useTransaction } from '../../contexts/transactionContext.jsx';
 // Import components
 import LoginModal from '../../components/loginModal/modal.jsx';
 import DropDown from '../../components/portfolioDropdown/dropdown.jsx';
+import HistoryButton from '../../components/historyBtn/historyButton.jsx';
+import CapitalBtn from '../../components/capitalBtn/capitalBtn.jsx';
 
 // Import styles
 import './portfolio.scss';
+import BuyButton from '../../components/buyBtn/buyButton.jsx';
+import SellButton from '../../components/sellBtn/sellButton.jsx';
 
 const Portfolio = () => {
     // Contexts
@@ -32,13 +36,16 @@ const Portfolio = () => {
         <div id='portfolio-container'>
             <div id='info'>
                 <div className='row'>
-                    <div className='col col-4'>
+                    <div className='col col-3'>
                         <h5>Capital: ${ balance }</h5>
                     </div>
-                    <div className='col col-4'>
+                    <div className='col col-3'>
+                        <CapitalBtn />
+                    </div>
+                    <div className='col col-3'>
                         <h5>Portfolio Value: ${ portfolioValue }</h5>
                     </div>
-                    <div className='col col-4'>
+                    <div className='col col-3'>
                         <DropDown />
                     </div>
                 </div>
@@ -53,6 +60,7 @@ const Portfolio = () => {
                                 <th>Symbol</th>
                                 <th>Shares</th>
                                 <th>Total Value</th>
+                                <th colSpan={2}>Manage Stock</th>
                                 <th>Transaction History</th>
                             </tr>
                         </thead>
@@ -63,8 +71,10 @@ const Portfolio = () => {
                                         <td>{stock.company}</td>
                                         <td>{stock.symbol}</td>
                                         <td>{stock.shares}</td>
-                                        <td>{stock.total_price}</td>
-                                        <td><button className='btn' value={stock.symbol} onClick={(e) => handleTransactionRedirect(e)}>View</button></td>
+                                        <td>${stock.total_price}</td>
+                                        <td><BuyButton stock={stock.symbol} company={stock.company} /></td>
+                                        <td><SellButton stock={stock.symbol} company={stock.company} /></td>
+                                        <td><HistoryButton stock={stock.symbol} handleTransactionRedirect={handleTransactionRedirect} /></td>
                                     </tr>
                                 ))
                             ) : (
