@@ -9,7 +9,7 @@ export const PortfolioProvider = ({ children }) => {
   const [portfolioFilter, setPortfolioFilter] = useState('All');
   const [portfolioList, setPortfolioList] = useState([]);
   const [stockData, setStockData] = useState([]);
-  const [stockFilter, setStockFilter] = useState('');
+  const [stockFilter, setStockFilter] = useState('ALL');
   const [portfolioValue, setPortfolioValue ] = useState(0);
 
   // Get portfolio stocks

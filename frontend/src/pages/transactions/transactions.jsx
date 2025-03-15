@@ -2,16 +2,16 @@
 import { useEffect, useState, useRef } from 'react';
 
 // Import contexts
-import { useAuth } from '../../contexts/authContext.js';
-import { useTransaction } from '../../contexts/transactionContext.js';
+import { useAuth } from '../../contexts/authContext.jsx';
+import { useTransaction } from '../../contexts/transactionContext.jsx';
 
 // Import components
-import LoginModal from '../../components/loginModal/modal.js';
-import Dropdown from '../../components/portfolioDropdown/dropdown.js';
+import LoginModal from '../../components/loginModal/modal.jsx';
+import Dropdown from '../../components/portfolioDropdown/dropdown.jsx';
 
 // Import styles
 import './transactions.scss';
-import { usePortfolio } from '../../contexts/portfolioContext.js';
+import { usePortfolio } from '../../contexts/portfolioContext.jsx';
 
 const Transactions = () => {
     // Contexts
@@ -34,7 +34,7 @@ const Transactions = () => {
                 <div className='row'>
                     <div className='col col-6 col-md-3'>
                         <select defaultValue={stockFilter} className='form-select'>
-                            <option disabled value='All'>Stock</option>
+                            <option value='ALL'>Stock</option>
                             <option value={stockFilter}>{stockFilter}</option>
                         </select>
                     </div>

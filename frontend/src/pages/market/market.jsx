@@ -6,17 +6,17 @@ import { marketHelper, watchlistHelper } from '../../utils/helpers.js';
 import './market.scss';
 
 // Import components
-import LoginModal from '../../components/loginModal/modal.js';
-import DropDown from '../../components/portfolioDropdown/dropdown.js';
+import LoginModal from '../../components/loginModal/modal.jsx';
+import DropDown from '../../components/portfolioDropdown/dropdown.jsx';
 import BuyButton from '../../components/buyBtn/buyButton.jsx';
 import SellButton from '../../components/sellBtn/sellButton.jsx';
 import HistoryButton from '../../components/historyBtn/historyButton.jsx';
 
 // Import contexts
-import { useAuth } from '../../contexts/authContext.js';
-import { useUser } from '../../contexts/userContext.js';
-import { usePortfolio } from '../../contexts/portfolioContext.js';
-import { useTransaction } from '../../contexts/transactionContext.js';
+import { useAuth } from '../../contexts/authContext.jsx';
+import { useUser } from '../../contexts/userContext.jsx';
+import { usePortfolio } from '../../contexts/portfolioContext.jsx';
+import { useTransaction } from '../../contexts/transactionContext.jsx';
 
 
 const Market = () => {
