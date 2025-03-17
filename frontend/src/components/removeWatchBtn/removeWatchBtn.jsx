@@ -4,6 +4,9 @@ import { removeWatchHelper } from '../../utils/helpers.js';
 // Contexts
 import { usePortfolio } from '../../contexts/portfolioContext.jsx';
 
+// Styles
+import './removeWatchBtn.scss';
+
 const RemoveWatchBtn = ({ stock }) => {
     // Contexts
     const { portfolioFilter, updateWatchlist } = usePortfolio();
@@ -21,7 +24,7 @@ const RemoveWatchBtn = ({ stock }) => {
     }
 
     return (
-        <button onClick={handleRemove} className='btn'>Unwatch</button>
+        <button onClick={handleRemove} className='btn btn-dark-blue'>Unwatch</button>
     );
 }
 

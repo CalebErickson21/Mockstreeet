@@ -13,3 +13,36 @@ $NAV_HEIGHT: 8dvh;
 .success {
     color: $GREEN;
 }
+
+.btn-light-blue {
+    background-color: $LIGHT_BLUE;
+    color: $DARK_BLUE;
+
+    &:hover {
+        background-color: $LIGHT_BLUE;
+        color: $DARK_BLUE;
+        font-weight: bold;
+    }
+}
+
+.btn-dark-blue {
+    background-color: $DARK_BLUE;
+    color: $COOL_GREY;
+
+    &:hover {
+        background-color: $DARK_BLUE;
+        color: $COOL_GREY;
+        font-weight: bold;
+    }
+}
+
+.btn-dark-grey {
+    background-color: $DARK_GREY;
+    color: $COOL_GREY;
+
+    &:hover {
+        background-color: $DARK_GREY;
+        color: $COOL_GREY;
+        font-weight: bold;
+    }
+}

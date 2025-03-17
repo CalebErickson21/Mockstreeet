@@ -33,6 +33,9 @@ app.use(session({
     }
 }));
 
+// Constants
+const MAX_NUM = 999999999999.99;
+
 
 /** Title Case Helper
  * 
@@ -240,7 +243,7 @@ app.get('/portfolio/names', checkAuthHelper, async (req, res) => {
 
     try {
         const { rows: portfolioQuery } = await db.query(
-            'SELECT portfolio_name FROM portfolios WHERE user_id = $1 ORDER BY portfolio_name DESC;',
+            'SELECT portfolio_name FROM portfolios WHERE user_id = $1 ORDER BY portfolio_name ASC;',
             [req.session.user.user_id]
         );
         
@@ -301,7 +304,7 @@ app.get('/portfolio/stocks', checkAuthHelper, async (req, res) => {
         // Get stock data given portfolio ids list
         const portfolioIdsList = portfolioIds.map(p => p.portfolio_id);
         const { rows: stocks } = await db.query(
-            'SELECT symbol, shares FROM portfolio_details WHERE portfolio_id = ANY($1) ORDER BY shares DESC;',
+            'SELECT symbol, SUM(shares) as total_shares FROM portfolio_details WHERE portfolio_id = ANY($1) GROUP BY symbol ORDER BY total_shares DESC;',
             [ portfolioIdsList ]
         );
 
@@ -323,14 +326,14 @@ app.get('/portfolio/stocks', checkAuthHelper, async (req, res) => {
             const stockData = stocks.map(stock => {
                 const stockInfo = stockPrices.find(s => s.symbol === stock.symbol);
 
-                portfolioValue += parseFloat(stockInfo.regularMarketPrice.toFixed(2)) * stock.shares;
+                portfolioValue += parseFloat(stockInfo.regularMarketPrice.toFixed(2)) * stock.total_shares;
                 
                 return {
                     company: stockInfo.shortName,
                     symbol: stock.symbol,
-                    shares: stock.shares,
+                    shares: stock.total_shares,
                     share_price: stockInfo?.regularMarketPrice.toFixed(2) || 0,
-                    total_price: ((stockInfo?.regularMarketPrice || 0) * stock.shares).toFixed(2),
+                    total_price: ((stockInfo?.regularMarketPrice || 0) * stock.total_shares).toFixed(2),
                 };
             });
 
@@ -466,6 +469,8 @@ app.get('/transactions', checkAuthHelper, async (req, res) => {
         transactionQuery += ' ORDER BY transaction_date DESC;';
 
         // Query database
+        console.log(transactionQuery);
+        console.log(transactionQueryParams);
         const { rows: queryRes } = await db.query(transactionQuery, transactionQueryParams);
 
         if (queryRes.length === 0) {
@@ -722,9 +727,9 @@ app.get('/market/search', checkAuthHelper, async (req, res) => {
                 return {
                     company: stockInfo.shortName,
                     symbol: stockInfo.symbol,
-                    share_price: stockInfo.regularMarketPrice.toFixed(2)
+                    share_price: stockInfo.regularMarketPrice?.toFixed(2) || 0.00
                 };
-            }).filter(stock => stock !== undefined);
+            }).filter(stock => stock.company !== undefined && stock.symbol !== undefined);
         }
         catch (err) {
             log('error', '/market/search', `Error fetching stock data: ${err.message}`, { user: req.session.user.user_id });
@@ -1002,12 +1007,50 @@ app.get('/balance', checkAuthHelper, async (req, res) => {
 
 app.post('/balance/add', checkAuthHelper, async (req, res) => {
     try {
-        const { add } = req.body;
+        const { balance } = req.body;
+        const increment = parseInt(balance, 10);
+        if (isNaN(increment))  {
+            log('info', '/balance/add', 'Increment input must be a number', { user: req.session.user.user_id });
+            return res.status(400).json({ success: false, message: 'Balance must be a number' });
+        }
+        if (increment <= 0) {
+            log ('info', '/balance/add', 'Input must be positive', { user: req.session.user.user_id });
+            return res.status(400).json({ success: false, message: 'Balance must be positive' });
+        }
 
-        await db.query(
-            'UPDATE users SET balance = balance + $1 WHERE user_id = $2;',
-            [ add, req.session.user.user_id ]
-        );
+        try {
+            // Begin transaction
+            await db.query('BEGIN;');
+
+            // Make sure user balance does not exceed max
+            const { rows: queryRes } = await db.query(
+                'SELECT balance FROM users WHERE user_id = $1;',
+                [req.session.user.user_id]
+            );
+            if (queryRes.length !== 1) {
+                log('error', '/balance/add', 'No user', { user: req.session.user.user_id });
+                return res.status(500).json({ success: false, message: 'Internal server error' });
+            }
+
+            if (queryRes[0].balance + increment >= MAX_NUM) {
+                log('info', '/balance/add', 'Increment result cannot exceed max balance', { user: req.session.user.user_id });
+                return res.status(400).json({ success: false, message: 'Invalid increment input.' });
+            }
+
+            await db.query(
+                'UPDATE users SET balance = balance + $1 WHERE user_id = $2;',
+                [ increment, req.session.user.user_id ]
+            );
+
+            await db.query('COMMIT;');
+
+        }
+        catch (err) {
+            // Rollback if error
+            await db.query('ROLLBACK;');
+            log('error', '/balance/add', `Database error ${err.message}`, { user: req.session.user.user_id });
+            return res.status(500).json({ success: false, message: 'Internal server error' });
+        }
 
         log('info', '/balance/add', 'Balance increased successfully', { user: req.session.user.user_id });
         return res.status(200).json({ success: true, message: 'Balance increased successfully' });

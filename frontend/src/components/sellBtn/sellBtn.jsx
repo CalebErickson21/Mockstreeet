@@ -7,7 +7,10 @@ import { useUser } from "../../contexts/userContext";
 import { usePortfolio } from "../../contexts/portfolioContext";
 import { useTransaction } from "../../contexts/transactionContext";
 
-const SellButton = ( {stock, company} ) => {
+// Styles
+import './sellBtn.scss';
+
+const SellBtn = ( {stock, company} ) => {
 
     // Contexts
     const { updateBalance } = useUser();
@@ -56,7 +59,7 @@ const SellButton = ( {stock, company} ) => {
     return (
 
         <>
-            <button onClick={() => setShowSell(true)} className='btn'>Sell</button>
+            <button onClick={() => setShowSell(true)} className='btn btn-dark-blue'>Sell</button>
 
             {showSell && <div className='modal-backdrop fade show'></div>}
             <div id='buy-modal' className={`modal fade ${showSell ? "show d-block" : ""}`} data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel">
@@ -84,4 +87,4 @@ const SellButton = ( {stock, company} ) => {
 }
 
 
-export default SellButton;
+export default SellBtn;

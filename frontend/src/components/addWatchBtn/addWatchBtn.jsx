@@ -4,6 +4,9 @@ import { addWatchHelper } from '../../utils/helpers.js';
 // Contexts
 import { usePortfolio } from '../../contexts/portfolioContext.jsx';
 
+// Styles
+import './addWatchBtn.scss';
+
 const AddWatchBtn = ({ stock }) => {
     // Contexts
     const { portfolioFilter, updateWatchlist } = usePortfolio();
@@ -20,7 +23,7 @@ const AddWatchBtn = ({ stock }) => {
     }
 
     return (
-        <button onClick={handleAdd}className='btn'>Watch</button>
+        <button onClick={handleAdd}className='btn btn-dark-blue'>Watch</button>
     );
 }
 

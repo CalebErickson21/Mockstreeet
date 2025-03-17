@@ -18,15 +18,6 @@
             align-items: center;
             justify-content: center;
         }
-
-        button {
-            background-color: $DARK_BLUE;
-            color: $COOL_GREY;
-
-            &:hover {
-                font-weight: bold;
-            }
-        }
     }
 
     .section {

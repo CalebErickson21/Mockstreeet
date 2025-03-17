@@ -1,8 +1,17 @@
- // Helpers
- import { useEffect, useState } from "react";
+// Helpers
+import { useEffect, useState } from "react";
 import { addBalanceHelper } from "../../utils/helpers";
 
+// Contexts
+import { useUser } from "../../contexts/userContext";
+
+// Styles
+import './capitalBtn.scss';
+
  const CapitalBtn = () => {
+
+    // Contexts
+    const { updateBalance } = useUser();
 
     // States
     const [showCapital, setShowCapital] = useState(false);
@@ -22,6 +31,7 @@ import { addBalanceHelper } from "../../utils/helpers";
         const data = await addBalanceHelper(capital);
 
         if (data.success) {
+            updateBalance();
             setSuccess(data.message);
         }
         else {
@@ -31,8 +41,8 @@ import { addBalanceHelper } from "../../utils/helpers";
 
     return (
         <>
-            <div className="capitalBtn">
-                <button onClick={() => {setShowCapital(true)}} className='btn'> Add Capital</button>
+            <div id="capitalBtn">
+                <button onClick={() => {setShowCapital(true)}} className='btn btn-dark-blue'> Add Capital</button>
             </div>
 
             {showCapital && <div className='modal-backdrop fade show'></div>}

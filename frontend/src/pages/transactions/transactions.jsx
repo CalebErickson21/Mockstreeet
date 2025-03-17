@@ -33,16 +33,17 @@ const Transactions = () => {
                 <h5>Filter By:</h5>
                 <div className='row'>
                     <div className='col col-6 col-md-3'>
-                        <select defaultValue={stockFilter} onChange={(e) => setStockFilter(e.target.value)} className='form-select'>
-                            <option value='ALL'>Stock</option>
-                            {stockData.map(stock => {
+                        <select value={stockFilter} onChange={(e) => setStockFilter(e.target.value)} className='form-select'>
+                            <option disabled value='ALL'>Stock</option>
+                            <option value='ALL'>All</option>
+                            {stockData.map(stock => (
                                 <option value={stock.symbol}>{stock.symbol}</option>
-                            })}
+                            ))}
                         </select>
                     </div>
 
                     <div className='col col-6 col-md-3'>
-                        <select defaultValue={transactionTypeFilter} onChange={(e) => setTransactionTypeFilter(e.target.value)} className='form-select'>
+                        <select value={transactionTypeFilter} onChange={(e) => setTransactionTypeFilter(e.target.value)} className='form-select'>
                             <option disabled value='All'>Transaction Type</option>
                             <option value='All'>All</option>
                             <option value='BUY'>Buy</option>
@@ -85,8 +86,8 @@ const Transactions = () => {
                     </thead>
                     <tbody>
                         {transactions.length > 0 ? (
-                            transactions.map(t => (
-                                <tr key={t.symbol}>
+                            transactions.map((t, idx) => (
+                                <tr key={idx}>
                                     <td>{t.company}</td>
                                     <td>{t.symbol}</td>
                                     <td>{t.shares}</td>

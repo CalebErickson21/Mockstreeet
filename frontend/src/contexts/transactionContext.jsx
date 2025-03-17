@@ -22,7 +22,6 @@ export const TransactionProvider = ({ children }) => {
     // Update transactions
     const updateTransactions = async () => {
         const data = await transactionsHelper(portfolioFilter, stockFilter, transactionTypeFilter, startDate, endDate);
-
         if (data.success) {
             setTransactions(data.transactions);
         }
