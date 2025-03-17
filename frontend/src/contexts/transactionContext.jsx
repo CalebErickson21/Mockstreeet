@@ -11,17 +11,16 @@ export const TransactionProvider = ({ children }) => {
 
     // Contexts
     const { portfolioFilter, stockFilter, setStockFilter } = usePortfolio();
-    const { balance } = useUser();
 
     // States
     const [transactions, setTransactions] = useState([]);
-    const [transactionTypeFilter, setTransactionTypeFilter] = useState('All');
+    const [transactionTypeFilter, setTransactionTypeFilter] = useState('ALL');
     const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
     const [startDate, setStartDate] = useState(new Date(new Date(endDate).setDate(new Date(endDate).getDate() - 7)).toISOString().split('T')[0]);
 
     // Update transactions
     const updateTransactions = async () => {
-        const data = await transactionsHelper(portfolioFilter, stockFilter, startDate, endDate);
+        const data = await transactionsHelper(portfolioFilter, stockFilter, transactionTypeFilter, startDate, endDate);
 
         if (data.success) {
             setTransactions(data.transactions);
@@ -37,7 +36,7 @@ export const TransactionProvider = ({ children }) => {
     // Get transactions on context render and filter changes
     useEffect(() => {
         updateTransactions();
-    }, [portfolioFilter, stockFilter, startDate, endDate, transactionTypeFilter]);
+    }, [portfolioFilter, stockFilter, transactionTypeFilter, startDate, endDate ]);
 
 
     return (

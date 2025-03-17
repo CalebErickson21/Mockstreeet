@@ -238,9 +238,9 @@ export const userStatsHelper = async () => {
  * 
  * @returns all transactions that fit the given parameters
  */
-export const transactionsHelper = async (portfolioFilter, stockFilter, startDateFilter, endDateFilter) => {
+export const transactionsHelper = async (portfolioFilter, stockFilter, transactionFilter, startDateFilter, endDateFilter) => {
     try {
-        const response = await fetch(`http://localhost:5000/portfolio/transactions?portfolio=${portfolioFilter}&stock=${stockFilter}&startDate=${startDateFilter}&endDate=${endDateFilter}`, {
+        const response = await fetch(`http://localhost:5000/portfolio/transactions?portfolio=${portfolioFilter}&stock=${stockFilter}&transaction=${transactionFilter}&startDate=${startDateFilter}&endDate=${endDateFilter}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include', // Include cookies
@@ -285,6 +285,9 @@ export const marketHelper = async (searchStock) => {
     }
 };
 
+/** Search Market helper
+ * 
+ */
 export const watchlistHelper = async (portfolioFilter) => {
     try {
         const response = await fetch(`http://localhost:5000/portfolio/watchlist?portfolio=${portfolioFilter}`, {
@@ -307,6 +310,29 @@ export const watchlistHelper = async (portfolioFilter) => {
         return ({ success: false, message: err.message || 'An error occured. Please try again.' });
     }
 };
+
+export const buyHelper = async (portfolio, stock, shares) => {
+    try {
+        const response = await fetch('http://localhost:5000/market/buy', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ portfolio, stock, shares }),
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+            return data;
+        }
+        else {
+            return ({ success: false, message: data.message || 'An error occured. Please try again.' });
+        }
+    }
+    catch (err) {
+        log('error', 'buyHelper', 'Error: ', err.message || 'An error occured. Please try again.');
+        return ({ success: false, message: err.message || 'An error occured. Please try again.' });
+    }
+}
 
 /** Logout helper
  * 

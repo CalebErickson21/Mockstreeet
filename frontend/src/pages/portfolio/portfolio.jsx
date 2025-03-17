@@ -22,7 +22,7 @@ const Portfolio = () => {
     // Contexts
     const { user } = useAuth();
     const { balance } = useUser();
-    const { portfolioValue, stockData, setStockFilter } = usePortfolio();
+    const { portfolioFilter, portfolioValue, stockData, setStockFilter } = usePortfolio();
     const { handleTransactionRedirect } = useTransaction();
 
     // Show modal if user is not logged in
@@ -36,16 +36,16 @@ const Portfolio = () => {
         <div id='portfolio-container'>
             <div id='info'>
                 <div className='row'>
-                    <div className='col col-3'>
+                    <div className='col col-6 col-sm-3'>
                         <h5>Capital: ${ balance }</h5>
                     </div>
-                    <div className='col col-3'>
+                    <div className='col col-6 col-sm-3'>
                         <CapitalBtn />
                     </div>
-                    <div className='col col-3'>
+                    <div className='col col-6 col-sm-3'>
                         <h5>Portfolio Value: ${ portfolioValue }</h5>
                     </div>
-                    <div className='col col-3'>
+                    <div className='col col-6 col-sm-3'>
                         <DropDown />
                     </div>
                 </div>
@@ -79,7 +79,7 @@ const Portfolio = () => {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={5}>No Stocks to Display</td>
+                                    <td colSpan={7}>No Stocks to Display for Portfolio: {portfolioFilter}</td>
                                 </tr>
                             )}
                         </tbody>

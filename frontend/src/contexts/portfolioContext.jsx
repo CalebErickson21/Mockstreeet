@@ -13,16 +13,16 @@ export const PortfolioProvider = ({ children }) => {
   const [portfolioValue, setPortfolioValue ] = useState(0);
 
   // Get portfolio stocks
-  useEffect(() => {
-    const getPortfolioStocks = async () => {
-      const data = await portfolioStocksHelper(portfolioFilter);
-    
-      if (data.success) { 
-        setStockData(data.stocks);
-        setPortfolioValue(data.value); 
-      }
-      else { log('error', 'portfolio', 'Error displaying portfolio information', data.message); }
+  const getPortfolioStocks = async () => {
+    const data = await portfolioStocksHelper(portfolioFilter);
+  
+    if (data.success) { 
+      setStockData(data.stocks);
+      setPortfolioValue(data.value); 
     }
+    else { log('error', 'portfolio', 'Error displaying portfolio information', data.message); }
+  }
+  useEffect(() => {
     getPortfolioStocks(); 
   }, [portfolioFilter, user]);
 
@@ -42,7 +42,7 @@ export const PortfolioProvider = ({ children }) => {
 
   // Return context wrapper
   return (
-    <PortfolioContext.Provider value={{ portfolioFilter, setPortfolioFilter, portfolioList, updatePortfolioList, portfolioValue, setPortfolioValue, stockData, setStockData, stockFilter, setStockFilter }}>
+    <PortfolioContext.Provider value={{ portfolioFilter, setPortfolioFilter, portfolioList, updatePortfolioList, portfolioValue, setPortfolioValue, stockData, setStockData, stockFilter, setStockFilter, getPortfolioStocks }}>
       { children }
     </PortfolioContext.Provider>
   );

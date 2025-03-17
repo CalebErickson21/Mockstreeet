@@ -1,6 +1,16 @@
+// Helpers
 import { useEffect, useState } from "react";
+import { buyHelper } from "../../utils/helpers";
+
+// Contexts
+import { usePortfolio } from "../../contexts/portfolioContext";
+import { useTransaction } from "../../contexts/transactionContext";
 
 const BuyButton = ( {stock, company} ) => {
+
+    // Contexts
+    const { portfolioFilter, getPortfolioStocks } = usePortfolio();
+    const { updateTransactions } = useTransaction();
 
     // States
     const [showBuy, setShowBuy] = useState(false);
@@ -24,8 +34,21 @@ const BuyButton = ( {stock, company} ) => {
     }, [showBuy]);
 
     // Buy Functionality
-    const handleBuy = async () => {
-        // TODO
+    const handleBuy = async (e) => {
+        e.preventDefault();
+        setError(false);
+        setSuccess(false);
+
+        const data = await buyHelper(portfolioFilter, stock, shares);
+
+        if (data.success) {
+            setSuccess(data.messsage);
+            getPortfolioStocks();
+            updateTransactions();
+        }
+        else {
+            setError(data.message);
+        }
     }
     
 
@@ -50,6 +73,9 @@ const BuyButton = ( {stock, company} ) => {
                             </div>
                             <div className='modal-footer'>
                                 <button type='submit' className='btn' id='buyBtn'>Buy!</button>
+                                <br/>
+                                {error && <div className='error'>Error buying stock</div>}
+                                {success && <div className='success'>Stock bought successfully</div>}
                             </div>
                         </form>
                     </div>

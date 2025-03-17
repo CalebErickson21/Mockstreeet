@@ -1,4 +1,3 @@
-// psql -U postgres -d mockstreet -h localhost -p 5432
 // Dependencies
 import pkg from 'pg'; // PostgreSQL client for node.js
 const { Client } = pkg;

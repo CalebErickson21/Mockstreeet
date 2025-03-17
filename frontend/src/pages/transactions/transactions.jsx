@@ -33,7 +33,7 @@ const Transactions = () => {
                 <h5>Filter By:</h5>
                 <div className='row'>
                     <div className='col col-6 col-md-3'>
-                        <select defaultValue={stockFilter} className='form-select'>
+                        <select defaultValue={stockFilter} onChange={(e) => setStockFilter(e.target.value)} className='form-select'>
                             <option value='ALL'>Stock</option>
                             <option value={stockFilter}>{stockFilter}</option>
                         </select>
@@ -43,8 +43,8 @@ const Transactions = () => {
                         <select defaultValue={transactionTypeFilter} onChange={(e) => setTransactionTypeFilter(e.target.value)} value={transactionTypeFilter} className='form-select'>
                             <option disabled value='All'>Transaction Type</option>
                             <option value='All'>All</option>
-                            <option value='Buy'>Buy</option>
-                            <option value='Sell'>Sell</option>
+                            <option value='BUY'>Buy</option>
+                            <option value='SELL'>Sell</option>
                         </select>
                     </div>
 
