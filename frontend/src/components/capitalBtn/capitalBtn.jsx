@@ -1,5 +1,6 @@
  // Helpers
- import { useState } from "react";
+ import { useEffect, useState } from "react";
+import { addBalanceHelper } from "../../utils/helpers";
 
  const CapitalBtn = () => {
 
@@ -9,10 +10,23 @@
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
+    useEffect(() => {
+        setError('');
+        setSuccess('');
+    })
+
 
     const handleAddCapital = async (e) => {
         e.preventDefault();
-        // TODO
+        
+        const data = await addBalanceHelper(capital);
+
+        if (data.success) {
+            setSuccess(data.message);
+        }
+        else {
+            setError(data.message);
+        }
     }
 
     return (

@@ -16,7 +16,7 @@ import { usePortfolio } from '../../contexts/portfolioContext.jsx';
 const Transactions = () => {
     // Contexts
     const { user } = useAuth();
-    const { stockFilter, setStockFilter } = usePortfolio();
+    const { stockData, stockFilter, setStockFilter } = usePortfolio();
     const { transactions, transactionTypeFilter, setTransactionTypeFilter, startDate, setStartDate, endDate, setEndDate } = useTransaction();
 
     // Show modal if user is not logged in
@@ -35,7 +35,9 @@ const Transactions = () => {
                     <div className='col col-6 col-md-3'>
                         <select defaultValue={stockFilter} onChange={(e) => setStockFilter(e.target.value)} className='form-select'>
                             <option value='ALL'>Stock</option>
-                            <option value={stockFilter}>{stockFilter}</option>
+                            {stockData.map(stock => {
+                                <option value={stock.symbol}>{stock.symbol}</option>
+                            })}
                         </select>
                     </div>
 

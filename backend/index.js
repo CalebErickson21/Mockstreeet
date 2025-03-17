@@ -240,7 +240,7 @@ app.get('/portfolio/names', checkAuthHelper, async (req, res) => {
 
     try {
         const { rows: portfolioQuery } = await db.query(
-            'SELECT portfolio_name FROM portfolios WHERE user_id = $1;',
+            'SELECT portfolio_name FROM portfolios WHERE user_id = $1 ORDER BY portfolio_name DESC;',
             [req.session.user.user_id]
         );
         
@@ -301,7 +301,7 @@ app.get('/portfolio/stocks', checkAuthHelper, async (req, res) => {
         // Get stock data given portfolio ids list
         const portfolioIdsList = portfolioIds.map(p => p.portfolio_id);
         const { rows: stocks } = await db.query(
-            'SELECT symbol, shares FROM portfolio_details WHERE portfolio_id = ANY($1);',
+            'SELECT symbol, shares FROM portfolio_details WHERE portfolio_id = ANY($1) ORDER BY shares DESC;',
             [ portfolioIdsList ]
         );
 
@@ -323,14 +323,14 @@ app.get('/portfolio/stocks', checkAuthHelper, async (req, res) => {
             const stockData = stocks.map(stock => {
                 const stockInfo = stockPrices.find(s => s.symbol === stock.symbol);
 
-                portfolioValue += stockInfo.regularMarketPrice.toFixed(2) * stock.shares;
+                portfolioValue += parseFloat(stockInfo.regularMarketPrice.toFixed(2)) * stock.shares;
                 
                 return {
                     company: stockInfo.shortName,
                     symbol: stock.symbol,
                     shares: stock.shares,
                     share_price: stockInfo?.regularMarketPrice.toFixed(2) || 0,
-                    total_price: ((stockInfo?.regularMarketPrice.toFixed(2) || 0) * stock.shares).toFixed(2),
+                    total_price: ((stockInfo?.regularMarketPrice || 0) * stock.shares).toFixed(2),
                 };
             });
 
@@ -463,7 +463,7 @@ app.get('/transactions', checkAuthHelper, async (req, res) => {
             transactionQueryParams.push(transactionFilter);
             paramIdx++;
         }
-        transactionQuery += ';';
+        transactionQuery += ' ORDER BY transaction_date DESC;';
 
         // Query database
         const { rows: queryRes } = await db.query(transactionQuery, transactionQueryParams);
@@ -785,7 +785,7 @@ app.post('/market/buy', checkAuthHelper, async (req, res) => {
                     log('error', '/market/buy', 'Stock price not found', { user: req.session.user.user_id });
                     return res.status(500).json({ success: false, message: 'Internal server error' });
                 }
-                stockPrice = yahooRes[0].regularMarketPrice.toFixed(2);
+                stockPrice = parseFloat(yahooRes[0].regularMarketPrice.toFixed(2));
             }
             catch (err) {
                 log('error', '/market/buy', 'Error fetching stock price', { user: req.session.user.user_id });
@@ -810,7 +810,7 @@ app.post('/market/buy', checkAuthHelper, async (req, res) => {
             }
             const portfolioId = portfolioIdRes[0].portfolio_id;
 
-            // Insert stock into portfolio details
+            // Update portfolio details
             const { rows: stockExistsRes } = await db.query(
                 'SELECT * FROM portfolio_details WHERE portfolio_id = $1 AND symbol = $2;',
                 [ portfolioId, stockSymbol ]
@@ -866,13 +866,116 @@ app.post('/market/buy', checkAuthHelper, async (req, res) => {
  * Sell a stock
  */
 app.post('/market/sell', checkAuthHelper, async (req, res) => {
+    try {
+        const { portfolio, stock, shares } = req.body;
+        const portfolioName = toTitleCase(portfolio);
+        const stockSymbol = stock.toUpperCase().trim();
+        const numShares = parseInt(shares, 10);
+
+        // Error check inputs
+        if (!portfolioName || !stockSymbol || !numShares) {
+            log('error', '/market/sell', 'Empty input fields', { user: req.session.user.user_id });
+            return res.status(400).json({ success: false, message: 'All input fields required' });
+        }
+        if (isNaN(numShares))  {
+            log('error', '/market/sell', 'Invalid shares input', { user: req.session.user.user_id });
+            return res.status(400).json({ success: false, message: 'Shares must be a number' });
+        }
+        if (portfolioName.length >= 50 || stockSymbol.length >= 10 || shares <= 0) {
+            log('error', '/market/sell', 'Invalid input fields', { user: req.session.user.user_id });
+            return res.status(400).json({ success: false, message: 'Invalid input fields' });
+        }
+
+        // Begin sell transaction
+        try {
+            // Check stock price
+            let stockPrice;
+            try {
+                const yahooRes = await yahooFinance.quote([ stockSymbol ], { fields: [ 'regularMarketPrice' ] });
+                if (yahooRes.length !== 1) {
+                    log('error', '/market/sell', 'Stock price not found', { user: req.session.user.user_id });
+                    return res.status(500).json({ success: false, message: 'Internal server error' });
+                }
+                stockPrice = parseFloat(yahooRes[0].regularMarketPrice.toFixed(2));
+            }
+            catch (err) {
+                log('error', '/market/sell', 'Error fetching stock price', { user: req.session.user.user_id });
+                return res.status(500).json({ success: false, message: 'Internal server error' });
+            }
+            
+            // Begin transaction
+            await db.query('BEGIN;');
+
+            // Get portfolio id
+            const { rows: portfolioIdRes } = await db.query(
+                'SELECT portfolio_id FROM portfolios WHERE user_id = $1 AND portfolio_name = $2;',
+                [ req.session.user.user_id, portfolioName ]
+            );
+            if (portfolioIdRes.length !== 1) {
+                log('error', '/market/buy', 'Portfolio not found', { user: req.session.user.user_id });
+                return res.status(404).json({ success: false, message: 'Portfolio not found' });
+            }
+            const portfolioId = portfolioIdRes[0].portfolio_id;
+
+            // See if user has enough shares to sell
+            const { rows: sharesRes } = await db.query(
+                'SELECT shares FROM portfolio_details WHERE portfolio_id = $1 AND symbol = $2',
+                [ portfolioId, stockSymbol]
+            );
+            if (sharesRes.length !== 1 || sharesRes[0].shares < numShares) {
+                log('info', '/market/sell', 'Cannot sell unowned stock', { user: req.session.user.user_id });
+                return res.status(400).json({ success: false, message: 'Insufficient shares' });
+            }
+
+            // Update portfolio details
+            await db.query(
+                'UPDATE portfolio_details SET shares = shares - $1 WHERE portfolio_id = $2 AND symbol = $3;',
+                [ numShares, portfolioId, stockSymbol ]
+            );
+
+            // Handle 0 shares left
+            await db.query(
+                'DELETE FROM portfolio_details WHERE portfolio_id = $1 AND symbol = $2 AND shares = 0;',
+                [portfolioId, stockSymbol]
+              );
+
+            // Update transactions
+            await db.query(
+                'INSERT INTO transactions (portfolio_id, symbol, transaction_type, shares, share_price) VALUES ($1, $2, $3, $4, $5);',
+                [ portfolioId, stockSymbol, 'SELL', numShares, stockPrice ]
+            );
+
+            // Update user balance
+            await db.query(
+                'UPDATE users SET balance = balance + $1 WHERE user_id = $2;',
+                [ numShares * stockPrice, req.session.user.user_id ]
+            );
+
+            // Commit transaction
+            await db.query('COMMIT;');
+        }
+        catch (err) {
+            // Rollback transaction if error
+            await db.query('ROLLBACK;');
+            log('error', '/market/sell', `Error buying stock: ${err.message}`, { user: req.session.user.user_id });
+            return res.status(500).json({ success: false, message: 'Internal server error' });
+        }
+
+        // Return successful result
+        log('info', '/market/sell', 'Stock sold successfully', { user: req.session.user.user_id, stock: stockSymbol, shares: numShares });
+        return res.status(200).json({ success: true, message: 'Stock sold successfully' });
+    }
+    catch (err) {
+        log('error', '/market/sell', `Error: ${err.message}`, { user: req.session.user.user_id });
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
 });
 
 
 /** User/stats route
  * Get a user's balance
  */
-app.get('/user/stats', checkAuthHelper, async (req, res) => {
+app.get('/balance', checkAuthHelper, async (req, res) => {
 
     try {
         // Query for user info
@@ -893,6 +996,24 @@ app.get('/user/stats', checkAuthHelper, async (req, res) => {
     }
     catch (err) {
         log('error', '/user/stats', `Internal server error: ${err.message}`, { user: req.session.user.user_id });
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
+app.post('/balance/add', checkAuthHelper, async (req, res) => {
+    try {
+        const { add } = req.body;
+
+        await db.query(
+            'UPDATE users SET balance = balance + $1 WHERE user_id = $2;',
+            [ add, req.session.user.user_id ]
+        );
+
+        log('info', '/balance/add', 'Balance increased successfully', { user: req.session.user.user_id });
+        return res.status(200).json({ success: true, message: 'Balance increased successfully' });
+    }
+    catch (err) {
+        log('error', '/balance/add', `Error: ${err.message}`, { user: req.session.user.user_id });
         return res.status(500).json({ success: false, message: 'Internal server error' });
     }
 });

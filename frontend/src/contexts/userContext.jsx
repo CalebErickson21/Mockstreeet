@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { userStatsHelper, log } from "../utils/helpers";
+import { balanceHelper, log } from "../utils/helpers";
 import { useAuth } from "./authContext";
 
 const UserContext = createContext();
@@ -9,7 +9,7 @@ export const UserProvider = ({ children }) => {
     const [balance, setBalance] = useState(0);
 
     const updateBalance = async () => {
-        const data = await userStatsHelper();
+        const data = await balanceHelper();
 
         if (data.success) {
             setBalance(data.balance);

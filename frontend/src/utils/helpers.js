@@ -250,10 +250,10 @@ export const portfolioNewHelper = async ( portfolio ) => {
  * 
  * @returns user balance
  */
-export const userStatsHelper = async () => {
+export const balanceHelper = async () => {
     try {
         // Backend request with login information
-        const response = await fetch('http://localhost:5000/user/stats', {
+        const response = await fetch('http://localhost:5000/balance', {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include', // Include cookies
@@ -270,6 +270,30 @@ export const userStatsHelper = async () => {
     }
     catch (err) {
         log('error', 'userStatsHelper', 'Error: ', err.message);
+        return ({ success: false, message: err.message || 'An error occured. Please try again.' });
+    }
+};
+
+
+export const addBalanceHelper = async ( balance ) => {
+    try {
+        const response = await fetch(`http://localhost:5000/balance/add`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include', // Include cookies
+            body: JSON.stringify({ balance })
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+            return data;
+        }
+        else {
+            return ({ success: false, message: data.message || 'An error occured. Please try again.' });
+        }
+    }
+    catch (err) {
+        log('error', 'addBalanceHelper', 'Error: ', err.message || 'An error occured. Please try again.');
         return ({ success: false, message: err.message || 'An error occured. Please try again.' });
     }
 };
@@ -366,7 +390,26 @@ export const buyHelper = async (portfolio, stock, shares) => {
  * @param {*} shares 
 */
 export const sellHelper = async (portfolio, stock, shares) => {
-    
+    try {
+        const response = await fetch('http://localhost:5000/market/sell', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ portfolio, stock, shares }),
+        });
+        const data = await response.json();
+        
+        if (response.ok) {
+            return data;
+        }
+        else {
+            return ({ success: false, message: data.message || 'An error occured. Please try again.' });
+        }
+    }
+    catch (err) {
+        log('error', 'sellHelper', 'Error: ', err.message || 'An error occured. Please try again.');
+        return ({ success: false, message: err.message || 'An error occured. Please try again.' });
+    }
 };
 
 

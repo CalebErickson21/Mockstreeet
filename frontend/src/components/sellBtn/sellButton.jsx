@@ -1,6 +1,19 @@
+// Helpers
 import { useEffect, useState } from "react";
+import { sellHelper } from "../../utils/helpers";
+
+// Contexts
+import { useUser } from "../../contexts/userContext";
+import { usePortfolio } from "../../contexts/portfolioContext";
+import { useTransaction } from "../../contexts/transactionContext";
 
 const SellButton = ( {stock, company} ) => {
+
+    // Contexts
+    const { updateBalance } = useUser();
+    const { portfolioFilter, getPortfolioStocks } = usePortfolio();
+    const { updateTransactions } = useTransaction();
+    
 
     // States
     const [showSell, setShowSell] = useState(false);
@@ -24,8 +37,19 @@ const SellButton = ( {stock, company} ) => {
     }, [showSell]);
 
     // Buy Functionality
-    const handleSell = async () => {
-        // TODO
+    const handleSell = async (e) => {
+        e.preventDefault();
+
+        const data = await sellHelper(portfolioFilter, stock, shares);
+        if (data.success) {
+            getPortfolioStocks();
+            updateTransactions();
+            updateBalance();
+            setSuccess(data.message);
+        }
+        else {
+            setError(data.message);
+        }
     }
     
 
