@@ -1,6 +1,6 @@
 // Import dependencies
 import db from './db.js'; // Connect to database
-import express, { query } from 'express'; // Routes and middleware
+import express from 'express'; // Routes and middleware
 import session from 'express-session'; // User sessions
 import cors from 'cors'; // Cross-origin resource sharing
 import yahooFinance from 'yahoo-finance2'; // Yahoo finance stock fetching
@@ -414,7 +414,7 @@ app.post('/portfolio/new', checkAuthHelper, async (req, res) => {
 /** Portfolio/transactions route
  * Get all transactions for a certain portfolio
  */
-app.get('/portfolio/transactions', checkAuthHelper, async (req, res) => {
+app.get('/transactions', checkAuthHelper, async (req, res) => {
     try {
         // Get request variables
         const transactionFilter = (req.query.transaction).toUpperCase().trim();
@@ -453,7 +453,7 @@ app.get('/portfolio/transactions', checkAuthHelper, async (req, res) => {
             paramIdx++;
         }
 
-        if (stockFilter !== 'All') {
+        if (stockFilter !== 'ALL') {
             transactionQuery += ` AND t.symbol = $${paramIdx}`;
             transactionQueryParams.push(stockFilter);
             paramIdx++;
@@ -513,10 +513,10 @@ app.get('/portfolio/transactions', checkAuthHelper, async (req, res) => {
 });
 
 
-/** Portfolio/watchlist route
+/** watchlist route
  * Get all stocks in a portfolio's watchlist
  */
-app.get('/portfolio/watchlist', checkAuthHelper, async (req, res) => {
+app.get('/watchlist', checkAuthHelper, async (req, res) => {
     try {
         // Get search parameters
         const portfolioParam = toTitleCase(req.query.portfolio);
@@ -566,6 +566,128 @@ app.get('/portfolio/watchlist', checkAuthHelper, async (req, res) => {
     catch (err) {
         log('error', '/portfolio/watchlist', `Error: ${err.message}`, { user: req.session.user.user_id });
         return res.status(500).json({ success: false, message: 'Internal server error.' });
+    }
+});
+
+
+/** watchlist/add route */
+app.post('/watchlist/add', checkAuthHelper, async (req, res) => {
+    try {
+        const { portfolio, stock } = req.body;
+        const portfolioName = toTitleCase(portfolio);
+        const stockSymbol = stock.toUpperCase().trim();
+
+        // Error check inputs
+        if (!portfolioName || !stockSymbol) {
+            log('error', '/portfolio/watchlist/add', 'Empty input fields', { user: req.session.user.user_id });
+            return res.status(400).json({ success: false, message: 'All input fields required' });
+        }
+        if (portfolioName.length > 50 || stockSymbol.length > 10) {
+            log('error', '/portfolio/watchlist/add', 'Invalid input fields', { user: req.session.user.user_id });
+            return res.status(400).json({ success: false, message: 'Invalid input fields' });
+        }
+
+        try {
+            // Begin transaction
+            await db.query('BEGIN;');
+
+            // Get portfolio id
+            const { rows: portfolioIdRes } = await db.query(
+                'SELECT portfolio_id FROM portfolios WHERE user_id = $1 AND portfolio_name = $2;',
+                [ req.session.user.user_id, portfolioName ]
+            );
+            if (portfolioIdRes.length !== 1) {
+                log('error', '/portfolio/watchlist/add', 'Portfolio not found', { user: req.session.user.user_id });
+                return res.status(404).json({ success: false, message: 'Portfolio not found' });
+            }
+            const portfolioId = portfolioIdRes[0].portfolio_id;
+
+            // Insert stock into watchlist
+            await db.query(
+                'INSERT INTO watchlists (portfolio_id, symbol) VALUES ($1, $2);',
+                [ portfolioId, stockSymbol ]
+            );
+
+            // Commit transaction
+            await db.query('COMMIT;');
+        }
+        catch (err) {
+            // Rollback transaction if error
+            await db.query('ROLLBACK;');
+            log('error', '/portfolio/watchlist/add', `Error adding stock: ${err.message}`, { user: req.session.user.user_id });
+            return res.status(500).json({ success: false, message: 'Internal server error' });
+        }
+
+        // Return successful result
+        log('info', '/portfolio/watchlist/add', 'Stock added successfully', { user: req.session.user.user_id, stock: stockSymbol });
+        return res.status(200).json({ success: true, message: 'Stock added successfully' });
+
+    }
+    catch (err) {
+        log('error', '/portfolio/watchlist/add', `Error: ${err.message}`, { user: req.session.user.user_id });
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
+
+/** Portfolio/watchlist/remove route
+ * 
+ */
+app.post('/watchlist/remove', checkAuthHelper, async (req, res) => {
+    try {
+        const { portfolio, stock } = req.body;
+        const portfolioName = toTitleCase(portfolio);
+        const stockSymbol = stock.toUpperCase().trim();
+
+        // Error check inputs
+        if (!portfolioName || !stockSymbol) {
+            log('error', '/portfolio/watchlist/rempve', 'Empty input fields', { user: req.session.user.user_id });
+            return res.status(400).json({ success: false, message: 'All input fields required' });
+        }
+        if (portfolioName.length > 50 || stockSymbol.length > 10) {
+            log('error', '/portfolio/watchlist/remove', 'Invalid input fields', { user: req.session.user.user_id });
+            return res.status(400).json({ success: false, message: 'Invalid input fields' });
+        }
+
+        try {
+            // Begin transaction
+            await db.query('BEGIN;');
+
+            // Get portfolio id
+            const { rows: portfolioIdRes } = await db.query(
+                'SELECT portfolio_id FROM portfolios WHERE user_id = $1 AND portfolio_name = $2;',
+                [ req.session.user.user_id, portfolioName ]
+            );
+            if (portfolioIdRes.length !== 1) {
+                log('error', '/portfolio/watchlist/remove', 'Portfolio not found', { user: req.session.user.user_id });
+                return res.status(404).json({ success: false, message: 'Portfolio not found' });
+            }
+            const portfolioId = portfolioIdRes[0].portfolio_id;
+
+            // Remove stock from watchlist
+            await db.query(
+                'DELETE FROM watchlists WHERE portfolio_id = $1 AND symbol = $2;',
+                [ portfolioId, stockSymbol ]
+            );
+
+            // Commit transaction
+            await db.query('COMMIT;');
+        }
+        catch (err) {
+            // Rollback transaction if error
+            await db.query('ROLLBACK;');
+            log('error', '/portfolio/watchlist/remove', `Error removing stock: ${err.message}`, { user: req.session.user.user_id });
+            return res.status(500).json({ success: false, message: 'Internal server error' });
+        }
+
+        // Return success
+        log('info', '/watchlist/remove', 'Stock removed successfully', { user: req.session.user.user_id });
+        return res.status(200).json({ success: true, message: 'Watchlist updated successfully' });
+
+    }
+    catch (err) {
+        log('error', '/portfolio/watchlist/remove', `Error: ${err.message}`, { user: req.session.user.user_id });
+        return res.status(500).json({ success: false, message: 'Internal server error' });
     }
 });
 

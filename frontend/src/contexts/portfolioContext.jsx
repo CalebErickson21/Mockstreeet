@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { portfolioStocksHelper, portfolioNameHelper, log } from "../utils/helpers";
+import { portfolioStocksHelper, portfolioNameHelper, watchlistHelper, log } from "../utils/helpers";
 import { useAuth } from "./authContext";
 
 const PortfolioContext = createContext();
@@ -11,6 +11,7 @@ export const PortfolioProvider = ({ children }) => {
   const [stockData, setStockData] = useState([]);
   const [stockFilter, setStockFilter] = useState('ALL');
   const [portfolioValue, setPortfolioValue ] = useState(0);
+  const [watchlist, setWatchlist] = useState([]);
 
   // Get portfolio stocks
   const getPortfolioStocks = async () => {
@@ -40,9 +41,15 @@ export const PortfolioProvider = ({ children }) => {
     updatePortfolioList();
   }, [user]);
 
+  const updateWatchlist = async () => {
+    const data = await watchlistHelper(portfolioFilter);
+
+    data.success ? setWatchlist(data.watchlist) : setWatchlist([]);
+  }
+
   // Return context wrapper
   return (
-    <PortfolioContext.Provider value={{ portfolioFilter, setPortfolioFilter, portfolioList, updatePortfolioList, portfolioValue, setPortfolioValue, stockData, setStockData, stockFilter, setStockFilter, getPortfolioStocks }}>
+    <PortfolioContext.Provider value={{ portfolioFilter, setPortfolioFilter, portfolioList, updatePortfolioList, portfolioValue, setPortfolioValue, stockData, setStockData, stockFilter, setStockFilter, getPortfolioStocks, watchlist, updateWatchlist }}>
       { children }
     </PortfolioContext.Provider>
   );

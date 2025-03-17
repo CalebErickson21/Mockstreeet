@@ -1,7 +1,7 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, use, useContext, useEffect, useState } from "react";
 import { transactionsHelper, useNavigation } from "../utils/helpers";
 import { usePortfolio } from "./portfolioContext";
-import { useUser } from "./userContext";
+import { useAuth } from "./authContext";
 
 const TransactionContext = createContext();
 
@@ -10,6 +10,7 @@ export const TransactionProvider = ({ children }) => {
     const navigate = useNavigation();
 
     // Contexts
+    const { user } = useAuth();
     const { portfolioFilter, stockFilter, setStockFilter } = usePortfolio();
 
     // States
@@ -36,7 +37,7 @@ export const TransactionProvider = ({ children }) => {
     // Get transactions on context render and filter changes
     useEffect(() => {
         updateTransactions();
-    }, [portfolioFilter, stockFilter, transactionTypeFilter, startDate, endDate ]);
+    }, [portfolioFilter, stockFilter, transactionTypeFilter, startDate, endDate, user ]);
 
 
     return (

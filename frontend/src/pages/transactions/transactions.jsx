@@ -1,5 +1,5 @@
 // Import helpers
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 
 // Import contexts
 import { useAuth } from '../../contexts/authContext.jsx';
@@ -40,7 +40,7 @@ const Transactions = () => {
                     </div>
 
                     <div className='col col-6 col-md-3'>
-                        <select defaultValue={transactionTypeFilter} onChange={(e) => setTransactionTypeFilter(e.target.value)} value={transactionTypeFilter} className='form-select'>
+                        <select defaultValue={transactionTypeFilter} onChange={(e) => setTransactionTypeFilter(e.target.value)} className='form-select'>
                             <option disabled value='All'>Transaction Type</option>
                             <option value='All'>All</option>
                             <option value='BUY'>Buy</option>
