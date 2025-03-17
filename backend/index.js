@@ -329,8 +329,8 @@ app.get('/portfolio/stocks', checkAuthHelper, async (req, res) => {
                     company: stockInfo.shortName,
                     symbol: stock.symbol,
                     shares: stock.shares,
-                    share_price: stockInfo?.regularMarketPrice.toFixed(2) || 'Error',
-                    total_price: ((stockInfo?.regularMarketPrice.toFixed(2) || 0) * stock.shares),
+                    share_price: stockInfo?.regularMarketPrice.toFixed(2) || 0,
+                    total_price: ((stockInfo?.regularMarketPrice.toFixed(2) || 0) * stock.shares).toFixed(2),
                 };
             });
 

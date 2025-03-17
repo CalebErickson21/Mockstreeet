@@ -3,12 +3,14 @@ import { useEffect, useState } from "react";
 import { buyHelper } from "../../utils/helpers";
 
 // Contexts
+import { useUser } from "../../contexts/userContext";
 import { usePortfolio } from "../../contexts/portfolioContext";
 import { useTransaction } from "../../contexts/transactionContext";
 
 const BuyButton = ( {stock, company} ) => {
 
     // Contexts
+    const { updateBalance } = useUser();
     const { portfolioFilter, getPortfolioStocks } = usePortfolio();
     const { updateTransactions } = useTransaction();
 
@@ -43,6 +45,7 @@ const BuyButton = ( {stock, company} ) => {
 
         if (data.success) {
             setSuccess(data.messsage);
+            updateBalance();
             getPortfolioStocks();
             updateTransactions();
         }
