@@ -7,6 +7,13 @@ import yahooFinance from 'yahoo-finance2'; // Yahoo finance stock fetching
 import bcrypt from 'bcrypt'; // Password hashing
 import dotenv from 'dotenv'; // Environment variables
 
+// Import helper functions
+import { log, checkAuthHelper, formatPortfolio, formatStockTransaction, formatSharesBalance, formatDate, fetchYahooBuySell, fetchYahooWatchSearch } from './helpers.js';
+
+// Declare global constants
+const MAX_NUM = 999999999999.99;
+
+// Configurations
 const app = express(); // Create express app instance
 app.use(express.json()); // express.json enables parsing of json files
 dotenv.config(); // Load environment variables
@@ -32,48 +39,6 @@ app.use(session({
         maxAge: 1000 * 60 * 60 // 1 hour session
     }
 }));
-
-// Constants
-const MAX_NUM = 999999999999.99;
-
-
-/** Title Case Helper
- * 
- * @param {*} str 
- * @returns Title case version of string
- */
-const toTitleCase = (str) => {
-    return str.trim().toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
-}
-
-
-/** Logger helper function
- * 
- * @param {*} level 
- * @param {*} module 
- * @param {*} message 
- * @param {*} data 
- */
-const log = (level, module, message, data = null) => {
-    const timeStamp = new Date().toISOString();
-    console[level](`[${level.toUpperCase()}] [${timeStamp}] [${module}] - [${message}]`, data || '');
-}
-
-
-/** User Authorization Helper
- * 
- * @param {*} req 
- * @param {*} res 
- * @param {*} next 
- * @returns Error if user not logged in
- */
-const checkAuthHelper = ( req, res, next ) => {
-    if (!req.session.user) {
-        return res.status(401).json({ success: false, user: null, message: 'User not authenticated' });
-    }
-
-    next();
-}
 
 
 /** Check User Authorization Route that can be directly called by frontend
@@ -273,7 +238,7 @@ app.get('/portfolio/names', checkAuthHelper, async (req, res) => {
 app.get('/portfolio/stocks', checkAuthHelper, async (req, res) => {
     try {
     
-        const portfolioName = toTitleCase(req.query.portfolio);
+        const portfolioName = formatPortfolio(req.query.portfolio);
 
         if (!portfolioName) {
             return res.status(400).json({ success: false, message: 'All fields are required' });
@@ -365,7 +330,7 @@ app.post('/portfolio/new', checkAuthHelper, async (req, res) => {
         if (!portfolio) {
             return res.status(400).json({ success: false, message: 'All fields are required' });
         }
-        const portfolioName = toTitleCase(portfolio); // Consistent format
+        const portfolioName = formatPortfolio(portfolio); // Consistent format
 
         // Error check before entering into database
         if (portfolioName === 'All') { // Default portfolio
@@ -420,11 +385,11 @@ app.post('/portfolio/new', checkAuthHelper, async (req, res) => {
 app.get('/transactions', checkAuthHelper, async (req, res) => {
     try {
         // Get request variables
-        const transactionFilter = (req.query.transaction).toUpperCase().trim();
-        const portfolioFilter = toTitleCase(req.query.portfolio);
-        const stockFilter = (req.query.stock).toUpperCase().trim();
-        const startFilter = new Date(req.query.startDate).toISOString().split('T')[0] + ' 00:00:00.000000';
-        const endFilter = new Date(req.query.endDate).toISOString().split('T')[0] + ' 23:59:59.999999';
+        const transactionFilter = formatStockTransaction(req.query.transaction);
+        const stockFilter = formatStockTransaction(req.query.stock);
+        const portfolioFilter = formatPortfolio(req.query.portfolio);
+        const startFilter = formatDate(req.query.startDate, '00:00:00.000000');
+        const endFilter = formatDate(req.query.endDate, '23:59:59.999999');
 
         // Check for empty fields
         if (!portfolioFilter || !startFilter || !endFilter || !transactionFilter || !stockFilter) {
@@ -524,7 +489,7 @@ app.get('/transactions', checkAuthHelper, async (req, res) => {
 app.get('/watchlist', checkAuthHelper, async (req, res) => {
     try {
         // Get search parameters
-        const portfolioParam = toTitleCase(req.query.portfolio);
+        const portfolioParam = formatPortfolio(req.query.portfolio);
 
         // Error check
         if (portfolioParam === '' || portfolioParam.length >= 50) {
@@ -579,8 +544,8 @@ app.get('/watchlist', checkAuthHelper, async (req, res) => {
 app.post('/watchlist/add', checkAuthHelper, async (req, res) => {
     try {
         const { portfolio, stock } = req.body;
-        const portfolioName = toTitleCase(portfolio);
-        const stockSymbol = stock.toUpperCase().trim();
+        const portfolioName = formatPortfolio(portfolio);
+        const stockSymbol = formatStockTransaction(stock);
 
         // Error check inputs
         if (!portfolioName || !stockSymbol) {
@@ -641,8 +606,8 @@ app.post('/watchlist/add', checkAuthHelper, async (req, res) => {
 app.post('/watchlist/remove', checkAuthHelper, async (req, res) => {
     try {
         const { portfolio, stock } = req.body;
-        const portfolioName = toTitleCase(portfolio);
-        const stockSymbol = stock.toUpperCase().trim();
+        const portfolioName = formatPortfolio(portfolio);
+        const stockSymbol = formatStockTransaction(stock);
 
         // Error check inputs
         if (!portfolioName || !stockSymbol) {
@@ -702,7 +667,7 @@ app.post('/watchlist/remove', checkAuthHelper, async (req, res) => {
  *  */
 app.get('/market/search', checkAuthHelper, async (req, res) => {
     try {
-        const searchStocksList = (req.query.stock?.split(',').map(item => item.toUpperCase().trim()) || '').filter(s => s !== '');
+        const searchStocksList = (req.query.stock?.split(',').map(s => formatStockTransaction(s))).filter(s => s !== null);
 
         // Error check inputs
         if (!searchStocksList) {
@@ -753,8 +718,8 @@ app.get('/market/search', checkAuthHelper, async (req, res) => {
 app.post('/market/buy', checkAuthHelper, async (req, res) => {
     try {
         const { portfolio, stock, shares } = req.body;
-        const portfolioName = toTitleCase(portfolio);
-        const stockSymbol = stock.toUpperCase().trim();
+        const portfolioName = formatPortfolio(portfolio);
+        const stockSymbol = formatStockTransaction(stock);
         const numShares = parseInt(shares, 10);
 
         // Error check inputs
@@ -873,9 +838,9 @@ app.post('/market/buy', checkAuthHelper, async (req, res) => {
 app.post('/market/sell', checkAuthHelper, async (req, res) => {
     try {
         const { portfolio, stock, shares } = req.body;
-        const portfolioName = toTitleCase(portfolio);
-        const stockSymbol = stock.toUpperCase().trim();
-        const numShares = parseInt(shares, 10);
+        const portfolioName = formatPortfolio(portfolio);
+        const stockSymbol = formatStockTransaction(stock);
+        const numShares = formatSharesBalance(shares);
 
         // Error check inputs
         if (!portfolioName || !stockSymbol || !numShares) {
@@ -1005,10 +970,14 @@ app.get('/balance', checkAuthHelper, async (req, res) => {
     }
 });
 
+
+/** Balance/add route
+ * Add capital for a user
+ */
 app.post('/balance/add', checkAuthHelper, async (req, res) => {
     try {
         const { balance } = req.body;
-        const increment = parseInt(balance, 10);
+        const increment = formatSharesBalance(balance);
         if (isNaN(increment))  {
             log('info', '/balance/add', 'Increment input must be a number', { user: req.session.user.user_id });
             return res.status(400).json({ success: false, message: 'Balance must be a number' });
