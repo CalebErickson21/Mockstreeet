@@ -1,3 +1,6 @@
+// Dependencies
+import yahooFinance from 'yahoo-finance2'; // Yahoo finance stock fetching
+
 // Helper functions
 
 // Logging
@@ -35,11 +38,11 @@ export const formatDate = (date, ending) => {
     return new Date(date).toISOString().split('T')[0] + ' ' +ending;
 }
 
-export const fetchYahooBuySell = async (symbol, route) => {
+export const fetchYahooBuySell = async (symbol, route, userId) => {
     try {
         const yahooRes = await yahooFinance.quote([ symbol ], { fields: [ 'regularMarketPrice' ] });
         if (yahooRes.length !== 1) {
-            log('error', route, 'Stock price not found', { user: req.session.user.user_id });
+            log('error', route, 'Stock price not found', { user: userId });
             return null;
         }
         const price = parseFloat(yahooRes[0].regularMarketPrice.toFixed(2));
@@ -47,12 +50,12 @@ export const fetchYahooBuySell = async (symbol, route) => {
         return price;
     }
     catch (err) {
-        log('error', route, 'Error fetching stock price', { user: req.session.user.user_id });
+        log('error', route, `Error fetching stock price: ${err.message}`, { user: userId });
         return null;
     }
 }
 
-export const fetchYahooWatchSearch = async (list, route) => {
+export const fetchYahooWatchSearch = async (list, route, userId) => {
     try { // Query yahoo finance for stock data
         const yahooRes = await yahooFinance.quote(list, { fields: ['shortName', 'regularMarketPrice']});
 
@@ -66,12 +69,12 @@ export const fetchYahooWatchSearch = async (list, route) => {
                 symbol: stockInfo.symbol,
                 share_price: stockInfo.regularMarketPrice?.toFixed(2) || 0.00
             };
-        }).filter(stock => stock !== null);
+        }).filter(stock => stock !== null && stock.company !== undefined);
         log('info', route, 'Fetched stock data successfully: fetchYahooWatchSearch', stockData);
         return stockData;
     }
     catch (err) {
-        log('error', route, `Error fetching stock data: ${err.message}`, { user: req.session.user.user_id });
+        log('error', route, `Error fetching stock data: ${err.message}`, { user: userId });
         return null;
     }
 }

@@ -510,28 +510,15 @@ app.get('/watchlist', checkAuthHelper, async (req, res) => {
         // Convert query to list of stocks
         const stockSymbols = queryRes.map(stock => stock.symbol);
 
-        // Query yahoo finance api to fetch live stock data
-        try {
-            const yahooRes = await yahooFinance.quote(stockSymbols, { fields: ['shortName', 'regularMarketPrice'] });
-    
-            // Combine return data
-            const stockData = stockSymbols.map(stock => {
-                const stockInfo = yahooRes.find(s => s.symbol === stock);
-                return {
-                    company: stockInfo.shortName,
-                    symbol: stockInfo.symbol,
-                    share_price: stockInfo.regularMarketPrice.toFixed(2)
-                };
-            }).filter(stock => stock !== undefined);
-    
-            // Return result
-            log('info', '/portfolio/watchlist', 'Stocks fetched successfully', { user: req.session.user.user_id, stock: stockData });
-            return res.status(200).json({ success: true, watchlist: stockData });
+        // Fetch stock data
+        const stockData = await fetchYahooWatchSearch(stockSymbols, '/watchlist', req.session.user.user_id);
+        if (!stockData) {
+            return res.status(500).json({ success: false, watchlist: [], message: 'Internal server error.' });
         }
-        catch (err) {
-            log('error', '/portfolio/watchlist', `Error fetching yahoo stocks: ${err.message}`, { user: req.session.user.user_id });
-            return res.status(500).json({ success: false, message: 'Error fetching yahoo stocks' });
-        }
+
+        // Return result
+        log('info', '/portfolio/watchlist', 'Stocks fetched successfully', { user: req.session.user.user_id, stock: stockData });
+        return res.status(200).json({ success: true, watchlist: stockData });
     }
     catch (err) {
         log('error', '/portfolio/watchlist', `Error: ${err.message}`, { user: req.session.user.user_id });
@@ -682,23 +669,11 @@ app.get('/market/search', checkAuthHelper, async (req, res) => {
                 return res.status(400).json({ success: false, message: 'Stock symbol must be less than 10 characters' });
             }
         }
-        let stockData = [];
-        try { // Query yahoo finance for stock data
-            const yahooRes = await yahooFinance.quote(searchStocksList, { fields: ['shortName', 'regularMarketPrice']});
-
-            // Combine return data
-            stockData = searchStocksList.map(stock => {
-                const stockInfo = yahooRes.find(s => s.symbol === stock);
-                return {
-                    company: stockInfo.shortName,
-                    symbol: stockInfo.symbol,
-                    share_price: stockInfo.regularMarketPrice?.toFixed(2) || 0.00
-                };
-            }).filter(stock => stock.company !== undefined && stock.symbol !== undefined);
-        }
-        catch (err) {
-            log('error', '/market/search', `Error fetching stock data: ${err.message}`, { user: req.session.user.user_id });
-            return res.status(500).json({ success: false, stock: [], message: 'Error fetching stock data' });
+        
+        // Fetch stock data
+        const stockData = await fetchYahooWatchSearch(searchStocksList, '/market/search', req.session.user.user_id);
+        if (!stockData) {
+            return res.status(500).json({ success: false, watchlist: [], message: 'Internal server error.' });
         }
 
         // Return result
@@ -747,18 +722,9 @@ app.post('/market/buy', checkAuthHelper, async (req, res) => {
             );
             const balance = balanceQueryRes[0].balance;
 
-            // Check stock price
-            let stockPrice;
-            try {
-                const yahooRes = await yahooFinance.quote([ stockSymbol ], { fields: [ 'regularMarketPrice' ] });
-                if (yahooRes.length !== 1) {
-                    log('error', '/market/buy', 'Stock price not found', { user: req.session.user.user_id });
-                    return res.status(500).json({ success: false, message: 'Internal server error' });
-                }
-                stockPrice = parseFloat(yahooRes[0].regularMarketPrice.toFixed(2));
-            }
-            catch (err) {
-                log('error', '/market/buy', 'Error fetching stock price', { user: req.session.user.user_id });
+            // Fetch stock price
+            const stockPrice = await fetchYahooBuySell(stockSymbol, '/market/buy', req.session.user.user_id);
+            if (!stockPrice) {
                 return res.status(500).json({ success: false, message: 'Internal server error' });
             }
 
@@ -858,18 +824,9 @@ app.post('/market/sell', checkAuthHelper, async (req, res) => {
 
         // Begin sell transaction
         try {
-            // Check stock price
-            let stockPrice;
-            try {
-                const yahooRes = await yahooFinance.quote([ stockSymbol ], { fields: [ 'regularMarketPrice' ] });
-                if (yahooRes.length !== 1) {
-                    log('error', '/market/sell', 'Stock price not found', { user: req.session.user.user_id });
-                    return res.status(500).json({ success: false, message: 'Internal server error' });
-                }
-                stockPrice = parseFloat(yahooRes[0].regularMarketPrice.toFixed(2));
-            }
-            catch (err) {
-                log('error', '/market/sell', 'Error fetching stock price', { user: req.session.user.user_id });
+            // Fetch stock price
+            const stockPrice = await fetchYahooBuySell(stockSymbol, '/market/buy', req.session.user.user_id);
+            if (!stockPrice) {
                 return res.status(500).json({ success: false, message: 'Internal server error' });
             }
             
