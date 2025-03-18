@@ -16,57 +16,82 @@ import { usePortfolio } from '../../contexts/portfolioContext.jsx';
 const Transactions = () => {
     // Contexts
     const { user } = useAuth();
-    const { stockData, stockFilter, setStockFilter } = usePortfolio();
+    const { stockFilter, setStockFilter } = usePortfolio();
     const { transactions, transactionTypeFilter, setTransactionTypeFilter, startDate, setStartDate, endDate, setEndDate } = useTransaction();
 
-    // Show modal if user is not logged in
+    // States
     const [showLoginModal, setShowLoginModal] = useState(false);
+    const [uniqueStocks, setUniqueStocks] = useState([]);
+
+    // Show modal if user is not logged in
     useEffect(() => {
-        user ? setShowLoginModal(false) : setShowLoginModal(true);
+        if (user) {
+            setShowLoginModal(false);
+            setUniqueStocks([]);
+        }
+        else { setShowLoginModal(true); }
     }, [user]);
+
+    // Get unique stocks for dropdown
+    useEffect(() => {
+        if (!transactions || transactions.length === 0) {
+            setUniqueStocks([]);
+            return;
+        }
+
+        const filteredStocks = transactions.filter(
+            (stock, index, self) => index === self.findIndex((s) => s.symbol === stock.symbol)
+        );
+
+        setUniqueStocks(filteredStocks);
+    }, [transactions]);
 
     // Visible component
     return (
         <div id='transactions-container'>
 
             <div id='filters'>
-                <h5>Filter By:</h5>
                 <div className='row'>
-                    <div className='col col-6 col-md-3'>
+                    <div className='col col-4'>
                         <select value={stockFilter} onChange={(e) => setStockFilter(e.target.value)} className='form-select'>
                             <option disabled value='ALL'>Stock</option>
                             <option value='ALL'>All</option>
-                            {stockData.map(stock => (
-                                <option value={stock.symbol}>{stock.symbol}</option>
+                            {uniqueStocks.map(stock => (
+                                <option key={stock.symbol} value={stock.symbol}>{stock.symbol}</option>
                             ))}
                         </select>
                     </div>
 
-                    <div className='col col-6 col-md-3'>
+                    <div className='col col-4'>
                         <select value={transactionTypeFilter} onChange={(e) => setTransactionTypeFilter(e.target.value)} className='form-select'>
-                            <option disabled value='All'>Transaction Type</option>
-                            <option value='All'>All</option>
+                            <option disabled value='ALL'>Transaction Type</option>
+                            <option value='ALL'>All</option>
                             <option value='BUY'>Buy</option>
                             <option value='SELL'>Sell</option>
                         </select>
                     </div>
 
-                    <div className='col col-6 col-md-3'>
+                    <div className='col col-4'>
                         <Dropdown />
                     </div>
 
 
-                    <div className='col col-6 col-md-3'>
-                        <div className='col col-6'>
-                            <input onChange={(e) => setStartDate(e.target.value)} value={startDate} className='form-control date' type='date' placeholder='Start Date'></input>
-                        </div>
+                    <div className='col col-2'></div>
 
-                        <div className='col col-6'>
-                            <div className='col col-6'>
-                                <input onChange={(e) => setEndDate(e.target.value)} value={endDate} className='form-control date' type='date' placeholder='End Date'></input>
-                            </div>
-                        </div>
+                    <div className='col col-3'>
+                        <label htmlFor='startDate'>From: </label>
+                        <input onChange={(e) => setStartDate(e.target.value)} value={startDate} id='startDate' className='form-control date' type='date' placeholder='Start Date'></input>
                     </div>
+
+                    <div className='col col-2'></div>
+
+                    <div className='col col-3'>
+                        <label htmlFor='endDate'>To: </label>
+                        <input onChange={(e) => setEndDate(e.target.value)} value={endDate} id='endDate' className='form-control date' type='date' placeholder='End Date'></input>
+                    </div>
+
+                    <div className='col col-2'></div>
+                    
                 </div>
 
             </div>

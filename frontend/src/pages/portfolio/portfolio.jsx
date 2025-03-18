@@ -23,11 +23,13 @@ const Portfolio = () => {
     // Contexts
     const { user } = useAuth();
     const { balance } = useUser();
-    const { portfolioFilter, portfolioValue, stockData, setStockFilter } = usePortfolio();
+    const { portfolioFilter, portfolioValue, stockData } = usePortfolio();
     const { handleTransactionRedirect } = useTransaction();
 
-    // Show modal if user is not logged in
+    // States
     const [showLoginModal, setShowLoginModal] = useState(false);
+    
+    // Show modal if user is not logged in
     useEffect(() => {
         user ? setShowLoginModal(false) : setShowLoginModal(true);
     }, [user]);

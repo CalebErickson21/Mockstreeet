@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { portfolioStocksHelper, portfolioNameHelper, watchlistHelper, log } from "../utils/helpers";
 import { useAuth } from "./authContext";
 
@@ -14,7 +14,9 @@ export const PortfolioProvider = ({ children }) => {
   const [watchlist, setWatchlist] = useState([]);
 
   // Get portfolio stocks
-  const getPortfolioStocks = async () => {
+  const getPortfolioStocks = useCallback(async () => {
+    if (portfolioFilter === 'createNew') { return; }
+
     const data = await portfolioStocksHelper(portfolioFilter);
   
     if (data.success) { 
@@ -22,10 +24,13 @@ export const PortfolioProvider = ({ children }) => {
       setPortfolioValue(data.value); 
     }
     else { log('error', 'portfolio', 'Error displaying portfolio information', data.message); }
-  }
+  }, [portfolioFilter]);
   useEffect(() => {
-    getPortfolioStocks(); 
-  }, [portfolioFilter, user]);
+    const refresh = async () => {
+      user ? await getPortfolioStocks() : setStockData([]);
+    }
+    refresh(); 
+  }, [portfolioFilter, user, getPortfolioStocks]);
 
   // Get list of all portfolios
   const updatePortfolioList = async () => {
@@ -38,14 +43,18 @@ export const PortfolioProvider = ({ children }) => {
     }
   };
   useEffect(() => {
-    updatePortfolioList();
+    const refresh = async () => {
+      user ? await updatePortfolioList() : setPortfolioList([]);
+    }
+    refresh();
   }, [user]);
 
-  const updateWatchlist = async () => {
+  // Update watchlist function
+  const updateWatchlist = useCallback(async () => {
     const data = await watchlistHelper(portfolioFilter);
 
-    data.success ? setWatchlist(data.watchlist) : setWatchlist([]);
-  }
+    if (data.success) { setWatchlist(data.watchlist); }
+  }, [portfolioFilter]);
 
   // Return context wrapper
   return (

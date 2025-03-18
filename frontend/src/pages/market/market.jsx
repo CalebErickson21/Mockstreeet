@@ -1,6 +1,6 @@
 // Import helpers
 import { useEffect, useState } from 'react';
-import { marketHelper, watchlistHelper } from '../../utils/helpers.js';
+import { marketHelper } from '../../utils/helpers.js';
 
 // Import styles
 import './market.scss';
@@ -36,13 +36,24 @@ const Market = () => {
 
     // Modal functions
     useEffect(() => {
-        user ? setShowLoginModal(false) : setShowLoginModal(true);
+        if (user) {
+            setShowLoginModal(false);
+            setSearchStock('');
+            setSearchRes([]);
+        }
+        else {
+            setShowLoginModal(true);
+        }
+            
     }, [user]);
 
     // Update watchlist when portfolio changes
     useEffect(() => {
-        updateWatchlist();
-    }, [portfolioFilter]);
+        const refresh = async () => {
+            updateWatchlist();
+        }
+        refresh();
+    }, [portfolioFilter, updateWatchlist]);
 
     // Search market function
     const handleSearch = async (e) => {

@@ -1,4 +1,4 @@
-import { createContext, use, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { transactionsHelper, useNavigation } from "../utils/helpers";
 import { usePortfolio } from "./portfolioContext";
 import { useAuth } from "./authContext";
@@ -20,24 +20,25 @@ export const TransactionProvider = ({ children }) => {
     const [startDate, setStartDate] = useState(new Date(new Date(endDate).setDate(new Date(endDate).getDate() - 7)).toISOString().split('T')[0]);
 
     // Update transactions
-    const updateTransactions = async () => {
+    const updateTransactions = useCallback(async () => {
         const data = await transactionsHelper(portfolioFilter, stockFilter, transactionTypeFilter, startDate, endDate);
         if (data.success) {
             setTransactions(data.transactions);
         }
-    };
+    }, [portfolioFilter, stockFilter, transactionTypeFilter, startDate, endDate]);
+    // Get transactions on context render and filter changes
+    useEffect(() => {
+        const refresh = async () => {
+            user ? await updateTransactions() : setTransactions([]);
+        }
+        refresh();
+    }, [portfolioFilter, stockFilter, transactionTypeFilter, startDate, endDate, user, updateTransactions ]);
 
     // Handle transaction redirect
     const handleTransactionRedirect = ( stock ) => {
         setStockFilter(stock);
         navigate('/transactions')();
     }
-
-    // Get transactions on context render and filter changes
-    useEffect(() => {
-        updateTransactions();
-    }, [portfolioFilter, stockFilter, transactionTypeFilter, startDate, endDate, user ]);
-
 
     return (
         <TransactionContext.Provider value={{ transactions, updateTransactions, transactionTypeFilter, setTransactionTypeFilter, startDate, setStartDate, endDate, setEndDate , handleTransactionRedirect }}>

@@ -1,7 +1,6 @@
 // Import dependencies
 import { useNavigate } from 'react-router-dom';
 
-
 /** Logger Function
  * 
  * @param {*} level 

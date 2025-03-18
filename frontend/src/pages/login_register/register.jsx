@@ -93,7 +93,7 @@ const Register = () => {
                             <button className="btn my-2" type='submit'>Register</button>
                         </form>
                         {error && <p className='error'>{error}</p>}
-                        <h5>Already have account? <a onClick={navigate('/login')}>Log in!</a></h5>
+                        <h5>Already have account? <button className='link' onClick={navigate('/login')}>Log in!</button></h5>
                     </div>
                 </div>
             </div>

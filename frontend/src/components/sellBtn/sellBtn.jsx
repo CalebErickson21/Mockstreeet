@@ -21,8 +21,8 @@ const SellBtn = ( {stock, company} ) => {
     // States
     const [showSell, setShowSell] = useState(false);
     const [shares, setShares] = useState(0);
-    const [error, setError] = useState(false);
-    const [success, setSuccess] = useState(false);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
 
     // Modal controls
     useEffect(() => {
@@ -42,22 +42,23 @@ const SellBtn = ( {stock, company} ) => {
     // Buy Functionality
     const handleSell = async (e) => {
         e.preventDefault();
+        setError('');
+        setSuccess('');
 
         const data = await sellHelper(portfolioFilter, stock, shares);
         if (data.success) {
-            getPortfolioStocks();
-            updateTransactions();
-            updateBalance();
             setSuccess(data.message);
+            await getPortfolioStocks();
+            await updateTransactions();
+            await updateBalance();
         }
         else {
             setError(data.message);
         }
     }
     
-
+    // Visible Component
     return (
-
         <>
             <button onClick={() => setShowSell(true)} className='btn btn-dark-blue'>Sell</button>
 
@@ -76,6 +77,8 @@ const SellBtn = ( {stock, company} ) => {
                                 <input required onChange={(e) => setShares(e.target.value)} type='number' className='form-control' name='sellShares' placeholder='ex. 15'></input>
                             </div>
                             <div className='modal-footer'>
+                                {error && <div className='error'>{error}</div>}
+                                {success && <div className='success'>{success}</div>}
                                 <button type='submit' className='btn' id='buyBtn'>Sell</button>
                             </div>
                         </form>

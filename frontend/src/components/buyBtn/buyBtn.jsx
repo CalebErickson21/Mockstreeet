@@ -20,8 +20,8 @@ const BuyBtn = ( {stock, company} ) => {
     // States
     const [showBuy, setShowBuy] = useState(false);
     const [shares, setShares] = useState(0);
-    const [error, setError] = useState(false);
-    const [success, setSuccess] = useState(false);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
 
     // Modal controls
     useEffect(() => {
@@ -41,25 +41,24 @@ const BuyBtn = ( {stock, company} ) => {
     // Buy Functionality
     const handleBuy = async (e) => {
         e.preventDefault();
-        setError(false);
-        setSuccess(false);
+        setSuccess('');
+        setError('');
 
         const data = await buyHelper(portfolioFilter, stock, shares);
 
         if (data.success) {
-            setSuccess(data.messsage);
-            updateBalance();
-            getPortfolioStocks();
-            updateTransactions();
+            setSuccess(data.message);
+            await updateBalance();
+            await getPortfolioStocks();
+            await updateTransactions();
         }
         else {
             setError(data.message);
         }
     }
     
-
+    // Visible component
     return (
-
         <>
             <button onClick={() => setShowBuy(true)} className='btn btn-dark-blue'>Buy</button>
 
@@ -78,10 +77,9 @@ const BuyBtn = ( {stock, company} ) => {
                                 <input required onChange={(e) => setShares(e.target.value)} type='number' className='form-control' name='buyShares' placeholder='ex. 15'></input>
                             </div>
                             <div className='modal-footer'>
-                                <button type='submit' className='btn' id='buyBtn'>Buy!</button>
-                                <br/>
-                                {error && <div className='error'>Error buying stock</div>}
-                                {success && <div className='success'>Stock bought successfully</div>}
+                                {error && <div className='error'>{error}</div>}
+                                {success && <div className='success'>{success}</div>}
+                                <button type='submit' className='btn' id='buyBtn'>Buy</button>
                             </div>
                         </form>
                     </div>

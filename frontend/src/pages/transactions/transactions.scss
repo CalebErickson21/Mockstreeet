@@ -6,6 +6,7 @@
         padding-left: 1dvw;
         padding-right: 1dvw;
         padding-bottom: 1dvh;
+        padding-top: 1dvh;
         background-color: $COOL_GREY;
         border-bottom: 0.5dvh solid $DARK_BLUE;
 
@@ -15,6 +16,15 @@
             align-items: center;
 
             select {
+                width: min-content;
+            }
+
+            label {
+                color: $DARK_GREY;
+            }
+            
+            .date {
+                margin-left: 2dvw;
                 width: min-content;
             }
         }

@@ -26,10 +26,12 @@
                     color: $DARK_GREY;
                 }
 
-                a {
-                    font-weight: bold;
-                    text-decoration: underline;
+                button.link {
+                    background: none;
                     color: $DARK_BLUE;
+                    border: none;
+                    text-decoration: underline;
+                    font-weight: bold;
                 }
 
                 form {
@@ -60,9 +62,5 @@
                 }
             }
         }
-    }
-
-    .error {
-        color: $RED;
     }
 }

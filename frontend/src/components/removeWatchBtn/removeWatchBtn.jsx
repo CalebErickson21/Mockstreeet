@@ -12,14 +12,9 @@ const RemoveWatchBtn = ({ stock }) => {
     const { portfolioFilter, updateWatchlist } = usePortfolio();
 
     const handleRemove = async () => {
-        console.log('In the handleremove function');
         const data = await removeWatchHelper(portfolioFilter, stock);
-        console.log('Helper executed properly');
 
-        if (data.success) {
-            console.log('Successfully removed');
-        }
-        await updateWatchlist();
+        if (data.success) { await updateWatchlist(); }
 
     }
 

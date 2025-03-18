@@ -4,7 +4,7 @@ import { usePortfolio } from '../../contexts/portfolioContext';
 
 // Import styles
 import './dropdown.scss'
-import { portfolioNewHelper, portfolioNameHelper } from '../../utils/helpers';
+import { portfolioNewHelper } from '../../utils/helpers';
 
 const DropDown = ()  => {
     // Contexts
@@ -62,7 +62,7 @@ const DropDown = ()  => {
         // Get create information from helper
         const data = await portfolioNewHelper(newPortfolio);
         if (data.success) {
-            updatePortfolioList();
+            await updatePortfolioList();
             setSuccess(data.message);
         }
         else {
@@ -102,9 +102,10 @@ const DropDown = ()  => {
                             </div>
 
                             <div className="modal-footer">
+                                {error && <div className='error'>{error}</div>}
+                                {success && <div className='success'>{success}</div>}
                                 <button type="submit" className="btn" id="create">Create</button>
-                                {error && <h5 className='error'>{error}</h5>}
-                                {success && <h5 className='success'>{success}</h5>}
+                                
                             </div>
                         </form>
                     </div>

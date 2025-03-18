@@ -23,7 +23,7 @@ const Login = () => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        setError(''); // Clear any previous errors
+        setError(''); 
 
         const data = await loginHelper(userNameOrEmail, password);
 
@@ -64,7 +64,7 @@ const Login = () => {
                             <button  type='submit' className="btn my-2">Login</button>
                         </form>
                         {error && <p className='error'>{error}</p>}
-                        <h5>New? <a onClick={navigate('/register')}>Sign up</a> now and start trading today!</h5>
+                        <h5>New? <button className='link' onClick={navigate('/register')}>Sign up</button> now and start trading today!</h5>
                     </div>
                 </div>
             </div>

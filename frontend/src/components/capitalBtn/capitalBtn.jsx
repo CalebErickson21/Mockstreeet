@@ -1,5 +1,5 @@
 // Helpers
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { addBalanceHelper } from "../../utils/helpers";
 
 // Contexts
@@ -19,19 +19,14 @@ import './capitalBtn.scss';
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
-    useEffect(() => {
-        setError('');
-        setSuccess('');
-    })
-
-
     const handleAddCapital = async (e) => {
         e.preventDefault();
+        setError('');
+        setSuccess('');
         
         const data = await addBalanceHelper(capital);
-
         if (data.success) {
-            updateBalance();
+            await updateBalance();
             setSuccess(data.message);
         }
         else {
@@ -60,6 +55,8 @@ import './capitalBtn.scss';
                                 <input required onChange={(e) => addCapital(e.target.value)} type='number' className='form-control' name='addCapital' placeholder='ex. 1000'></input>
                             </div>
                             <div className='modal-footer'>
+                                {error && <div className='error'>{error}</div>}
+                                {success && <div className='success'>{success}</div>}
                                 <button type='submit' className='btn' id='buyBtn'>Add Capital</button>
                             </div>
                         </form>

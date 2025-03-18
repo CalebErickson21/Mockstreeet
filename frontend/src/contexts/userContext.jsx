@@ -19,7 +19,10 @@ export const UserProvider = ({ children }) => {
         }
     }
     useEffect(() => {
-        updateBalance();  
+        const refresh = async () => {
+            user ? await updateBalance() : setBalance(10000);
+        }
+        refresh();
     }, [user]);
 
     return (
