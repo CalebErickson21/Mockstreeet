@@ -496,3 +496,27 @@ export const removeWatchHelper = async (portfolio, stock) => {
     }
 };
 
+
+export const emailHelper = async (email, subject, message) => {
+    try {
+        const response = await fetch('http://localhost:5000/email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ email, subject, message }),
+        });
+        const data = await response.json();
+        
+        if (response.ok) {
+            return data;
+        }
+        else {
+            return ({ success: false, message: data.message || 'An error occured. Please try again.' });
+        }
+    }
+    catch (err) {
+        log('error', 'emailHelper', 'Error: ', err.message || 'An error occured. Please try again.');
+        return ({ success: false, message: err.message || 'An error occured. Please try again.' });
+    }
+}
+

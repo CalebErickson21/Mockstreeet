@@ -6,6 +6,7 @@ import cors from 'cors'; // Cross-origin resource sharing
 import yahooFinance from 'yahoo-finance2'; // Yahoo finance stock fetching
 import bcrypt from 'bcrypt'; // Password hashing
 import dotenv from 'dotenv'; // Environment variables
+import nodemailer from 'nodemailer'; // Send emails
 
 // Import helper functions
 import { log, checkAuthHelper, formatPortfolio, formatStockTransaction, formatSharesBalance, formatDate, fetchYahooBuySell, fetchYahooWatchSearch } from './helpers.js';
@@ -17,6 +18,14 @@ const MAX_NUM = 999999999999.99;
 const app = express(); // Create express app instance
 app.use(express.json()); // express.json enables parsing of json files
 dotenv.config(); // Load environment variables
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+})
 
 // Define port
 const PORT = 5000;
@@ -983,6 +992,37 @@ app.post('/balance/add', checkAuthHelper, async (req, res) => {
     }
     catch (err) {
         log('error', '/balance/add', `Error: ${err.message}`, { user: req.session.user.user_id });
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
+
+/** /Email route
+ * Send email to support staff
+ */
+app.post('/email', async (req, res) => {
+    try {
+        const { email, subject, message } = req.body;
+
+        const mailOptions = {
+            from: email,
+            to: process.env.EMAIL_USER,
+            subject: `Mockstreet message from: ${subject}`,
+            text: message
+        };
+
+        try {
+            await transporter.sendMail(mailOptions);
+            log('info', '/email', 'Email sent successfully');
+            return res.status(200).json({ success: true, message: 'Email sent' });
+        }
+        catch (err) {
+            log('error', '/email', `Error sending email: ${err.message}`, mailOptions);
+            return res.status(500).json({ success: false, message: 'Error sending email' });
+        }
+    }
+    catch (err) {
+        log('error', '/email', `Error: ${err.message}`, { user: req.session.user.user_id || 'No user'});
         return res.status(500).json({ success: false, message: 'Internal server error' });
     }
 });
