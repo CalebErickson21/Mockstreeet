@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 // Declare constants
 const TEST_URL = 'http://localhost:5000/';
 const PROD_URL = 'https://mockstreetexchange.com/';
-const URL = PROD_URL;
+const URL = TEST_URL;
 
 /** Logger Function
  * 
