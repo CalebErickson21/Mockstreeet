@@ -52,7 +52,7 @@ app.use(session({
 
 /** Check User Authorization Route that can be directly called by frontend
  */
-app.get('/check-auth', (req, res) => {
+app.get('/api/check-auth', (req, res) => {
     try { 
         if (req.session.user) {
             log('info', '/check-auth', 'User is authenticated', { user: req.session.user.user_id });
@@ -73,7 +73,7 @@ app.get('/check-auth', (req, res) => {
  * If user found in database, login
  * If user not found in database, return error
  */
-app.post('/login', async (req, res) => {
+app.post('/api/login', async (req, res) => {
     try {
         // Get request data
         const { userNameOrEmail, password } = req.body;
@@ -87,7 +87,7 @@ app.post('/login', async (req, res) => {
         // User not found
         if (queryRes.rows.length === 0) {
             log('info', '/login', 'Invalid username or email');
-            return res.status(401).json({success: false, message: 'Invalid username or email'}); // Return 401 (unauthorized)
+            return res.status(401).json({success: false, message: 'Invalid login'}); // Return 401 (unauthorized)
         }
 
         // User found
@@ -96,7 +96,7 @@ app.post('/login', async (req, res) => {
         // Check password
         const passwordMatch = await bcrypt.compare(password, user.password_hash);
         if (!passwordMatch) {
-            return res.status(401).json({success: false, message: 'Incorrect password'}); // Return 401 (unauthorized)
+            return res.status(401).json({success: false, message: 'Incorrect login'}); // Return 401 (unauthorized)
         }
 
         // Successful login
@@ -115,7 +115,7 @@ app.post('/login', async (req, res) => {
 /** Logout route
  * Logout user
  */
-app.get('/logout', (req, res) => {
+app.get('/api/logout', (req, res) => {
     try {
         // No user logged in 
         if (!req.session.user) {
@@ -139,7 +139,7 @@ app.get('/logout', (req, res) => {
 /** Registration route
  * Register user, then redirect to login page
  */
-app.post('/register', async (req, res) => {
+app.post('/api/register', async (req, res) => {
     try {
         
         const { firstName, lastName, email, username, password, passwordConfirmation } = req.body; // Extract user details from request
@@ -213,7 +213,7 @@ app.post('/register', async (req, res) => {
 /** Portfolio/names route
  * Get a list of all of a user's portfolios
  */
-app.get('/portfolio/names', checkAuthHelper, async (req, res) => {
+app.get('/api/portfolio/names', checkAuthHelper, async (req, res) => {
 
     try {
         const { rows: portfolioQuery } = await db.query(
@@ -244,7 +244,7 @@ app.get('/portfolio/names', checkAuthHelper, async (req, res) => {
 /** Porfolio/stocks route
  * Get stock data for a certain portfolio
  */
-app.get('/portfolio/stocks', checkAuthHelper, async (req, res) => {
+app.get('/api/portfolio/stocks', checkAuthHelper, async (req, res) => {
     try {
     
         const portfolioName = formatPortfolio(req.query.portfolio);
@@ -331,7 +331,7 @@ app.get('/portfolio/stocks', checkAuthHelper, async (req, res) => {
 /** Porfolio/new route
  * Create new portfolio
  */
-app.post('/portfolio/new', checkAuthHelper, async (req, res) => {
+app.post('/api/portfolio/new', checkAuthHelper, async (req, res) => {
     try {
         const { portfolio } = req.body;
 
@@ -391,7 +391,7 @@ app.post('/portfolio/new', checkAuthHelper, async (req, res) => {
 /** Portfolio/transactions route
  * Get all transactions for a certain portfolio
  */
-app.get('/transactions', checkAuthHelper, async (req, res) => {
+app.get('/api/transactions', checkAuthHelper, async (req, res) => {
     try {
         // Get request variables
         const transactionFilter = formatStockTransaction(req.query.transaction);
@@ -495,7 +495,7 @@ app.get('/transactions', checkAuthHelper, async (req, res) => {
 /** watchlist route
  * Get all stocks in a portfolio's watchlist
  */
-app.get('/watchlist', checkAuthHelper, async (req, res) => {
+app.get('/api/watchlist', checkAuthHelper, async (req, res) => {
     try {
         // Get search parameters
         const portfolioParam = formatPortfolio(req.query.portfolio);
@@ -537,7 +537,7 @@ app.get('/watchlist', checkAuthHelper, async (req, res) => {
 
 
 /** watchlist/add route */
-app.post('/watchlist/add', checkAuthHelper, async (req, res) => {
+app.post('/api/watchlist/add', checkAuthHelper, async (req, res) => {
     try {
         const { portfolio, stock } = req.body;
         const portfolioName = formatPortfolio(portfolio);
@@ -599,7 +599,7 @@ app.post('/watchlist/add', checkAuthHelper, async (req, res) => {
 /** Portfolio/watchlist/remove route
  * 
  */
-app.post('/watchlist/remove', checkAuthHelper, async (req, res) => {
+app.post('/api/watchlist/remove', checkAuthHelper, async (req, res) => {
     try {
         const { portfolio, stock } = req.body;
         const portfolioName = formatPortfolio(portfolio);
@@ -661,7 +661,7 @@ app.post('/watchlist/remove', checkAuthHelper, async (req, res) => {
 /** Market/search route
  * Display stock information for a list of searched stocks
  *  */
-app.get('/market/search', checkAuthHelper, async (req, res) => {
+app.get('/api/market/search', checkAuthHelper, async (req, res) => {
     try {
         const searchStocksList = (req.query.stock?.split(',').map(s => formatStockTransaction(s))).filter(s => s !== null);
 
@@ -699,7 +699,7 @@ app.get('/market/search', checkAuthHelper, async (req, res) => {
 /** Market/buy route
  * Buy a stock
  */
-app.post('/market/buy', checkAuthHelper, async (req, res) => {
+app.post('/api/market/buy', checkAuthHelper, async (req, res) => {
     try {
         const { portfolio, stock, shares } = req.body;
         const portfolioName = formatPortfolio(portfolio);
@@ -810,7 +810,7 @@ app.post('/market/buy', checkAuthHelper, async (req, res) => {
 /** Market/sell route
  * Sell a stock
  */
-app.post('/market/sell', checkAuthHelper, async (req, res) => {
+app.post('/api/market/sell', checkAuthHelper, async (req, res) => {
     try {
         const { portfolio, stock, shares } = req.body;
         const portfolioName = formatPortfolio(portfolio);
@@ -911,7 +911,7 @@ app.post('/market/sell', checkAuthHelper, async (req, res) => {
 /** User/stats route
  * Get a user's balance
  */
-app.get('/balance', checkAuthHelper, async (req, res) => {
+app.get('/api/balance', checkAuthHelper, async (req, res) => {
 
     try {
         // Query for user info
@@ -940,7 +940,7 @@ app.get('/balance', checkAuthHelper, async (req, res) => {
 /** Balance/add route
  * Add capital for a user
  */
-app.post('/balance/add', checkAuthHelper, async (req, res) => {
+app.post('/api/balance/add', checkAuthHelper, async (req, res) => {
     try {
         const { balance } = req.body;
         const increment = formatSharesBalance(balance);
@@ -1000,7 +1000,7 @@ app.post('/balance/add', checkAuthHelper, async (req, res) => {
 /** /Email route
  * Send email to support staff
  */
-app.post('/email', async (req, res) => {
+app.post('/api/email', async (req, res) => {
     try {
         const { email, subject, message } = req.body;
 
