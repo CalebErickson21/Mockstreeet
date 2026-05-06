@@ -3,19 +3,19 @@ import db from './db.js'; // Connect to database
 import express from 'express'; // Routes and middleware
 import session from 'express-session'; // User sessions
 import cors from 'cors'; // Cross-origin resource sharing
-import yahooFinance from 'yahoo-finance2'; // Yahoo finance stock fetching
 import bcrypt from 'bcrypt'; // Password hashing
 import dotenv from 'dotenv'; // Environment variables
 import nodemailer from 'nodemailer'; // Send emails
 
 // Import helper functions
-import { log, checkAuthHelper, formatPortfolio, formatStockTransaction, formatSharesBalance, formatDate, fetchYahooBuySell, fetchYahooWatchSearch } from './helpers.js';
+import { log, checkAuthHelper, formatPortfolio, formatStockTransaction, formatSharesBalance, formatDate, fetchYahooBuySell, fetchStockSearch, fetchFinnhubProfile } from './helpers.js';
 
 // Declare global constants
 const MAX_NUM = 999999999999.99;
 
 // Configurations
 const app = express(); // Create express app instance
+app.set('trust proxy', 1);
 app.use(express.json()); // express.json enables parsing of json files
 dotenv.config(); // Load environment variables
 
@@ -25,26 +25,44 @@ const transporter = nodemailer.createTransport({
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
     }
-})
+});
 
 // Define port
 const PORT = 5000;
 
+const defaultDevOrigins =
+    'http://localhost:3000,http://localhost,http://localhost:80,http://127.0.0.1:3000,http://127.0.0.1,http://127.0.0.1:80';
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',').map((o) => o.trim()).filter(Boolean)
+    : process.env.NODE_ENV === 'production'
+        ? []
+        : defaultDevOrigins.split(',').map((o) => o.trim()).filter(Boolean);
+
 // Enable CORS
 app.use(cors({
-    origin: 'http://localhost:3000', // Frontend - Adjust for production
-    credentials: true // Ensures cookies are sent
-}))
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(null, false);
+        }
+    },
+    credentials: true
+}));
 
+const isProduction = process.env.NODE_ENV === 'production';
+const getSessionUserId = (req) => req.session?.user?.user_id ?? 'No user';
 
 // Configure sessions
 app.use(session({
     secret: process.env.SESSION_SECRET, // Sign and encrypt session data
     resave: false, // Prevents unnecessary session saving
     saveUninitialized: false, // Do not save empty sessions (user visits but does not log in)
-    cookie: { 
-        secure: false, // Cookies sent over HTTPS only - Adjust for production
-        httpOnly: true, // Prevents javascript from accessing cookies
+    proxy: true,
+    cookie: {
+        secure: isProduction,
+        httpOnly: true,
+        sameSite: 'lax',
         maxAge: 1000 * 60 * 60 // 1 hour session
     }
 }));
@@ -63,7 +81,7 @@ app.get('/api/check-auth', (req, res) => {
         }
     }
     catch (err) {
-        log('error', '/check-auth', `Authentication error: ${err.message}`, { user: req.session.user.user_id? req.session.user.user_id : 'No user' });
+        log('error', '/check-auth', `Authentication error: ${err.message}`, { user: getSessionUserId(req) });
         return res.status(500).json({ success: false, message: 'Internal server error' });
     }
 });
@@ -130,7 +148,7 @@ app.get('/api/logout', (req, res) => {
         });
     }
     catch (err) {
-        log('error', '/logout', `Logout error: ${err.message}`, { user: req.session.user.user_id });
+        log('error', '/logout', `Logout error: ${err.message}`, { user: getSessionUserId(req) });
         return res.status(500).json({ success: false, message: 'Internal server error' });
     }
 });
@@ -204,7 +222,8 @@ app.post('/api/register', async (req, res) => {
         return res.status(201).json({ success: true, user: {username: username, email: email}, message: 'Registered successfully' }); // Successful register (201 = created)
     }
     catch (err) {
-        log('error', '/register', `Registration error: ${err.message}`, { firstName: firstName, lastName: lastName, email: email }); // Log error
+        const { firstName = null, lastName = null, email = null } = req.body || {};
+        log('error', '/register', `Registration error: ${err.message}`, { firstName, lastName, email }); // Log error
         return res.status(500).json({ success: false, message: 'Internal server error' }); // 500 status code to frontend (internal server error)
     }
 });
@@ -293,21 +312,25 @@ app.get('/api/portfolio/stocks', checkAuthHelper, async (req, res) => {
         try {
             const stockSymbols = stocks.map(stock => stock.symbol);
 
-            // API call to yahoo finance
-            const stockPrices = await yahooFinance.quote(stockSymbols, {fields: ['shortName', 'regularMarketPrice' ] });
+            // API call for company names and prices
+            const stockPrices = await fetchStockSearch(stockSymbols, '/portfolio/stocks', req.session.user.user_id);
+            if (!stockPrices) {
+                return res.status(500).json({ success: false, message: 'Internal server error.'});
+            }
 
             // Combine data
             const stockData = stocks.map(stock => {
                 const stockInfo = stockPrices.find(s => s.symbol === stock.symbol);
+                const price = Number(stockInfo?.share_price || 0);
 
-                portfolioValue += parseFloat(stockInfo.regularMarketPrice.toFixed(2)) * stock.total_shares;
+                portfolioValue += price * stock.total_shares;
                 
                 return {
-                    company: stockInfo.shortName,
+                    company: stockInfo?.company || stock.symbol,
                     symbol: stock.symbol,
                     shares: stock.total_shares,
-                    share_price: stockInfo?.regularMarketPrice.toFixed(2) || 0,
-                    total_price: ((stockInfo?.regularMarketPrice || 0) * stock.total_shares).toFixed(2),
+                    share_price: price.toFixed(2),
+                    total_price: (price * stock.total_shares).toFixed(2),
                 };
             });
 
@@ -456,15 +479,21 @@ app.get('/api/transactions', checkAuthHelper, async (req, res) => {
             // Get each stocks name
             const stockSymbols = queryRes.map(row => row.symbol);
             
-            // Query yahoo finance to get company name for each stock symbol
-            const yahooQuery = await yahooFinance.quote(stockSymbols, {fields: ['shortName'] });
+            // Query Finnhub to get company names for each stock symbol
+            const uniqueSymbols = [...new Set(stockSymbols)];
+            const profileResults = await Promise.all(
+                uniqueSymbols.map(async (symbol) => {
+                    const profile = await fetchFinnhubProfile(symbol);
+                    return { symbol, name: profile?.name || symbol };
+                })
+            );
 
             // Structure transaction return value
             const transactionData = queryRes.map(t => {
-                const stockInfo = yahooQuery.find(s => s.symbol === t.symbol);
+                const stockInfo = profileResults.find((s) => s.symbol === t.symbol);
                 
                 return {
-                    company: stockInfo.shortName,
+                    company: stockInfo?.name || t.symbol,
                     symbol: t.symbol,
                     type: t.transaction_type,
                     shares: t.shares,
@@ -520,7 +549,7 @@ app.get('/api/watchlist', checkAuthHelper, async (req, res) => {
         const stockSymbols = queryRes.map(stock => stock.symbol);
 
         // Fetch stock data
-        const stockData = await fetchYahooWatchSearch(stockSymbols, '/watchlist', req.session.user.user_id);
+        const stockData = await fetchStockSearch(stockSymbols, '/watchlist', req.session.user.user_id);
         if (!stockData) {
             return res.status(500).json({ success: false, watchlist: [], message: 'Internal server error.' });
         }
@@ -680,7 +709,7 @@ app.get('/api/market/search', checkAuthHelper, async (req, res) => {
         }
         
         // Fetch stock data
-        const stockData = await fetchYahooWatchSearch(searchStocksList, '/market/search', req.session.user.user_id);
+        const stockData = await fetchStockSearch(searchStocksList, '/market/search', req.session.user.user_id);
         if (!stockData) {
             return res.status(500).json({ success: false, watchlist: [], message: 'Internal server error.' });
         }
@@ -1022,13 +1051,13 @@ app.post('/api/email', async (req, res) => {
         }
     }
     catch (err) {
-        log('error', '/email', `Error: ${err.message}`, { user: req.session.user.user_id || 'No user'});
+        log('error', '/email', `Error: ${err.message}`, { user: getSessionUserId(req) });
         return res.status(500).json({ success: false, message: 'Internal server error' });
     }
 });
 
 
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on port http://localhost:${PORT}`);
 });
