@@ -1,6 +1,6 @@
 // Import dependencies
-import { useState, useEffect } from 'react'; 
-import { useNavigation }  from '../../utils/helpers';
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/authContext';
 
 // Import styles
@@ -13,7 +13,6 @@ import logo from "../../assets/images/text_right.png";
 const lgWidth = 992;
 
 const Header = () => {
-    const navigate = useNavigation();
     const { user, handleLogout } = useAuth();
 
     // Center nav tabs function - handles window resizing
@@ -34,40 +33,46 @@ const Header = () => {
         <div id='header-container'>
             <nav id="navbar" className="navbar sticky-top navbar-expand-lg border-bottom border-body">
                 <div className="container-fluid">
-                    
-                    <a className="navbar-brand" onClick={navigate('/')}>
+
+                    <Link className="navbar-brand" to="/">
                         <img src={logo} alt='MockStreet Logo'/>
-                    </a>
+                    </Link>
 
 
                     <div className="collapse navbar-collapse" id="navCollapse">
                         <ul className={`navbar-nav nav-underline mb-2 mb-lg-0 ${isCentered ? "nav-center" : ""}`} id="nav-center">
                             <li className="nav-item">
-                                <a className="nav-link" onClick={navigate('/')}>Home</a>
+                                <Link className="nav-link" to="/">Home</Link>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link" onClick={navigate('/portfolio')}>Portfolio</a>
+                                <Link className="nav-link" to="/portfolio">Portfolio</Link>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link" onClick={navigate('/market')}>Buy + Sell</a>
+                                <Link className="nav-link" to="/market">Buy + Sell</Link>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link" onClick={navigate('/transactions')}>Transactions</a>
+                                <Link className="nav-link" to="/transactions">Transactions</Link>
                             </li>
                         </ul>
                         {user ? (
                             <ul className="navbar-nav nav-underline ms-auto mb-2 mb-lg-0">
                                 <li className="nav-item">
-                                    <a className="nav-link" onClick={handleLogout}>Logout</a>
+                                    <button
+                                        type="button"
+                                        className="nav-link btn btn-link text-start text-decoration-none p-0 border-0"
+                                        onClick={() => void handleLogout()}
+                                    >
+                                        Logout
+                                    </button>
                                 </li>
                             </ul>
                         ) : (
                             <ul className="navbar-nav nav-underline ms-auto mb-2 mb-lg-0">
                                 <li className="nav-item">
-                                    <a className="nav-link" onClick={navigate('/login')}>Login</a>
+                                    <Link className="nav-link" to="/login">Login</Link>
                                 </li>
                                 <li className="nav-item">
-                                    <a className="nav-link" onClick={navigate('/register')}>Register</a>
+                                    <Link className="nav-link" to="/register">Register</Link>
                                 </li>
                             </ul>
                         )}

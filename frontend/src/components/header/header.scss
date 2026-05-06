@@ -25,6 +25,17 @@
             }
         }
 
+        button.nav-link.btn-link {
+            color: $COOL_GREY;
+            line-height: inherit;
+
+            &:hover,
+            &:focus {
+                font-weight: bold;
+                color: $COOL_GREY;
+            }
+        }
+
         .navbar-toggler-icon {
             filter: invert(1);
         }

@@ -1,5 +1,7 @@
 // Dependencies
-import yahooFinance from 'yahoo-finance2'; // Yahoo finance stock fetching
+import finnhub from 'finnhub';
+
+export const finnhubClient = new finnhub.DefaultApi(process.env.FINNHUB_API_KEY);
 
 // Helper functions
 
@@ -40,12 +42,12 @@ export const formatDate = (date, ending) => {
 
 export const fetchYahooBuySell = async (symbol, route, userId) => {
     try {
-        const yahooRes = await yahooFinance.quote([ symbol ], { fields: [ 'regularMarketPrice' ] });
-        if (yahooRes.length !== 1) {
+        const quote = await fetchFinnhubQuote(symbol);
+        if (!quote || quote.c === 0) {
             log('error', route, 'Stock price not found', { user: userId });
             return null;
         }
-        const price = parseFloat(yahooRes[0].regularMarketPrice.toFixed(2));
+        const price = parseFloat(Number(quote.c).toFixed(2));
         log('info', route, 'Fetched stock price successfully: fetchYahooBuySell', { symbol: price});
         return price;
     }
@@ -55,26 +57,54 @@ export const fetchYahooBuySell = async (symbol, route, userId) => {
     }
 }
 
-export const fetchYahooWatchSearch = async (list, route, userId) => {
-    try { // Query yahoo finance for stock data
-        const yahooRes = await yahooFinance.quote(list, { fields: ['shortName', 'regularMarketPrice']});
+export const fetchFinnhubQuote = (symbol) =>
+    new Promise((resolve, reject) => {
+        finnhubClient.quote(symbol, (error, data) => {
+            if (error) {
+                reject(error);
+                return;
+            }
+            resolve(data);
+        });
+    });
 
-        // Combine return data
-        const stockData = list.map(stock => {
-            const stockInfo = yahooRes.find(s => s.symbol === stock);
-            if (!stockInfo) return null;
+export const fetchFinnhubProfile = (symbol) =>
+    new Promise((resolve, reject) => {
+        finnhubClient.companyProfile2({ symbol }, (error, data) => {
+            if (error) {
+                reject(error);
+                return;
+            }
+            resolve(data);
+        });
+    });
 
-            return {
-                company: stockInfo.shortName,
-                symbol: stockInfo.symbol,
-                share_price: stockInfo.regularMarketPrice?.toFixed(2) || 0.00
-            };
-        }).filter(stock => stock !== null && stock.company !== undefined);
-        log('info', route, 'Fetched stock data successfully: fetchYahooWatchSearch', stockData);
+export const fetchStockSearch = async (list, route, userId) => {
+    try {
+        const result = await Promise.all(
+            list.map(async (symbol) => {
+                const [quote, profile] = await Promise.all([
+                    fetchFinnhubQuote(symbol),
+                    fetchFinnhubProfile(symbol),
+                ]);
+
+                if (!quote || !profile || !profile.name || quote.c === 0) {
+                    return null;
+                }
+
+                return {
+                    company: profile.name,
+                    symbol,
+                    share_price: Number(quote.c).toFixed(2),
+                };
+            })
+        );
+
+        const stockData = result.filter((stock) => stock !== null);
+        log('info', route, 'Fetched stock data successfully: fetchStockSearch', stockData);
         return stockData;
-    }
-    catch (err) {
+    } catch (err) {
         log('error', route, `Error fetching stock data: ${err.message}`, { user: userId });
         return null;
     }
-}
+};

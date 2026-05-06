@@ -1,11 +1,6 @@
 // Import dependencies
 import { useNavigate } from 'react-router-dom';
 
-// Declare constants
-const TEST_URL = 'http://localhost:5000/';
-const PROD_URL = 'https://mockstreetexchange.com/';
-const URL = PROD_URL;
-
 /** Logger Function
  * 
  * @param {*} level 
@@ -42,7 +37,7 @@ export const useNavigation = () => {
 export const registerHelper = async (firstName, lastName, email, username, password, passwordConfirmation) => {
     try {
         // Backed request with registration information
-        const response = await fetch(URL + 'api/register', { // Backend path
+        const response = await fetch('/api/register', { // Backend path
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include', // Ensures cookies are included in request
@@ -76,7 +71,7 @@ export const registerHelper = async (firstName, lastName, email, username, passw
 export const loginHelper = async (userNameOrEmail, password) => {
     try {
         // Backend request with login information
-        const response = await fetch(URL +'api/login', {
+        const response = await fetch('/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include', // Include cookies
@@ -109,7 +104,7 @@ export const loginHelper = async (userNameOrEmail, password) => {
 export const logoutHelper = async () => {
     try {
         // Backedn request
-        const response = await fetch(URL + 'api/logout', {
+        const response = await fetch('/api/logout', {
             method: "GET", // Default method for fetch(), included for clarity
             headers: { 'Content-Type' : 'application/json' },
             credentials: "include"
@@ -141,7 +136,7 @@ export const logoutHelper = async () => {
 export const checkAuthHelper = async () => {
     try {
         // Backend request
-        const response = await fetch(URL + 'api/check-auth', {
+        const response = await fetch('/api/check-auth', {
             method: "GET",
             headers: { 'Content-Type' : 'application/json' },
             credentials: "include" 
@@ -169,7 +164,7 @@ export const checkAuthHelper = async () => {
  */
 export const portfolioNameHelper = async () => {
     try {
-        const response = await fetch(URL + 'api/portfolio/names', {
+        const response = await fetch('/api/portfolio/names', {
             method: 'GET',
             headers: { 'Content-Type' : 'application/json' },
             credentials: 'include',
@@ -201,7 +196,7 @@ export const portfolioNameHelper = async () => {
 export const portfolioStocksHelper = async ( portfolio ) => {
     try {
         // Backend request with portfolio information
-        const response = await fetch(URL + `api/portfolio/stocks?portfolio=${portfolio}`, {
+        const response = await fetch(`/api/portfolio/stocks?portfolio=${portfolio}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include', // Include cookies
@@ -233,7 +228,7 @@ export const portfolioStocksHelper = async ( portfolio ) => {
 export const portfolioNewHelper = async ( portfolio ) => {
     try {
         // Backend request with login information
-        const response = await fetch(URL + 'api/portfolio/new', {
+        const response = await fetch('/api/portfolio/new', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include', // Include cookies
@@ -262,7 +257,7 @@ export const portfolioNewHelper = async ( portfolio ) => {
 export const balanceHelper = async () => {
     try {
         // Backend request with login information
-        const response = await fetch(URL + 'api/balance', {
+        const response = await fetch('/api/balance', {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include', // Include cookies
@@ -289,7 +284,7 @@ export const balanceHelper = async () => {
  */
 export const addBalanceHelper = async ( balance ) => {
     try {
-        const response = await fetch(URL + 'api/balance/add', {
+        const response = await fetch('/api/balance/add', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include', // Include cookies
@@ -317,7 +312,7 @@ export const addBalanceHelper = async ( balance ) => {
  */
 export const transactionsHelper = async (portfolioFilter, stockFilter, transactionFilter, startDateFilter, endDateFilter) => {
     try {
-        const response = await fetch(URL + `api/transactions?portfolio=${portfolioFilter}&stock=${stockFilter}&transaction=${transactionFilter}&startDate=${startDateFilter}&endDate=${endDateFilter}`, {
+        const response = await fetch(`/api/transactions?portfolio=${portfolioFilter}&stock=${stockFilter}&transaction=${transactionFilter}&startDate=${startDateFilter}&endDate=${endDateFilter}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include', // Include cookies
@@ -343,7 +338,7 @@ export const transactionsHelper = async (portfolioFilter, stockFilter, transacti
  */
 export const marketHelper = async (searchStock) => {
     try {
-        const response = await fetch(URL + `api/market/search?stock=${searchStock}`, {
+        const response = await fetch(`/api/market/search?stock=${searchStock}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include', // Include cookies
@@ -373,7 +368,7 @@ export const marketHelper = async (searchStock) => {
 */
 export const buyHelper = async (portfolio, stock, shares) => {
     try {
-        const response = await fetch(URL + 'api/market/buy', {
+        const response = await fetch('/api/market/buy', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -403,7 +398,7 @@ export const buyHelper = async (portfolio, stock, shares) => {
 */
 export const sellHelper = async (portfolio, stock, shares) => {
     try {
-        const response = await fetch(URL + 'api/market/sell', {
+        const response = await fetch('/api/market/sell', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -430,7 +425,7 @@ export const sellHelper = async (portfolio, stock, shares) => {
  */
 export const watchlistHelper = async (portfolioFilter) => {
     try {
-        const response = await fetch(URL + `api/watchlist?portfolio=${portfolioFilter}`, {
+        const response = await fetch(`/api/watchlist?portfolio=${portfolioFilter}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include', // Include cookies
@@ -459,7 +454,7 @@ export const watchlistHelper = async (portfolioFilter) => {
 */
 export const addWatchHelper = async (portfolio, stock) => {
     try {
-        const response = await fetch(URL + 'api/watchlist/add', {
+        const response = await fetch('/api/watchlist/add', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -488,7 +483,7 @@ export const addWatchHelper = async (portfolio, stock) => {
  */
 export const removeWatchHelper = async (portfolio, stock) => {
     try {
-        const response = await fetch(URL + 'api/watchlist/remove', {
+        const response = await fetch('/api/watchlist/remove', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -515,7 +510,7 @@ export const removeWatchHelper = async (portfolio, stock) => {
  */
 export const emailHelper = async (email, subject, message) => {
     try {
-        const response = await fetch(URL + 'api/email', {
+        const response = await fetch('/api/email', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
