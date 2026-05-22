@@ -1,38 +1,30 @@
 // Dependencies
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { emailHelper } from '../../utils/helpers.js';
 
 // Import styles
 import "./footer.scss";
 
 const Footer = () => {
-    // States
-    const [email, setEmail] = useState('');
-    const [subject, setSubject] = useState('');
-    const [message, setMessage] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-
-    useEffect(() => {
-        setEmail('');
-        setSubject('');
-        setMessage('');
-        setSuccess('');
-        setError('');
-    }, []);
 
     const handleEmail = async (e) => {
         e.preventDefault();
         setSuccess('');
         setError('');
 
+        const form = e.currentTarget;
+        const formData = new FormData(form);
+        const email = formData.get('email');
+        const subject = formData.get('subject');
+        const message = formData.get('message');
+
         const data = await emailHelper(email, subject, message);
 
         if (data.success) {
             setSuccess(data.message);
-            setEmail('');
-            setSubject('');
-            setMessage('');
+            form.reset();
         }
         else {
             setError(data.message);
@@ -75,14 +67,14 @@ const Footer = () => {
                         <div className="modal-body">
                             <div className="mb-3">
                                 <label htmlFor="emailEmail" className='col-form-label'>Email:</label>
-                                <input onChange={(e) => setEmail(e.target.value)} type='text' className="form-control" id="emailEmail" name="emailEmail" required></input>
+                                <input type="email" className="form-control" id="emailEmail" name="email" required autoComplete="email" />
 
                                 <label htmlFor="emailSubject" className="col-form-label">Subject:</label>
-                                <input onChange={(e) => setSubject(e.target.value)} type="text" className="form-control" id="emailSubject" name="emailSubject" required></input>
+                                <input type="text" className="form-control" id="emailSubject" name="subject" required />
                             </div>
                             <div className="mb-3">
                                 <label htmlFor="emailBody" className="col-form-label">Message:</label>
-                                <textarea onChange={(e) => setMessage(e.target.value)} className="form-control" id="emailBody" required></textarea>
+                                <textarea className="form-control" id="emailBody" name="message" required />
                             </div>
                         </div>
 

@@ -466,12 +466,12 @@ export const addWatchHelper = async (portfolio, stock) => {
             return data;
         }
         else {
-            return ({ success: false, message: data.message || 'An error occured. Please try again.' });
+            return ({ success: false, message: 'An error occured. Please try again.' });
         }
     }
     catch (err) {
         log('error', 'addWatchHelper', 'Error: ', err.message || 'An error occured. Please try again.');
-        return ({ success: false, message: err.message || 'An error occured. Please try again.' });
+        return ({ success: false, message: 'An error occured. Please try again.' });
     }
 };
 
@@ -500,7 +500,7 @@ export const removeWatchHelper = async (portfolio, stock) => {
     }
     catch (err) {
         log('error', 'addWatchHelper', 'Error: ', err.message || 'An error occured. Please try again.');
-        return ({ success: false, message: err.message || 'An error occured. Please try again.' });
+        return ({ success: false, message: 'An error occured. Please try again.' });
     }
 };
 
@@ -522,12 +522,12 @@ export const emailHelper = async (email, subject, message) => {
             return data;
         }
         else {
-            return ({ success: false, message: data.message || 'An error occured. Please try again.' });
+            return ({ success: false, message: 'An error occured. Please try again.' });
         }
     }
     catch (err) {
         log('error', 'emailHelper', 'Error: ', err.message || 'An error occured. Please try again.');
-        return ({ success: false, message: err.message || 'An error occured. Please try again.' });
+        return ({ success: false, message: 'An error occured. Please try again.' });
     }
 }
 

@@ -12,18 +12,20 @@ const Register = () => {
     // Navigation
     const navigate = useNavigation();
 
-    // Register variables
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [passwordConfirmation, setPasswordConfirmation] = useState('');
     const [error, setError] = useState('');
 
     const handleRegister = async (e) => {
         e.preventDefault();
-        setError(''); // Clear any previous errors
+        setError('');
+
+        const form = e.currentTarget;
+        const formData = new FormData(form);
+        const firstName = formData.get('firstName');
+        const lastName = formData.get('lastName');
+        const email = formData.get('email');
+        const username = formData.get('username');
+        const password = formData.get('password');
+        const passwordConfirmation = formData.get('passwordConfirmation');
 
         // Check if password and confirmation match
         if (password !== passwordConfirmation) {
@@ -47,6 +49,7 @@ const Register = () => {
         const data = await registerHelper(firstName, lastName, email, username, password, passwordConfirmation);
 
         if (data.success) {
+            form.reset();
             navigate('/login')(); // Redirect to login page after successful registration
             log('info', 'registser', 'Successfully logged in', data.user);
         } else {
@@ -70,25 +73,25 @@ const Register = () => {
                         <form onSubmit={handleRegister}>
                             <div className='form-group my-2'>
                                 <label htmlFor='firstName'>First Name</label>
-                                <input required value={firstName} onChange={(e) => setFirstName(e.target.value)} type="text" id='firstName' className="form-control"  placeholder="ex. John"/>
+                                <input required type="text" id="firstName" name="firstName" className="form-control" placeholder="ex. John" autoComplete="given-name" />
                                 <label htmlFor='lastName'>Last Name</label>
-                                <input required value={lastName} onChange={(e) => setLastName(e.target.value)} type="text" id='lastName' className="form-control"  placeholder="ex. Doe"/>
+                                <input required type="text" id="lastName" name="lastName" className="form-control" placeholder="ex. Doe" autoComplete="family-name" />
                             </div>
                             <div className="form-group my-2">
                                 <label htmlFor='email'>Email</label>
-                                <input required value={email} onChange={(e) => setEmail(e.target.value)} type="text" id='email' className="form-control"  placeholder="ex. JohnDoe123@example.com"/>
+                                <input required type="email" id="email" name="email" className="form-control" placeholder="ex. JohnDoe123@example.com" autoComplete="email" />
                             </div>
                             <div className="form-group my-2">
                                 <label htmlFor='username'>Username</label>
-                                <input required value={username} onChange={(e) => setUsername(e.target.value)} type="text" id='username' className="form-control"  placeholder="ex. JohnDoe123"/>
+                                <input required type="text" id="username" name="username" className="form-control" placeholder="ex. JohnDoe123" autoComplete="username" />
                             </div>
                             <div className="form-group my-2">
                                 <label htmlFor='password'>Password</label>
-                                <input required value={password} onChange={(e) => setPassword(e.target.value)} type="password" className="form-control" id="password" placeholder="ex. Password123"/>
+                                <input required type="password" id="password" name="password" className="form-control" placeholder="ex. Password123" autoComplete="new-password" />
                             </div>
                             <div className="form-group my-2">
                                 <label htmlFor='passwordConfirmation'>Confirm Password</label>
-                                <input required value={passwordConfirmation} onChange={(e) => setPasswordConfirmation(e.target.value)} type="password" className="form-control" id="passwordConfirmation" placeholder="ex. Password123"/>
+                                <input required type="password" id="passwordConfirmation" name="passwordConfirmation" className="form-control" placeholder="ex. Password123" autoComplete="new-password" />
                             </div>
                             <button className="btn my-2" type='submit'>Register</button>
                         </form>

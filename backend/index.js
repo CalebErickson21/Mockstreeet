@@ -19,14 +19,6 @@ app.set('trust proxy', 1);
 app.use(express.json()); // express.json enables parsing of json files
 dotenv.config(); // Load environment variables
 
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
-});
-
 // Define port
 const PORT = 5000;
 
@@ -1033,11 +1025,21 @@ app.post('/api/email', async (req, res) => {
     try {
         const { email, subject, message } = req.body;
 
+        log('debug', '/email', 'debug', [email, subject, message]);
+        
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            }
+        });
+
         const mailOptions = {
             from: email,
             to: process.env.EMAIL_USER,
-            subject: `Mockstreet message from: ${subject}`,
-            text: message
+            subject: `[Mockstreet email] [From: ${email}] [Subject: ${subject}]`,
+            text: `Email: [${email}]\nSubject: [${subject}]\nMessage: [${message}]`
         };
 
         try {

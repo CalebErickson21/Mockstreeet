@@ -16,18 +16,21 @@ const Login = () => {
     // Navigation
     const navigate = useNavigation();
 
-    // Login variables
-    const [userNameOrEmail, setUserNameOrEmail] = useState('');
-    const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        setError(''); 
+        setError('');
+
+        const form = e.currentTarget;
+        const formData = new FormData(form);
+        const userNameOrEmail = formData.get('userNameOrEmail');
+        const password = formData.get('password');
 
         const data = await loginHelper(userNameOrEmail, password);
 
         if (data.success) {
+            form.reset();
             setUser(data.user);
             navigate('/')();
             log('info', 'login', 'Successfully logged in', data.user);
@@ -53,12 +56,12 @@ const Login = () => {
                         <form onSubmit={handleLogin}>
                             <div className="form-group my-2">
                                 <label htmlFor='username'>User Name or Email</label>
-                                <input required type="text" id='username' value={userNameOrEmail} onChange={(e) => setUserNameOrEmail(e.target.value)} className="form-control"  placeholder="ex. JohnDoe123"/>
+                                <input required type="text" id="username" name="userNameOrEmail" className="form-control" placeholder="ex. JohnDoe123" autoComplete="username" />
                             </div>
 
                             <div className="form-group my-2">
                                 <label htmlFor='password'>Password</label>
-                                <input required type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="form-control" id="password" placeholder="ex. Password123"/>
+                                <input required type="password" id="password" name="password" className="form-control" placeholder="ex. Password123" autoComplete="current-password" />
                             </div>
 
                             <button  type='submit' className="btn my-2">Login</button>
