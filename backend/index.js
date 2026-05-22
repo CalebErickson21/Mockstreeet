@@ -59,16 +59,25 @@ app.use(session({
     }
 }));
 
+// Email transporter config
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
+
 
 /** Check User Authorization Route that can be directly called by frontend
  */
 app.get('/api/check-auth', (req, res) => {
     try { 
         if (req.session.user) {
-            log('info', '/check-auth', 'User is authenticated', { user: req.session.user.user_id });
+            // log('info', '/check-auth', 'User is authenticated', { user: req.session.user.user_id });
             return res.status(200).json({ success: true, user: req.session.user.username, message: 'User is authenticated' });
         } else {
-            log('info', '/check-auth', 'User not authenticated');
+            // log('info', '/check-auth', 'User not authenticated');
             return res.status(200).json({ success: false, user: null, message: 'User is not authenticated' }); // Still successful because users can be on homepage and not be authenticated
         }
     }
@@ -96,7 +105,7 @@ app.post('/api/login', async (req, res) => {
         
         // User not found
         if (queryRes.rows.length === 0) {
-            log('info', '/login', 'Invalid username or email');
+            // log('info', '/login', 'Invalid username or email');
             return res.status(401).json({success: false, message: 'Invalid login'}); // Return 401 (unauthorized)
         }
 
@@ -111,7 +120,7 @@ app.post('/api/login', async (req, res) => {
 
         // Successful login
         req.session.user = { user_id: user.user_id, username: user.username, email: user.email }; // Store user data for session
-        log('info', '/login', 'Login successful', req.session.user.user_id); // Log information
+        // log('info', '/login', 'Login successful', req.session.user.user_id); // Log information
         return res.status(200).json({success: true, user: req.session.user.username}); // Return successful login to frontend (200 is success)
     }
     catch (err) {
@@ -129,13 +138,13 @@ app.get('/api/logout', (req, res) => {
     try {
         // No user logged in 
         if (!req.session.user) {
-            log('info', '/logout', 'No user to log out');
+            // log('info', '/logout', 'No user to log out');
             return res.status(200).json({ success: false, message: 'No user to log out' });
         }
 
         // Log user out
         req.session.destroy(() => { // Log user out
-            log('info', '/logout', 'User logged out'); // Log information
+            // log('info', '/logout', 'User logged out'); // Log information
             return res.status(200).json({ success: true, message: 'User logged out' }); // Return logout success to frontend (200 is success)
         });
     }
@@ -210,7 +219,7 @@ app.post('/api/register', async (req, res) => {
         }
 
         // Successful registration
-        log('info', '/register', 'Successful registration', {firstName: firstName, lastName: lastName, email: email }); // Log successful registration
+        // log('info', '/register', 'Successful registration', {firstName: firstName, lastName: lastName, email: email }); // Log successful registration
         return res.status(201).json({ success: true, user: {username: username, email: email}, message: 'Registered successfully' }); // Successful register (201 = created)
     }
     catch (err) {
@@ -242,7 +251,7 @@ app.get('/api/portfolio/names', checkAuthHelper, async (req, res) => {
         const portfolioNames = portfolioQuery.map(p => p.portfolio_name);
         
         // Return result
-        log('info', '/portfolio/names', 'Porfolio names fetched successfully', { user: req.session.user.user_id, portfolios: portfolioNames});
+        // log('info', '/portfolio/names', 'Porfolio names fetched successfully', { user: req.session.user.user_id, portfolios: portfolioNames});
         return res.status(200).json({ success: true, portfolioNames: portfolioNames});
     }
     catch (err) {
@@ -295,7 +304,7 @@ app.get('/api/portfolio/stocks', checkAuthHelper, async (req, res) => {
 
         // If no stocks in portfolio
         if (stocks.length === 0) {
-            log('info', 'portfolio/stocks', 'Empty portfolio', { stocks: [] });
+            // log('info', 'portfolio/stocks', 'Empty portfolio', { stocks: [] });
             return res.status(200).json({ success: true, stocks: [], value: 0 });
         }
 
@@ -327,7 +336,7 @@ app.get('/api/portfolio/stocks', checkAuthHelper, async (req, res) => {
             });
 
             // Send result
-            log('info', 'portfolio/stocks', 'Stocks fetched successfully', stockData);
+            // log('info', 'portfolio/stocks', 'Stocks fetched successfully', stockData);
             return res.status(200).json({ success: true, stocks: stockData, value: portfolioValue.toFixed(2) });
         }
         catch (err) {
@@ -463,7 +472,7 @@ app.get('/api/transactions', checkAuthHelper, async (req, res) => {
         const { rows: queryRes } = await db.query(transactionQuery, transactionQueryParams);
 
         if (queryRes.length === 0) {
-            log('info', '/portfolio/transactions', 'No transactions with given params', { user: req.session.user.user_id });
+            // log('info', '/portfolio/transactions', 'No transactions with given params', { user: req.session.user.user_id });
             return res.status(200).json({ success: true, message: 'No transactions', transactions: []});
         }
 
@@ -496,7 +505,7 @@ app.get('/api/transactions', checkAuthHelper, async (req, res) => {
             });
 
             // Return result
-            log('info', '/portfolio/transactions', 'Successfully fetched transactions', { user: req.session.user.user_id, transactions: transactionData });
+            // log('info', '/portfolio/transactions', 'Successfully fetched transactions', { user: req.session.user.user_id, transactions: transactionData });
             return res.status(200).json({ success: true, transactions: transactionData });
         }
         catch (err) {
@@ -533,7 +542,7 @@ app.get('/api/watchlist', checkAuthHelper, async (req, res) => {
             [ portfolioParam, req.session.user.user_id ]
         );
         if (queryRes.length === 0) {
-            log('info', '/portfolio/watchlist', 'No stocks in portfolio watchlist');
+            // log('info', '/portfolio/watchlist', 'No stocks in portfolio watchlist');
             return res.status(200).json({ success: true, watchlist: [] });
         }
 
@@ -547,7 +556,7 @@ app.get('/api/watchlist', checkAuthHelper, async (req, res) => {
         }
 
         // Return result
-        log('info', '/portfolio/watchlist', 'Stocks fetched successfully', { user: req.session.user.user_id, stock: stockData });
+        // log('info', '/portfolio/watchlist', 'Stocks fetched successfully', { user: req.session.user.user_id, stock: stockData });
         return res.status(200).json({ success: true, watchlist: stockData });
     }
     catch (err) {
@@ -606,7 +615,7 @@ app.post('/api/watchlist/add', checkAuthHelper, async (req, res) => {
         }
 
         // Return successful result
-        log('info', '/portfolio/watchlist/add', 'Stock added successfully', { user: req.session.user.user_id, stock: stockSymbol });
+        // log('info', '/portfolio/watchlist/add', 'Stock added successfully', { user: req.session.user.user_id, stock: stockSymbol });
         return res.status(200).json({ success: true, message: 'Stock added successfully' });
 
     }
@@ -668,7 +677,7 @@ app.post('/api/watchlist/remove', checkAuthHelper, async (req, res) => {
         }
 
         // Return success
-        log('info', '/watchlist/remove', 'Stock removed successfully', { user: req.session.user.user_id });
+        // log('info', '/watchlist/remove', 'Stock removed successfully', { user: req.session.user.user_id });
         return res.status(200).json({ success: true, message: 'Watchlist updated successfully' });
 
     }
@@ -707,7 +716,7 @@ app.get('/api/market/search', checkAuthHelper, async (req, res) => {
         }
 
         // Return result
-        log('info', '/market/search', 'Stocks fetched successfully', stockData);
+        // log('info', '/market/search', 'Stocks fetched successfully', stockData);
         return res.status(200).json({ success: true, stock: stockData });
     }
     catch (err) {
@@ -818,7 +827,7 @@ app.post('/api/market/buy', checkAuthHelper, async (req, res) => {
 
 
         // Return successful result
-        log('info', '/market/buy', 'Stock bought successfully', { user: req.session.user.user_id, stock: stockSymbol, shares: numShares });
+        // log('info', '/market/buy', 'Stock bought successfully', { user: req.session.user.user_id, stock: stockSymbol, shares: numShares });
         return res.status(200).json({ success: true, message: 'Stock bought successfully' });
     }
     catch (err) {
@@ -880,7 +889,7 @@ app.post('/api/market/sell', checkAuthHelper, async (req, res) => {
                 [ portfolioId, stockSymbol]
             );
             if (sharesRes.length !== 1 || sharesRes[0].shares < numShares) {
-                log('info', '/market/sell', 'Cannot sell unowned stock', { user: req.session.user.user_id });
+                // log('info', '/market/sell', 'Cannot sell unowned stock', { user: req.session.user.user_id });
                 return res.status(400).json({ success: false, message: 'Insufficient shares' });
             }
 
@@ -919,7 +928,7 @@ app.post('/api/market/sell', checkAuthHelper, async (req, res) => {
         }
 
         // Return successful result
-        log('info', '/market/sell', 'Stock sold successfully', { user: req.session.user.user_id, stock: stockSymbol, shares: numShares });
+        // log('info', '/market/sell', 'Stock sold successfully', { user: req.session.user.user_id, stock: stockSymbol, shares: numShares });
         return res.status(200).json({ success: true, message: 'Stock sold successfully' });
     }
     catch (err) {
@@ -948,7 +957,7 @@ app.get('/api/balance', checkAuthHelper, async (req, res) => {
 
         // Return result
         const balance = queryRes[0].balance;
-        log('info', '/user/stats', 'Successfully fetched user balance', { user: req.session.user.user_id, balance: balance });
+        // log('info', '/user/stats', 'Successfully fetched user balance', { user: req.session.user.user_id, balance: balance });
         return res.status(200).json( { success: true, balance: balance, message: 'Balance fetched successfully' });
     }
     catch (err) {
@@ -966,7 +975,7 @@ app.post('/api/balance/add', checkAuthHelper, async (req, res) => {
         const { balance } = req.body;
         const increment = formatSharesBalance(balance);
         if (isNaN(increment))  {
-            log('info', '/balance/add', 'Increment input must be a number', { user: req.session.user.user_id });
+            // log('info', '/balance/add', 'Increment input must be a number', { user: req.session.user.user_id });
             return res.status(400).json({ success: false, message: 'Balance must be a number' });
         }
         if (increment <= 0) {
@@ -989,7 +998,7 @@ app.post('/api/balance/add', checkAuthHelper, async (req, res) => {
             }
 
             if (queryRes[0].balance + increment >= MAX_NUM) {
-                log('info', '/balance/add', 'Increment result cannot exceed max balance', { user: req.session.user.user_id });
+                // log('info', '/balance/add', 'Increment result cannot exceed max balance', { user: req.session.user.user_id });
                 return res.status(400).json({ success: false, message: 'Invalid increment input.' });
             }
 
@@ -1008,7 +1017,7 @@ app.post('/api/balance/add', checkAuthHelper, async (req, res) => {
             return res.status(500).json({ success: false, message: 'Internal server error' });
         }
 
-        log('info', '/balance/add', 'Balance increased successfully', { user: req.session.user.user_id });
+        // log('info', '/balance/add', 'Balance increased successfully', { user: req.session.user.user_id });
         return res.status(200).json({ success: true, message: 'Balance increased successfully' });
     }
     catch (err) {
@@ -1024,16 +1033,6 @@ app.post('/api/balance/add', checkAuthHelper, async (req, res) => {
 app.post('/api/email', async (req, res) => {
     try {
         const { email, subject, message } = req.body;
-
-        log('debug', '/email', 'debug', [email, subject, message]);
-        
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            }
-        });
 
         const mailOptions = {
             from: email,
