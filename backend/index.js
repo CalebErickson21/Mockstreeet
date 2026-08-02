@@ -73,7 +73,7 @@ app.use(
 			secure: isProduction,
 			httpOnly: true,
 			sameSite: "lax",
-			maxAge: 1000 * 60 * 60, // 1 hour session
+			maxAge: 1000 * 60 * 25, // 25 minute session
 		},
 	}),
 );
@@ -85,6 +85,8 @@ const transporter = nodemailer.createTransport({
 		user: process.env.EMAIL_USER,
 		pass: process.env.EMAIL_PASS,
 	},
+	disableFileAccess: true,
+	disableUrlAccess: true,
 });
 
 /** Readiness check for automatic VM instance shutdown
