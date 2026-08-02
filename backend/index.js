@@ -87,19 +87,47 @@ const transporter = nodemailer.createTransport({
 	},
 });
 
+/** Readiness check for automatic VM instance shutdown
+ */
+app.get("/api/health/ready", async (req, res) => {
+	const startedAt = Date.now();
+
+	try {
+		await db.query("SELECT 1");
+
+		return res
+			.set("Cache-Control", "no-store")
+			.status(200)
+			.json({
+				success: true,
+				status: "ready",
+				database: "connected",
+				responseTimeMs: Date.now() - startedAt,
+			});
+	} catch (err) {
+		const message = err instanceof Error ? err.message : String(err);
+
+		log("error", "/api/health/ready", `Readiness check failed: ${message}`);
+
+		return res.set("Cache-Control", "no-store").status(503).json({
+			success: false,
+			status: "not_ready",
+			database: "unavailable",
+		});
+	}
+});
+
 /** Check User Authorization Route that can be directly called by frontend
  */
 app.get("/api/check-auth", (req, res) => {
 	try {
 		if (req.session.user) {
 			// log('info', '/check-auth', 'User is authenticated', { user: req.session.user.user_id });
-			return res
-				.status(200)
-				.json({
-					success: true,
-					user: req.session.user.username,
-					message: "User is authenticated",
-				});
+			return res.status(200).json({
+				success: true,
+				user: req.session.user.username,
+				message: "User is authenticated",
+			});
 		} else {
 			// log('info', '/check-auth', 'User not authenticated');
 			return res
@@ -195,13 +223,11 @@ app.post("/api/register", async (req, res) => {
 			username.length > 25 ||
 			password.length > 25
 		) {
-			return res
-				.status(400)
-				.json({
-					success: false,
-					message:
-						"First name, last name, username, and password must be less than 25 characters",
-				}); // User error (400)
+			return res.status(400).json({
+				success: false,
+				message:
+					"First name, last name, username, and password must be less than 25 characters",
+			}); // User error (400)
 		}
 		if (email.length > 50) {
 			return res
@@ -257,13 +283,11 @@ app.post("/api/register", async (req, res) => {
 
 		// Successful registration
 		// log('info', '/register', 'Successful registration', {firstName: firstName, lastName: lastName, email: email }); // Log successful registration
-		return res
-			.status(201)
-			.json({
-				success: true,
-				user: { username: username, email: email },
-				message: "Registered successfully",
-			}); // Successful register (201 = created)
+		return res.status(201).json({
+			success: true,
+			user: { username: username, email: email },
+			message: "Registered successfully",
+		}); // Successful register (201 = created)
 	} catch (err) {
 		const { firstName = null, lastName = null, email = null } = req.body || {};
 		log("error", "/register", `Registration error: ${err.message}`, {
@@ -439,12 +463,10 @@ app.post("/api/portfolio/new", checkAuthHelper, async (req, res) => {
 		}
 		if (portfolioName.length > 50) {
 			// Length
-			return res
-				.status(400)
-				.json({
-					success: false,
-					message: "Portfolio name must be less than 50 characters",
-				});
+			return res.status(400).json({
+				success: false,
+				message: "Portfolio name must be less than 50 characters",
+			});
 		}
 
 		try {
@@ -512,25 +534,21 @@ app.get("/api/transactions", checkAuthHelper, async (req, res) => {
 			log("error", "/portfolio/transactions", "Portfolio filter over 50 characters", {
 				user: req.session.user.user_id,
 			});
-			return res
-				.status(400)
-				.json({
-					success: false,
-					message: "Portfolio name must be less than 50 characters.",
-					transactions: [],
-				});
+			return res.status(400).json({
+				success: false,
+				message: "Portfolio name must be less than 50 characters.",
+				transactions: [],
+			});
 		}
 		if (stockFilter.length >= 10) {
 			log("error", "/portfolio/transactions", "Stock filter over 10 characters", {
 				user: req.session.user.user_id,
 			});
-			return res
-				.status(400)
-				.json({
-					success: false,
-					message: "Stock length must be less than 10 characers.",
-					transactions: [],
-				});
+			return res.status(400).json({
+				success: false,
+				message: "Stock length must be less than 10 characers.",
+				transactions: [],
+			});
 		}
 		if (
 			transactionFilter !== "BUY" &&
@@ -840,12 +858,10 @@ app.get("/api/market/search", checkAuthHelper, async (req, res) => {
 				log("error", "/market/search", "Stock symbol too long", {
 					user: req.session.user.user_id,
 				});
-				return res
-					.status(400)
-					.json({
-						success: false,
-						message: "Stock symbol must be less than 10 characters",
-					});
+				return res.status(400).json({
+					success: false,
+					message: "Stock symbol must be less than 10 characters",
+				});
 			}
 		}
 
