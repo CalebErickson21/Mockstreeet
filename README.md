@@ -60,6 +60,7 @@ Ensure `.env` is filled in (Postgres credentials, `SESSION_SECRET`, `ALLOWED_ORI
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
+# If error try: DOCKER_BUILDKIT=0 docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```
 
 App: ports **80** (HTTP) and **443** (HTTPS)

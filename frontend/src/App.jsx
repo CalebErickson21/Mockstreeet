@@ -1,5 +1,5 @@
 // Import functions
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router";
 
 // Import providers
 import { AppProviders } from "./contexts/AppProviders.jsx";
