@@ -1,28 +1,31 @@
 // Helpers
-import { addWatchHelper } from '../../utils/helpers.js';
+import { addWatchHelper } from "../../utils/helpers.js";
 
 // Contexts
-import { usePortfolio } from '../../contexts/portfolioContext.jsx';
+import { usePortfolio } from "../../contexts/portfolioContext.jsx";
 
 // Styles
-import './addWatchBtn.scss';
+import "./addWatchBtn.scss";
 
 const AddWatchBtn = ({ stock }) => {
-    // Contexts
-    const { portfolioFilter, updateWatchlist } = usePortfolio();
-    
-    const handleAdd = async (e) => {
-        e.preventDefault();
-        
-        const data = await addWatchHelper(portfolioFilter, stock);
+	// Contexts
+	const { portfolioFilter, updateWatchlist } = usePortfolio();
 
-        if (data.success) { await updateWatchlist(); }
+	const handleAdd = async (e) => {
+		e.preventDefault();
 
-    }
+		const data = await addWatchHelper(portfolioFilter, stock);
 
-    return (
-        <button onClick={(e) => handleAdd(e)} className='btn btn-dark-blue'>Watch</button>
-    );
-}
+		if (data.success) {
+			await updateWatchlist();
+		}
+	};
+
+	return (
+		<button onClick={(e) => handleAdd(e)} className="btn btn-dark-blue">
+			Watch
+		</button>
+	);
+};
 
 export default AddWatchBtn;

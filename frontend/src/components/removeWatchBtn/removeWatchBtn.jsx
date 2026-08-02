@@ -1,26 +1,29 @@
 // Helpers
-import { removeWatchHelper } from '../../utils/helpers.js';
+import { removeWatchHelper } from "../../utils/helpers.js";
 
 // Contexts
-import { usePortfolio } from '../../contexts/portfolioContext.jsx';
+import { usePortfolio } from "../../contexts/portfolioContext.jsx";
 
 // Styles
-import './removeWatchBtn.scss';
+import "./removeWatchBtn.scss";
 
 const RemoveWatchBtn = ({ stock }) => {
-    // Contexts
-    const { portfolioFilter, updateWatchlist } = usePortfolio();
+	// Contexts
+	const { portfolioFilter, updateWatchlist } = usePortfolio();
 
-    const handleRemove = async () => {
-        const data = await removeWatchHelper(portfolioFilter, stock);
+	const handleRemove = async () => {
+		const data = await removeWatchHelper(portfolioFilter, stock);
 
-        if (data.success) { await updateWatchlist(); }
+		if (data.success) {
+			await updateWatchlist();
+		}
+	};
 
-    }
-
-    return (
-        <button onClick={handleRemove} className='btn btn-dark-blue'>Unwatch</button>
-    );
-}
+	return (
+		<button onClick={handleRemove} className="btn btn-dark-blue">
+			Unwatch
+		</button>
+	);
+};
 
 export default RemoveWatchBtn;

@@ -5,33 +5,30 @@ import { useAuth } from "./authContext";
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-    const { user } = useAuth();
-    const [balance, setBalance] = useState(0);
+	const { user } = useAuth();
+	const [balance, setBalance] = useState(0);
 
-    const updateBalance = async () => {
-        const data = await balanceHelper();
+	const updateBalance = async () => {
+		const data = await balanceHelper();
 
-        if (data.success) {
-            setBalance(data.balance);
-        }
-        else {
-            log('error', 'UserProvider', 'Error fetching user data');
-        }
-    }
-    useEffect(() => {
-        const refresh = async () => {
-            user ? await updateBalance() : setBalance(10000);
-        }
-        refresh();
-    }, [user]);
+		if (data.success) {
+			setBalance(data.balance);
+		} else {
+			log("error", "UserProvider", "Error fetching user data");
+		}
+	};
+	useEffect(() => {
+		const refresh = async () => {
+			user ? await updateBalance() : setBalance(10000);
+		};
+		refresh();
+	}, [user]);
 
-    return (
-        <UserContext.Provider value = {{ balance, updateBalance }}>
-            { children }
-        </UserContext.Provider>
-    );
-}
+	return (
+		<UserContext.Provider value={{ balance, updateBalance }}>{children}</UserContext.Provider>
+	);
+};
 
 export const useUser = () => {
-    return useContext(UserContext);
-}
+	return useContext(UserContext);
+};
