@@ -1,4 +1,4 @@
-# Staging / QA stack — production-like containers before Vercel + Render.
+# Staging / QA stack - production-like containers before Vercel + Render.
 # Usage: docker compose -f docker-compose.yml -f docker-compose.staging.yml up --build
 #
 # Not for day-to-day coding (use npm on the host). Not deployed to production.
