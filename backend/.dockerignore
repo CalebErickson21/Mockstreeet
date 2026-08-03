@@ -5,3 +5,7 @@ npm-debug.log*
 .gitignore
 .env
 .env.*
+!.env.example
+*.md
+.vscode
+.idea

@@ -1,7 +1,12 @@
 node_modules
 dist
-build
 npm-debug.log*
 .DS_Store
 .git
 .gitignore
+.env
+.env.*
+!.env.example
+*.md
+.vscode
+.idea

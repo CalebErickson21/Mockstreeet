@@ -1,5 +1,5 @@
--- Mockstreet database initialization
--- Runs only on first initialization of a fresh Postgres data volume.
+-- Initial Mockstreet schema
+-- Idempotent: safe to re-run on databases that already have these objects.
 
 CREATE TABLE IF NOT EXISTS users (
     user_id SERIAL PRIMARY KEY,
