@@ -13,7 +13,7 @@ Browser → Vercel (Vite SPA) → Render Web Service (Docker) → Render Postgre
 **Local development**
 
 ```text
-npm Vite (:3000) → npm Express (:5000) → PostgreSQL (Compose :5433)
+npm Vite (:5173) → npm Express (:5000) → PostgreSQL (Compose :5433)
 ```
 
 **Staging / QA (Docker)**
@@ -80,7 +80,7 @@ npm run dev
 API: [http://localhost:5000](http://localhost:5000)  
 Health: [http://localhost:5000/health](http://localhost:5000/health)
 
-Example `DATABASE_URL`: `postgresql://mockstreet:mockstreet@localhost:5433/mockstreet`
+Example `DATABASE_URL`: `postgresql://postgres:postgres@localhost:5433/mockstreet-db` (must match root `.env` `POSTGRES_*`)
 
 ### 3. Frontend
 
@@ -91,11 +91,7 @@ npm ci
 npm run dev
 ```
 
-App: [http://localhost:3000](http://localhost:3000)
-
-### Local environment variables
-
-**Backend** (`backend/.env`): `NODE_ENV`, `PORT`, `DATABASE_URL`, `SESSION_SECRET`, `ALLOWED_ORIGINS`, `EMAIL_USER`, `EMAIL_PASS`, `FINNHUB_API_KEY`
+App: [http://localhost:5173](http://localhost:5173)
 
 **Frontend** (`frontend/.env`): `VITE_API_URL`
 
