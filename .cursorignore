@@ -1,0 +1,11 @@
+**/.env
+**/.env.*
+**/node_modules
+**/dist
+**/build
+**/__pycache__
+**/coverage
+**/*.pem
+**/*.key
+**/secrets/
+**/*.log*

@@ -1,11 +1,12 @@
-/transferTmp
-
 # Environment variables
 **/*.env 
 !**/*.env.example
 
 # Node modules
 **/node_modules
+
+# Dist
+**/dist
 
 # SSL
 **/ssl

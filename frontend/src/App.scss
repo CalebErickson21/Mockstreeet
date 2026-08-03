@@ -1,4 +1,4 @@
-@import './styles/base.scss';
+@use "./styles/variables" as *;
 
 #app-container {
     background-color: $DARK_BLUE;

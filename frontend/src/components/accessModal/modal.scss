@@ -1,4 +1,4 @@
-@import "../../styles/base.scss";
+@use "../../styles/variables" as *;
 
 body.modal-open {
 	overflow: hidden;

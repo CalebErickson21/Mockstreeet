@@ -2,6 +2,7 @@
 import db from "./db.js"; // Connect to database
 import express from "express"; // Routes and middleware
 import session from "express-session"; // User sessions
+import connectPgSimple from "connect-pg-simple"; // Postgres session store
 import cors from "cors"; // Cross-origin resource sharing
 import bcrypt from "bcrypt"; // Password hashing
 import dotenv from "dotenv"; // Environment variables
@@ -20,35 +21,43 @@ import {
 	fetchFinnhubProfile,
 } from "./helpers.js";
 
+dotenv.config(); // Load environment variables (db.js also loads them)
+
 // Declare global constants
 const MAX_NUM = 999999999999.99;
+const isProduction = process.env.NODE_ENV === "production";
+const port = Number(process.env.PORT) || 5000;
+
+function requireEnv(name) {
+	if (!process.env[name]) {
+		console.error(`Missing required environment variable: ${name}`);
+		process.exit(1);
+	}
+}
+
+if (isProduction) {
+	requireEnv("DATABASE_URL");
+	requireEnv("SESSION_SECRET");
+	requireEnv("ALLOWED_ORIGINS");
+} else {
+	requireEnv("SESSION_SECRET");
+	requireEnv("ALLOWED_ORIGINS");
+}
 
 // Configurations
 const app = express(); // Create express app instance
-app.set("trust proxy", 1);
+app.set("trust proxy", 1); // Trust Render (and other) reverse proxies
 app.use(express.json()); // express.json enables parsing of json files
-dotenv.config(); // Load environment variables
 
-// Define port
-const PORT = 5000;
-
-const defaultDevOrigins =
-	"http://localhost:3000,http://localhost,http://localhost:80,http://127.0.0.1:3000,http://127.0.0.1,http://127.0.0.1:80";
-const allowedOrigins = process.env.ALLOWED_ORIGINS
-	? process.env.ALLOWED_ORIGINS.split(",")
-			.map((o) => o.trim())
-			.filter(Boolean)
-	: process.env.NODE_ENV === "production"
-		? []
-		: defaultDevOrigins
-				.split(",")
-				.map((o) => o.trim())
-				.filter(Boolean);
+const allowedOrigins = process.env.ALLOWED_ORIGINS.split(",")
+	.map((o) => o.trim())
+	.filter(Boolean);
 
 // Enable CORS
 app.use(
 	cors({
 		origin: (origin, callback) => {
+			// Allow non-browser clients (no Origin) and exact allowlisted origins
 			if (!origin || allowedOrigins.includes(origin)) {
 				callback(null, true);
 			} else {
@@ -59,12 +68,16 @@ app.use(
 	}),
 );
 
-const isProduction = process.env.NODE_ENV === "production";
 const getSessionUserId = (req) => req.session?.user?.user_id ?? "No user";
+const PgSession = connectPgSimple(session);
 
-// Configure sessions
+// Configure sessions (Postgres-backed store; required for multi-instance / restarts)
 app.use(
 	session({
+		store: new PgSession({
+			pool: db,
+			createTableIfMissing: true,
+		}),
 		secret: process.env.SESSION_SECRET, // Sign and encrypt session data
 		resave: false, // Prevents unnecessary session saving
 		saveUninitialized: false, // Do not save empty sessions (user visits but does not log in)
@@ -72,7 +85,8 @@ app.use(
 		cookie: {
 			secure: isProduction,
 			httpOnly: true,
-			sameSite: "lax",
+			// Cross-site Vercel → Render needs SameSite=None + Secure in production
+			sameSite: isProduction ? "none" : "lax",
 			maxAge: 1000 * 60 * 25, // 25 minute session
 		},
 	}),
@@ -89,7 +103,12 @@ const transporter = nodemailer.createTransport({
 	disableUrlAccess: true,
 });
 
-/** Readiness check for automatic VM instance shutdown
+/** Lightweight liveness check for Render health checks */
+app.get("/health", (req, res) => {
+	res.set("Cache-Control", "no-store").status(200).json({ status: "ok" });
+});
+
+/** Readiness check (includes database connectivity)
  */
 app.get("/api/health/ready", async (req, res) => {
 	const startedAt = Date.now();
@@ -1237,6 +1256,28 @@ app.post("/api/email", async (req, res) => {
 });
 
 // Start server
-app.listen(PORT, "0.0.0.0", () => {
-	console.log(`Server is running on port http://localhost:${PORT}`);
+const server = app.listen(port, "0.0.0.0", () => {
+	console.log(`Server listening on port ${port}`);
 });
+
+async function shutdown(signal) {
+	console.log(`Received ${signal}, shutting down gracefully`);
+	server.close(async () => {
+		try {
+			await db.end();
+			console.log("Database pool closed");
+		} catch (err) {
+			const message = err instanceof Error ? err.message : String(err);
+			console.error("Error closing database pool:", message);
+		}
+		process.exit(0);
+	});
+
+	setTimeout(() => {
+		console.error("Forced shutdown after timeout");
+		process.exit(1);
+	}, 10_000).unref();
+}
+
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));

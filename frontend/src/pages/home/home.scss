@@ -1,4 +1,4 @@
-@import "../../styles/base.scss";
+@use "../../styles/variables" as *;
 
 #home {
     height: 100dvh - $NAV_HEIGHT;
