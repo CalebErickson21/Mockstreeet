@@ -7,6 +7,7 @@ import { AppProviders } from "./contexts/AppProviders.jsx";
 // Import components
 import Header from "./components/header/header.jsx";
 import Footer from "./components/footer/footer.jsx";
+import BootOverlay from "./components/bootOverlay/bootOverlay.jsx";
 
 // Import pages
 import Home from "./pages/home/home.jsx";
@@ -20,6 +21,7 @@ const App = () => {
 	// App layout
 	return (
 		<AppProviders>
+			<BootOverlay />
 			<div id="app-container">
 				<Header />
 				<Routes>

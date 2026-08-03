@@ -183,6 +183,25 @@ export const checkAuthHelper = async () => {
 	}
 };
 
+/** Health readiness helper — true when backend + DB are ready (cold-start safe).
+ *
+ * @returns {Promise<boolean>}
+ */
+export const checkHealthReadyHelper = async () => {
+	try {
+		const response = await fetch(apiUrl("/api/health/ready"), {
+			method: "GET",
+			headers: { "Content-Type": "application/json" },
+			cache: "no-store",
+		});
+		const data = await response.json();
+
+		return response.ok && data.success === true;
+	} catch {
+		return false;
+	}
+};
+
 /** Portfolio Name Helper
  *
  * @returns all the portfolio names for a user
