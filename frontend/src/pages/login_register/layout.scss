@@ -1,4 +1,4 @@
-@import '../../styles/base.scss';
+@use "../../styles/variables" as *;
 
 #login-register-container {
     .row {

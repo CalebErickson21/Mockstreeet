@@ -1,4 +1,4 @@
-@import '../../styles/base.scss';
+@use "../../styles/variables" as *;
 
 #portfolio-container {
     max-width: 100dvw;
