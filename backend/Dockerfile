@@ -1,5 +1,5 @@
-# Production image for Render, and local staging QA (docker-compose.staging.yml).
-FROM node:22-alpine AS prod
+# Production image for Render Web Service (root directory: backend).
+FROM node:22-alpine
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev

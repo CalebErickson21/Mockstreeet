@@ -26,10 +26,6 @@ dotenv.config(); // Load environment variables (db.js also loads them)
 // Declare global constants
 const MAX_NUM = 999999999999.99;
 const isProduction = process.env.NODE_ENV === "production";
-// Secure cookies are required for cross-site Vercel→Render; disable for local HTTP staging QA
-const useSecureCookies =
-	process.env.COOKIE_SECURE === "true" ||
-	(isProduction && process.env.COOKIE_SECURE !== "false");
 const port = Number(process.env.PORT) || 5000;
 
 function requireEnv(name) {
@@ -87,10 +83,10 @@ app.use(
 		saveUninitialized: false, // Do not save empty sessions (user visits but does not log in)
 		proxy: true,
 		cookie: {
-			secure: useSecureCookies,
+			secure: isProduction,
 			httpOnly: true,
-			// Cross-site Vercel → Render needs SameSite=None + Secure; local HTTP staging uses lax
-			sameSite: useSecureCookies ? "none" : "lax",
+			// Cross-site Vercel → Render needs SameSite=None + Secure in production
+			sameSite: isProduction ? "none" : "lax",
 			maxAge: 1000 * 60 * 25, // 25 minute session
 		},
 	}),

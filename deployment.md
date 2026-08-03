@@ -6,7 +6,7 @@
 Browser → Vercel frontend → Render backend (Docker) → Render PostgreSQL
 ```
 
-Nginx is not part of the architecture. Day-to-day local development runs Vite and Express on the host with Compose Postgres. Use `docker compose -f docker-compose.yml -f docker-compose.staging.yml up --build` for a production-like staging QA stack before deploying to Vercel + Render.
+Nginx is not part of the architecture. Local development runs Vite and Express on the host with Compose Postgres only (`docker compose up -d postgres`). Production is Vercel + Render.
 
 See [README.md](README.md) for the full local and production runbook.
 

@@ -16,12 +16,6 @@ Browser → Vercel (Vite SPA) → Render Web Service (Docker) → Render Postgre
 npm Vite (:5173) → npm Express (:5000) → PostgreSQL (Compose :5433)
 ```
 
-**Staging / QA (Docker)**
-
-```text
-Vite preview container (:3000) → backend prod image (:5000) → PostgreSQL (Compose)
-```
-
 Nginx is not used. Vercel serves production frontend; Render terminates TLS for the API; the frontend calls the backend via `VITE_API_URL`; the backend handles CORS and cookie sessions.
 
 Deployment checklist, known risks, and historical hosting decisions: **[deployment.md](deployment.md)**.
@@ -33,16 +27,14 @@ mockstreet/
 ├── frontend/                 # Vite + React SPA (deployed to Vercel)
 │   ├── public/
 │   ├── src/
-│   ├── Dockerfile            # Staging QA image only (not used by Vercel)
 │   ├── vercel.json
 │   └── .env.example
 ├── backend/                  # Express API (deployed to Render via Docker)
 │   ├── migrations/
 │   ├── scripts/migrate.js
-│   ├── Dockerfile            # prod image (Render + staging)
+│   ├── Dockerfile            # Render production image
 │   └── .env.example
-├── docker-compose.yml        # Local Postgres
-├── docker-compose.staging.yml # Staging QA: frontend + backend containers
+├── docker-compose.yml        # Local Postgres only
 ├── deployment.md
 └── README.md
 ```
@@ -50,12 +42,12 @@ mockstreet/
 ## Prerequisites
 
 - Node.js 22+
-- Docker and Docker Compose (Postgres + optional staging stack)
-- Copy env examples and fill in values for local npm workflow
+- Docker and Docker Compose (local PostgreSQL only)
+- Copy env examples and fill in values for local workflow
 
 ## Local development
 
-Day-to-day coding runs **frontend and backend on the host**. Nginx is not required.
+Frontend and backend run **on the host with npm**. Docker is only used for PostgreSQL. Nginx is not required.
 
 ### 1. PostgreSQL
 
@@ -93,32 +85,15 @@ npm run dev
 
 App: [http://localhost:5173](http://localhost:5173)
 
+### Local environment variables
+
+**Root** (`.env`): `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`
+
+**Backend** (`backend/.env`): `NODE_ENV`, `PORT`, `DATABASE_URL`, `SESSION_SECRET`, `ALLOWED_ORIGINS`, `EMAIL_USER`, `EMAIL_PASS`, `FINNHUB_API_KEY`
+
 **Frontend** (`frontend/.env`): `VITE_API_URL`
 
 Do not put database credentials, session secrets, email passwords, or private API keys in frontend env vars.
-
----
-
-## Staging / QA (Docker)
-
-Use this before pushing to Vercel + Render. It builds the **production backend image** and a **production frontend build** (served with `vite preview`) against Compose Postgres.
-
-```bash
-docker compose -f docker-compose.yml -f docker-compose.staging.yml up --build
-```
-
-- App: [http://localhost:3000](http://localhost:3000)
-- API: [http://localhost:5000](http://localhost:5000)
-
-Staging sets `COOKIE_SECURE=false` so session cookies work over local HTTP. Real Render production leaves cookies Secure (omit `COOKIE_SECURE` or set `true`).
-
-Optional root `.env` for staging secrets: `SESSION_SECRET`, `EMAIL_USER`, `EMAIL_PASS`, `FINNHUB_API_KEY`.
-
-```bash
-docker compose -f docker-compose.yml -f docker-compose.staging.yml down
-```
-
-This stack is **not** deployed to production. Vercel hosts the frontend; Render hosts the backend.
 
 ---
 
@@ -137,14 +112,14 @@ For the short checklist and background on why this stack was chosen, see **[depl
 
 ### Render backend (Web Service)
 
-| Setting | Value |
-| --- | --- |
-| Service type | Web Service |
-| Runtime | Docker |
-| Root directory | `backend` |
-| Dockerfile | `./Dockerfile` (relative to root directory) |
-| Health check path | `/health` |
-| Pre-deploy command | `npm run migrate` |
+| Setting            | Value                                       |
+| ------------------ | ------------------------------------------- |
+| Service type       | Web Service                                 |
+| Runtime            | Docker                                      |
+| Root directory     | `backend`                                   |
+| Dockerfile         | `./Dockerfile` (relative to root directory) |
+| Health check path  | `/health`                                   |
+| Pre-deploy command | `npm run migrate`                           |
 
 **Required environment variables** (set in the Render dashboard; no secret values in git):
 
@@ -155,8 +130,6 @@ For the short checklist and background on why this stack was chosen, see **[depl
 - `EMAIL_USER` / `EMAIL_PASS` — contact form (Gmail)
 - `FINNHUB_API_KEY` — market data
 
-Do **not** set `COOKIE_SECURE=false` on Render.
-
 Render sets `PORT` automatically; do not hard-code it.
 
 **Production migration command:** `npm run migrate`
@@ -165,12 +138,12 @@ After the final Vercel domain is known, update `ALLOWED_ORIGINS` on Render and r
 
 ### Vercel frontend
 
-| Setting | Value |
-| --- | --- |
-| Root directory | `frontend` |
-| Framework preset | Vite |
-| Build command | `npm run build` |
-| Output directory | `dist` |
+| Setting          | Value           |
+| ---------------- | --------------- |
+| Root directory   | `frontend`      |
+| Framework preset | Vite            |
+| Build command    | `npm run build` |
+| Output directory | `dist`          |
 
 **Environment variable** (Production):
 
@@ -182,11 +155,11 @@ After the final Vercel domain is known, update `ALLOWED_ORIGINS` on Render and r
 
 ## Docker Compose services
 
-| Service | File | Role |
-| --- | --- | --- |
-| `postgres` | `docker-compose.yml` | Local + staging database |
-| `backend` | `docker-compose.staging.yml` | Prod image for QA (same Dockerfile as Render) |
-| `frontend` | `docker-compose.staging.yml` | Prod build + `vite preview` for QA only |
+| Service    | Role                            |
+| ---------- | ------------------------------- |
+| `postgres` | Local development database only |
+
+There is no production or staging Compose stack. Do not deploy Compose to Render.
 
 ---
 
