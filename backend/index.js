@@ -45,6 +45,7 @@ if (isProduction) {
 	requireEnv("ALLOWED_ORIGINS");
 } else {
 	requireEnv("SESSION_SECRET");
+	requireEnv("ALLOWED_ORIGINS");
 }
 
 // Configurations
@@ -52,18 +53,9 @@ const app = express(); // Create express app instance
 app.set("trust proxy", 1); // Trust Render (and other) reverse proxies
 app.use(express.json()); // express.json enables parsing of json files
 
-const defaultDevOrigins =
-	"http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000";
-const allowedOrigins = process.env.ALLOWED_ORIGINS
-	? process.env.ALLOWED_ORIGINS.split(",")
-			.map((o) => o.trim())
-			.filter(Boolean)
-	: isProduction
-		? []
-		: defaultDevOrigins
-				.split(",")
-				.map((o) => o.trim())
-				.filter(Boolean);
+const allowedOrigins = process.env.ALLOWED_ORIGINS.split(",")
+	.map((o) => o.trim())
+	.filter(Boolean);
 
 // Enable CORS
 app.use(
